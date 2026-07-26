@@ -1,0 +1,8 @@
+build
+.vscode
+*.kra
+*.png:Zone.Identifier
+_deps
+CMakeCache.txt
+CMakeFiles/
+Sprites/

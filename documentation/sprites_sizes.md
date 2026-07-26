@@ -1,0 +1,1 @@
+hero sprites: hor: 95px, ver: 64px
