@@ -1,10 +1,11 @@
-add_library(Magic
+add_library(Magic SHARED
     SpellBook.cc
     Spell.cc
 )
 
-target_include_directories(Magic PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/Magic
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Magic PRIVATE
+)
+
+target_link_libraries(Magic PRIVATE
+    SFML::Graphics
 )

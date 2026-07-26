@@ -12,24 +12,22 @@
 // #include <SFML/Graphics.hpp>
 
 #include <array>
-#include <cmath>
 #include <memory>
 #include <vector>
 
-#include "Characters/Character.h"
-#include "Exceptions/CoordinateOutOfBoutdsException.hpp"
-#include "Exceptions/InvalidMoveException.hpp"
-#include "Exceptions/ObjectNotFoundException.hpp"
-#include "Exceptions/TileNotFoundException.hpp"
+#include "Character/Character.h"
+#include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/GridTile.h"
+#include "WorldMap/MapObject.h"
 
 class Character;
 class Building;
 
 class WorldMap {
  private:
-  std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_;  // underlying map structure
+  std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>
+      grid_;  // underlying map structure
   std::vector<std::shared_ptr<Character>> characters_;
   std::vector<std::shared_ptr<Building>> buildings_;
 

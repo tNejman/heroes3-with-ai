@@ -1,15 +1,12 @@
 #pragma once
 
 #include <SFML/Window.hpp>
-#include <algorithm>
 #include <deque>
-#include <map>
-#include <memory>
 #include <set>
+#include <vector>
 
-#include "Characters/Character.h"
-#include "Exceptions/UnknownStateException.hpp"
-#include "Exceptions/_NotImplementedException.hpp"
+#include "Miscellaneous/Coords.h"
+
 
 // Movement OverworldOnly
 class KeyHandler {
@@ -29,7 +26,7 @@ class KeyHandler {
 
  public:
   KeyHandler();
-  KeyHandler(bool is_buffered_input);
+  KeyHandler( bool is_buffered_input );
 
   // monitoring is split with getMove because there may be more than 1 move queued
   void monitorKeyPresses();

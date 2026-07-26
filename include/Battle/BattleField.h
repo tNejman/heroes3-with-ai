@@ -5,17 +5,16 @@
   - dodawanie przeszkód i sprawdzanie, czy jednostka może dojść gdzieś.
   - Pole bitwy jest reprezentowane jako graf gdzie można poruszać się w 6 kierunkach.
 */
-// #include <SFML/Graphics.hpp>
 
-#include <algorithm>
 #include <array>
 #include <memory>
-#include <queue>
 #include <vector>
 
-#include "Battle/Tile.h"
+#include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "WorldMap/GridTile.h"
+
+class Tile;
+class GridTile;
 
 class BattleField {
  private:
@@ -25,7 +24,6 @@ class BattleField {
 
  public:
   BattleField( std::shared_ptr<GridTile> background );
-  ~BattleField();
 
   std::vector<std::shared_ptr<Tile>> getTileNeighbours( const CoordPair coords );
   std::vector<std::shared_ptr<Tile>> getTileNeighbours( const std::shared_ptr<Tile> tile );

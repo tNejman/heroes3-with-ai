@@ -1,15 +1,17 @@
 #pragma once
 #include <exception>
 #include <string>
+#include <utility>
 
 class InvalidFactionTypeException : public std::exception {
  private:
-  std::string message;
+  std::string message_;
 
  public:
-  InvalidFactionTypeException( const std::string& msg ) : message( msg ) {}
+  InvalidFactionTypeException( std::string msg ) : message_( std::move( msg ) ) {
+  }
 
-  const char* what() const noexcept override {
-    return message.c_str();
+  [[nodiscard]] const char* what() const noexcept override {
+    return message_.c_str();
   }
 };

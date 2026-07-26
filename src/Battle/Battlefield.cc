@@ -1,17 +1,22 @@
 #include "Battle/BattleField.h"
 
-BattleField::BattleField( std::shared_ptr<GridTile> background )
-    : background_( background ) {
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "Battle/Tile.h"
+#include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+
+BattleField::BattleField( std::shared_ptr<GridTile> background ) : background_( background ) {
   for ( auto& col : battle_grid_ ) {
     for ( auto& tile_ptr : col ) {
       tile_ptr = nullptr;
     }
   }
 };
-
-BattleField::~BattleField() {
-  // empty
-}
 
 std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPair coords ) {
   const uint32_t x = coords.x_;
@@ -24,8 +29,7 @@ std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPa
     int nx = (int)x + delta.dx_;
     int ny = (int)y + delta.dy_;
 
-    if ( nx >= 0 && nx < (int)MAP_WIDTH_BF &&
-         ny >= 0 && ny < (int)MAP_HEIGHT_BF ) {
+    if ( nx >= 0 && nx < (int)MAP_WIDTH_BF && ny >= 0 && ny < (int)MAP_HEIGHT_BF ) {
       const auto& tile_ptr = getTileByProxy( CoordPair( uint32_t( nx ), uint32_t( ny ) ) );
       neighbours.push_back( tile_ptr );
     } else {

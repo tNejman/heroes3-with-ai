@@ -1,9 +1,10 @@
-add_library(Resource
+add_library(Resource SHARED
     Resource.cc
 )
 
-target_include_directories(Resource PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/Resource
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Resource PRIVATE
+)
+
+target_link_libraries(Resource PRIVATE
+    SFML::Graphics
 )

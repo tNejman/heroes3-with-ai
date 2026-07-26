@@ -1,12 +1,15 @@
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
 
 #include "Battle/Battle.h"
-#include "Characters/Character.h"
-#include "LoadAndSaveTools/CharacterSaver.h"
-#include "Miscellaneous/ProjectLib.h"
-#include "Units/Faction.hpp"
+#include "Battle/Tile.h"
+#include "Character/Character.h"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/UnitsLib.h"
+#include "Unit/Faction.hpp"
+#include "Unit/Unit.h"
 
 // Easy factory constructor
 // const std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
@@ -25,8 +28,10 @@ TEST( BattleTest, checkattacking ) {
   std::shared_ptr<UnitStack> pikeman_army = std::make_shared<UnitStack>( pikeman, (uint32_t)30 );
   std::shared_ptr<UnitStack> angel_army = std::make_shared<UnitStack>( angel, (uint32_t)1 );
 
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
 
   character1->recruitUnitStack( pikeman_army );
   character2->recruitUnitStack( angel_army );
@@ -48,10 +53,14 @@ TEST( BattleTest, checkingattacking ) {
   std::shared_ptr<UnitStack> angel_army_silverhand = std::make_shared<UnitStack>( angel, (uint32_t)1 );
   std::shared_ptr<UnitStack> angel_army_v = std::make_shared<UnitStack>( angel, (uint32_t)1 );
 
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 10, 10, 10, 10, 50, 2, -3 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 2, -3 );
-  std::shared_ptr<Character> character3 = std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 2, -3 );
-  std::shared_ptr<Character> character4 = std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 2, -3 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 10, 10, 10, 10, 50, 2, -3 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 2, -3 );
+  std::shared_ptr<Character> character3 =
+      std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 2, -3 );
+  std::shared_ptr<Character> character4 =
+      std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 2, -3 );
 
   character1->recruitUnitStack( pikeman_army_john );
   character2->recruitUnitStack( angel_army_silverhand );
@@ -80,10 +89,14 @@ TEST( BattleTest, checkingMaxattackBonus ) {
   std::shared_ptr<UnitStack> angel_army_silverhand = std::make_shared<UnitStack>( angel, (uint32_t)1 );
   std::shared_ptr<UnitStack> angel_army_v = std::make_shared<UnitStack>( angel, (uint32_t)1 );
 
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 4000, 4000, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character3 = std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character4 = std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 4000, 4000, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character3 =
+      std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character4 =
+      std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
 
   character1->recruitUnitStack( pikeman_army_john );
   character2->recruitUnitStack( angel_army_silverhand );
@@ -110,10 +123,14 @@ TEST( BattleTest, checkingMaxdefenseBonus ) {
   std::shared_ptr<UnitStack> angel_army_silverhand = std::make_shared<UnitStack>( angel, (uint32_t)5 );
   std::shared_ptr<UnitStack> angel_army_v = std::make_shared<UnitStack>( angel, (uint32_t)5 );
 
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 200, 200, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character3 = std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character4 = std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 200, 200, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character3 =
+      std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character4 =
+      std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
 
   character1->recruitUnitStack( angel_army_john );
   character2->recruitUnitStack( angel_army_silverhand );
@@ -147,8 +164,10 @@ TEST( BattleTestMoving, checksettingarmies ) {
   std::shared_ptr<UnitStack> swordsman_army = std::make_shared<UnitStack>( swordsman, (uint32_t)2 );
   std::shared_ptr<UnitStack> swordsman_2_army = std::make_shared<UnitStack>( swordsman, (uint32_t)3 );
   std::shared_ptr<UnitStack> swordsman_3_army = std::make_shared<UnitStack>( swordsman, (uint32_t)4 );
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
 
   character1->recruitUnitStack( pikeman_army );
   character1->recruitUnitStack( pikeman_2_army );
@@ -183,8 +202,10 @@ TEST( BattleTestMoving, checkmovingarmies ) {
   std::shared_ptr<UnitStack> swordsman_army = std::make_shared<UnitStack>( swordsman, 2u );
   std::shared_ptr<UnitStack> swordsman_2_army = std::make_shared<UnitStack>( swordsman, 3u );
   std::shared_ptr<UnitStack> swordsman_3_army = std::make_shared<UnitStack>( swordsman, 4u );
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
 
   character1->recruitUnitStack( pikeman_army );
   character1->recruitUnitStack( pikeman_2_army );
@@ -218,8 +239,10 @@ TEST( BattleTestAttack, check_attacking_armies ) {
   std::shared_ptr<UnitStack> swordsman_army = std::make_shared<UnitStack>( swordsman, 2u );
   std::shared_ptr<UnitStack> swordsman_2_army = std::make_shared<UnitStack>( swordsman, 3u );
   std::shared_ptr<UnitStack> swordsman_3_army = std::make_shared<UnitStack>( swordsman, 4u );
-  std::shared_ptr<Character> character1 = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 = std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character2 =
+      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
 
   character1->recruitUnitStack( pikeman_army );
   character1->recruitUnitStack( pikeman_2_army );

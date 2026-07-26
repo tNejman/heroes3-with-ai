@@ -1,13 +1,13 @@
-add_library(Game
+add_library(Game SHARED
     KeyHandler.cc
     Game.cc
 )
 
-target_include_directories(Game PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/Algorithms
-    ${CMAKE_SOURCE_DIR}/include/Game
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Game PRIVATE
 )
 
-target_link_libraries(Game PRIVATE Algorithms)
+target_link_libraries(Game PRIVATE 
+    Algorithms
+    Graphics
+    Miscellaneous
+)

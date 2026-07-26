@@ -1,5 +1,12 @@
 #include "LoadAndSaveTools/MapLoader.h"
 
+#include <cassert>
+#include <memory>
+
+#include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Miscellaneous/ProjectLib.h"
+#include "WorldMap/WorldMap.h"
+
 void MapLoader::resetCounters() {
   x_counter_ = 0;
   y_counter_ = WORLD_MAP_HEIGHT - 1;

@@ -3,10 +3,8 @@
 /* Zawarość klasy TileObject:
   - klasa TileObject jest interfajsem dla obiektów, które mogą być umieszczane na kafelkach w grze.
 */
-#include <array>
-#include <memory>
 #include <string>
-#include <vector>
+#include <utility>
 
 class TileObject {
  private:
@@ -14,8 +12,8 @@ class TileObject {
   std::string name_;
 
  public:
-  TileObject( std::string name ) : passable_( false ), name_( name ) {};
-  TileObject() : passable_( false ), name_( "" ) {};
+  TileObject( std::string name ) : passable_( false ), name_( std::move( name ) ) {};
+  TileObject() : passable_( false ) {};
   TileObject( bool passable ) : passable_( passable ) {};
-  const std::string& getName() const;
+  [[nodiscard]] const std::string& getName() const;
 };

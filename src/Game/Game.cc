@@ -1,18 +1,55 @@
 #include "Game/Game.h"
 
-void Game::_performGameLoopIterationOverworld() {
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowEnums.hpp>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <exception>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <ostream>
+#include <utility>
+#include <vector>
+
+#include "Algorithms/MinimaxAI.h"
+#include "Battle/Battle.h"
+#include "Battle/Moves/AttackMove.h"
+#include "Battle/Moves/Move.hpp"
+#include "Battle/Moves/MoveFactory.h"
+#include "Character/Character.h"
+#include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/InvalidMoveException.hpp"
+#include "Exceptions/UnknownStateException.hpp"
+#include "Game/KeyHandler.h"
+#include "Graphics/Renderers/MapRenderer.h"
+#include "Graphics/SpriteVisitor.h"
+#include "LoadAndSaveTools/MapLoader.h"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+#include "Player/Player.h"
+#include "Unit/Faction.hpp"
+#include "WorldMap/GridTile.h"
+#include "WorldMap/MapObject.h"
+
+void Game::performGameLoopIterationOverworld() {
   key_handler_->monitorKeyPresses();
   ShiftPair move_delta = key_handler_->getMove();
 
-  for (auto & player : players_) {
-    for (auto it = player->getCharacters().begin(); it != player->getCharacters().end(); ++it) {
+  for ( auto& player : players_ ) {
+    for ( auto it = player->getCharacters().begin(); it != player->getCharacters().end(); ++it ) {
       bool all_empty = true;
-      for (auto & unit : (*it)->getParty()) {
-        if (unit) all_empty = false;
+      for ( auto& unit : ( *it )->getParty() ) {
+        if ( unit ) all_empty = false;
       }
-      if (all_empty) {
-        world_map_->setMapObject((*it)->getCoords(), nullptr);
-        player->getCharacters().erase(it);
+      if ( all_empty ) {
+        world_map_->setMapObject( ( *it )->getCoords(), nullptr );
+        player->getCharacters().erase( it );
         break;
       }
     }
@@ -23,7 +60,8 @@ void Game::_performGameLoopIterationOverworld() {
     try {
       world_map_->moveMapObject( getMainPlayerCoords(), move_delta );
       center_coords = getMainPlayerCoords();
-      // std::cout << "DEBUG: Game moves character to: x=" << center_coords.x_ << " y=" << center_coords.y_ << std::endl;
+      // std::cout << "DEBUG: Game moves character to: x=" << center_coords.x_ << " y=" << center_coords.y_ <<
+      // std::endl;
     } catch ( const CoordinateOutOfBoundsException& e ) {
       std::cout << e.what() << std::endl;
     } catch ( const InvalidMoveException& e ) {
@@ -38,22 +76,21 @@ void Game::_performGameLoopIterationOverworld() {
         }
         std::cout << e.what() << std::endl;
       } catch ( const std::exception& start_battle_failed_exception ) {
-        std::cout << "Game::_performGameLoopIterationOverworld() failed to start battle" << start_battle_failed_exception.what() << std::endl;
+        std::cout << "Game::_performGameLoopIterationOverworld() failed to start battle"
+                  << start_battle_failed_exception.what() << std::endl;
       }
     }
   }
   map_renderer_->render( *render_window_, center_coords );
 }
 
-void Game::_performGameLoopIterationBattle() {
-  if ( battle_->getAttackingArmy().size() == 0 ||
-       battle_->getDefendingArmy().size() == 0 ) {
+void Game::performGameLoopIterationBattle() {
+  if ( battle_->getAttackingArmy().size() == 0 || battle_->getDefendingArmy().size() == 0 ) {
     game_state_ = GameState::OVERWORLD;
     battle_.reset();
     return;
   }
-  if ( battle_->getState() == BattleState::WIN_ATTACKER ||
-       battle_->getState() == BattleState::WIN_ATTACKER ) {
+  if ( battle_->getState() == BattleState::WIN_ATTACKER || battle_->getState() == BattleState::WIN_ATTACKER ) {
     battle_.reset();
     game_state_ = GameState::OVERWORLD;
     return;
@@ -64,13 +101,13 @@ void Game::_performGameLoopIterationBattle() {
   render_window_->draw( s );
 
   if ( battle_->isAIMove() ) {
-    _performBattleAIMove();
+    performBattleAiMove();
   } else {
-    _performBattleUserMove();
+    performBattleUserMove();
   }
 }
 
-void Game::_performBattleAIMove() {
+void Game::performBattleAiMove() {
   auto moves = MoveFactory::generateMoves( battle_ );
   std::shared_ptr<Move> best_move = nullptr;
   for ( auto& move : moves ) {
@@ -79,12 +116,11 @@ void Game::_performBattleAIMove() {
       break;
     }
   }
-  if ( best_move == nullptr )
-    best_move = minimax_->getBestMove( battle_, MINIMAX_MAX_DEPTH );
+  if ( best_move == nullptr ) best_move = minimax_->getBestMove( battle_, MINIMAX_MAX_DEPTH );
   best_move->execute( battle_ );
 }
 
-void Game::_performBattleUserMove() {
+void Game::performBattleUserMove() {
   auto moves = MoveFactory::generateMoves( battle_ );
   // if ( waiting_for_print_ ) {
   //   for ( auto& move : moves ) {
@@ -94,10 +130,9 @@ void Game::_performBattleUserMove() {
   // }
   auto battle_coords = getCoordsFromClick();
   if ( battle_coords.has_value() ) {
-    auto it = std::find_if( moves.begin(), moves.end(),
-                            [&]( std::shared_ptr<Move> move ) {
-                              return move->destinationCoords() == battle_coords.value();
-                            } );
+    auto it = std::find_if( moves.begin(), moves.end(), [&]( std::shared_ptr<Move> move ) {
+      return move->destinationCoords() == battle_coords.value();
+    } );
 
     if ( it != moves.end() ) {
       std::cout << "DEBUG: executing: " << ( *it )->getInfo( battle_ ) << std::endl;
@@ -162,24 +197,27 @@ std::optional<CoordPair> Game::getCoordsFromClick() {
   } else {
     mouse_x_ = -1;
     mouse_y_ = -1;
-    // std::cout << "DEBUG: Game::handleMouseClick() found coords: x=" << found_coords.x_ << " y=" << found_coords.y_ << std::endl;
+    // std::cout << "DEBUG: Game::handleMouseClick() found coords: x=" << found_coords.x_ << " y=" << found_coords.y_ <<
+    // std::endl;
     return found_coords;
   }
 }
 
-void Game::startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, std::shared_ptr<GridTile> background ) {
+void Game::startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                        std::shared_ptr<GridTile> background ) {
   battle_ = std::make_shared<Battle>( attacker, defender, background );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
 }
 
-Game::Game( std::vector<std::shared_ptr<Player>> players )
-    : Game( players, false ) {}
+Game::Game( std::vector<std::shared_ptr<Player>> players ) : Game( players, false ) {
+}
 
 Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input )
     : players_( std::move( players ) ),
       factions_( { std::make_unique<FactionForge>(), std::make_unique<FactionConflux>() } ),
-      render_window_( std::make_shared<sf::RenderWindow>( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close  ) ),
+      render_window_( std::make_shared<sf::RenderWindow>( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME,
+                                                          sf::Style::Titlebar | sf::Style::Close ) ),
       sprite_visitor_( std::make_shared<SpriteVisitor>() ),
       key_handler_( std::make_shared<KeyHandler>( if_buffered_input ) ),
       minimax_( std::make_shared<MinimaxAI>() ) {
@@ -206,14 +244,9 @@ void Game::setMouseCoords( int x, int y ) {
 
 void Game::performGameLoopIteration() {
   switch ( game_state_ ) {
-    case GameState::OVERWORLD:
-      _performGameLoopIterationOverworld();
-      break;
-    case GameState::BATTLE:
-      _performGameLoopIterationBattle();
-      break;
-    default:
-      throw UnknownStateException( "Game loop tried to perform action regarding forbidden game state" );
+    case GameState::OVERWORLD: performGameLoopIterationOverworld(); break;
+    case GameState::BATTLE: performGameLoopIterationBattle(); break;
+    default: throw UnknownStateException( "Game loop tried to perform action regarding forbidden game state" );
   }
 }
 
@@ -226,7 +259,8 @@ std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
 }
 
 void Game::debugStartBattle() {
-  battle_ = std::make_shared<Battle>( players_[0]->getCharacters()[0], players_[1]->getCharacters()[0], world_map_->getTile( CoordPair( 0u, 0u ) ) );
+  battle_ = std::make_shared<Battle>( players_[0]->getCharacters()[0], players_[1]->getCharacters()[0],
+                                      world_map_->getTile( CoordPair( 0u, 0u ) ) );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
 }

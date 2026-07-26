@@ -1,9 +1,10 @@
-add_library(Player
+add_library(Player SHARED
     Player.cc
 )
 
-target_include_directories(Player PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/Player
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Player PRIVATE
+)
+
+target_link_libraries(Player PRIVATE
+    SFML::Graphics
 )

@@ -1,24 +1,17 @@
 #include "Miscellaneous/Coords.h"
+
+#include <cmath>
+#include <cstdint>
+#include <ostream>
+
+#include "Exceptions/CoordinateOutOfBoundsException.hpp"
+
 /*
 ========== ShiftPair ==========
 */
 
-ShiftPair::ShiftPair( const ShiftPair& other ) noexcept
-    : dx_( other.dx_ ), dy_( other.dy_ ) {};
-
-ShiftPair::ShiftPair( const ShiftPair&& other ) noexcept
-    : dx_( other.dx_ ), dy_( other.dy_ ) {};
-
-// inline constexpr ShiftPair::ShiftPair(int dx, int dy) noexcept 
-//   : dx_ (dx), dy_(dy) {};
-
-ShiftPair& ShiftPair::operator=( const ShiftPair& other ) noexcept {
-  if ( this != &other ) {
-    dx_ = other.dx_;
-    dy_ = other.dy_;
-  }
-  return *this;
-}
+// constexpr ShiftPair::ShiftPair( int dx, int dy ) noexcept : dx_( dx ), dy_( dy ) {
+// }
 
 ShiftPair& ShiftPair::operator+( const ShiftPair& other ) noexcept {
   dx_ += other.dx_;
@@ -44,22 +37,8 @@ bool ShiftPair::operator!=( const ShiftPair& other ) const noexcept {
 ========== CoordPair ==========
 */
 
-CoordPair::CoordPair( const CoordPair& other ) noexcept
-    : x_( other.x_ ), y_( other.y_ ) {};
-
-CoordPair::CoordPair( const CoordPair&& other ) noexcept
-    : x_( other.x_ ), y_( other.CoordPair::y_ ) {}
-
-// inline constexpr CoordPair::CoordPair(uint32_t x, uint32_t y) noexcept 
-// : x_(x), y_(y) {}
-
-CoordPair& CoordPair::operator=( const CoordPair& other ) noexcept {
-  if ( this != &other ) {
-    x_ = other.x_;
-    y_ = other.y_;
-  }
-  return *this;
-}
+// constexpr CoordPair::CoordPair( uint32_t x, uint32_t y ) noexcept : x_( x ), y_( y ) {
+// }
 
 CoordPair& CoordPair::operator+( const CoordPair& other ) noexcept {
   x_ += other.x_;
@@ -103,9 +82,9 @@ CoordPair& CoordPair::operator+=( const ShiftPair& shift ) {
   }
 }
 
-std::ostream& operator<<(std::ostream& os, const CoordPair& coord) {
-    os << "(" << coord.x_ << ", " << coord.y_ << ")";
-    return os;
+std::ostream& operator<<( std::ostream& os, const CoordPair& coord ) {
+  os << "(" << coord.x_ << ", " << coord.y_ << ")";
+  return os;
 }
 
 bool CoordPair::operator==( const CoordPair& other ) const noexcept {
@@ -132,8 +111,9 @@ bool CoordPair::operator>=( const CoordPair& other ) const noexcept {
   return ( *this == other ) || ( x_ > other.x_ ) || ( x_ == other.x_ && y_ > other.y_ );
 }
 
-double CoordPair::distance(const CoordPair& other) const {
-  //if this = 0,0 and other = 4,3 the result will be 5
+double CoordPair::distance( const CoordPair& other ) const {
+  // if this = 0,0 and other = 4,3 the result will be 5
 
-  return sqrt(pow((double)((int)other.x_-(int)this->x_),2)+pow((double)((int)other.y_-(int)this->y_),2));
+  return sqrt( std::pow( (double)( (int)other.x_ - (int)this->x_ ), 2 )
+               + std::pow( (double)( (int)other.y_ - (int)this->y_ ), 2 ) );
 }

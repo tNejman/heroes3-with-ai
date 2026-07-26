@@ -1,5 +1,23 @@
 #include "Battle/Moves/MoveFactory.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
+
+#include "Battle/Battle.h"
+#include "Battle/BattleField.h"
+#include "Battle/Moves/AttackMove.h"
+#include "Battle/Moves/MoveMove.h"
+#include "Battle/Moves/WaitMove.h"
+#include "Battle/Tile.h"
+#include "Exceptions/_NotImplementedException.hpp"
+#include "Miscellaneous/Coords.h"
+#include "Unit/UnitStack.h"
+
 std::vector<std::shared_ptr<Move>> MoveFactory::createMoveMove( std::shared_ptr<Battle> battle ) {
   std::vector<std::shared_ptr<Move>> valid_moves;
   if ( !battle->getUnitInAction() ) return valid_moves;
@@ -15,7 +33,7 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createMoveMove( std::shared_ptr<
 
   queue.push( { start_tile, 0u } );
   visited.insert( start );
-  valid_moves.push_back(std::make_shared<WaitMove>(battle->getUnitInAction()->getCoordsInBattle()));
+  valid_moves.push_back( std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() ) );
   while ( !queue.empty() ) {
     auto [current_tile, cost] = queue.front();
     queue.pop();
@@ -61,7 +79,7 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createAttackMove( std::shared_pt
   visited.insert( start );
   std::vector<std::shared_ptr<UnitStack>> target_units = battle->getUnitsInBattle();
   std::shared_ptr<UnitStack> unit;
-  valid_moves.push_back(std::make_shared<WaitMove>(battle->getUnitInAction()->getCoordsInBattle()));
+  valid_moves.push_back( std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() ) );
   while ( !queue.empty() ) {
     auto [current_tile, cost] = queue.front();
     queue.pop();
@@ -70,8 +88,11 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createAttackMove( std::shared_pt
     if ( cost > 0u && cost <= distance && current_tile->getObject() != nullptr ) {
       // some magic to get defending unit
       std::for_each( target_units.begin(), target_units.end(),
-                     [&unit, &current_coords, &battle]( std::shared_ptr<UnitStack> unit_tmp ) {if(current_coords == unit_tmp->getCoordsInBattle() &&
-                       !battle->isSameArmy(battle->getUnitInAction(),unit_tmp))unit=unit_tmp; } );
+                     [&unit, &current_coords, &battle]( std::shared_ptr<UnitStack> unit_tmp ) {
+                       if ( current_coords == unit_tmp->getCoordsInBattle()
+                            && !battle->isSameArmy( battle->getUnitInAction(), unit_tmp ) )
+                         unit = unit_tmp;
+                     } );
       if ( unit )
         valid_moves.push_back(
             std::make_shared<AttackMove>( battle->unit_in_action_->getCoordsInBattle(), unit->getCoordsInBattle() ) );

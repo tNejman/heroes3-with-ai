@@ -1,10 +1,16 @@
 #include "Battle/Moves/AttackMove.h"
 
-AttackMove::AttackMove(
-    CoordPair attacker,
-    CoordPair defender ) : Move(), attacker_( attacker ), defender_( defender ) {}
+#include <memory>
+#include <string>
 
-AttackMove::~AttackMove() {}
+#include "Battle/Battle.h"
+#include "Battle/Moves/Move.hpp"
+#include "Miscellaneous/Coords.h"
+#include "Unit/UnitStack.h"
+
+AttackMove::AttackMove( CoordPair attacker, CoordPair defender )
+    : Move(), attacker_( attacker ), defender_( defender ) {
+}
 
 void AttackMove::execute( std::shared_ptr<Battle> battle ) {
   battle->attack( battle->getUnitFromCoords( attacker_ ), battle->getUnitFromCoords( defender_ ) );

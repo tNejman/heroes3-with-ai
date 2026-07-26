@@ -1,12 +1,11 @@
-add_library(Algorithms
+add_library(Algorithms SHARED
     MinimaxAI.cc
 )
 
-target_include_directories(Algorithms PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/Algorithms
-    ${CMAKE_SOURCE_DIR}/include/Miscellaneous
-    ${CMAKE_SOURCE_DIR}/include/Battle/Moves
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Algorithms PRIVATE
 )
-target_link_libraries(Algorithms PRIVATE Battle)
+
+target_link_libraries(Algorithms PRIVATE 
+    Battle
+    SFML::Graphics
+)

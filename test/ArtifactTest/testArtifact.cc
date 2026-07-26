@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "Artifacts/Artifact.h"
+#include "Artifact/Artifact.h"
 
 TEST( ArtifactTest, createValidArtifact ) {
   std::unique_ptr<Artifact> crown_of_the_supreme_magi = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );

@@ -2,11 +2,15 @@
 
 // Autor: Tomasz Nejman
 /* zawartość:
-    - klasa 'AttackMove' to podklasa 'Move' i reprezetnuje ruch, w którym oddział jednostek przemieszcza się na nowe pole
+    - klasa 'AttackMove' to podklasa 'Move' i reprezetnuje ruch, w którym oddział jednostek przemieszcza się na nowe
+   pole
 */
 
-#include "Battle/Battle.h"
+#include <memory>
+#include <string>
+
 #include "Battle/Moves/Move.hpp"
+#include "Miscellaneous/Coords.h"
 
 class MoveMove : public Move {
  private:
@@ -15,10 +19,9 @@ class MoveMove : public Move {
 
  public:
   MoveMove( CoordPair old_coords, CoordPair new_coords );
-  ~MoveMove();
-  void execute(std::shared_ptr<Battle> battle) override;
-  virtual CoordPair destinationCoords() const override;
-  virtual std::string getPath() const override;
-  std::string getInfo(std::shared_ptr<Battle> battle) const override;
-  virtual std::shared_ptr<Move> copy() const override;
+  void execute( std::shared_ptr<Battle> battle ) override;
+  [[nodiscard]] CoordPair destinationCoords() const override;
+  [[nodiscard]] std::string getPath() const override;
+  [[nodiscard]] std::string getInfo( std::shared_ptr<Battle> battle ) const override;
+  [[nodiscard]] std::shared_ptr<Move> copy() const override;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Characters/Character.h"
+#include "Character/Character.h"
 #include "LoadAndSaveTools/ISaver.hpp"
 
 class CharacterSaver : public ISaver {

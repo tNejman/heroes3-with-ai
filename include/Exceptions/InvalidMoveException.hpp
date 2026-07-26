@@ -2,15 +2,17 @@
 
 #include <exception>
 #include <string>
+#include <utility>
 
 class InvalidMoveException : public std::exception {
  private:
-  std::string message;
+  std::string message_;
 
  public:
-  InvalidMoveException( const std::string& msg ) : message( msg ) {}
+  InvalidMoveException( std::string msg ) : message_( std::move( msg ) ) {
+  }
 
-  const char* what() const noexcept override {
-    return message.c_str();
+  [[nodiscard]] const char* what() const noexcept override {
+    return message_.c_str();
   }
 };

@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <cstdint>
 #include <memory>
 
 #include "Battle/BattleField.h"
-#include "Battle/Tile.h"
-#include "Battle/TileObject.h"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+#include "WorldMap/GridTile.h"
 
 TEST( LayoutTest, check_up_right_neighbour_even ) {
   std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( Terrain::GRASS );
@@ -20,15 +22,13 @@ TEST( LayoutTest, check_up_right_neighbour_even ) {
   // top row
   const uint32_t max_y = MAP_HEIGHT_BF - 1;
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, max_y ) )[UR],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, max_y ) )[UR], nullptr );
   }
   // right column
   const uint32_t max_x = MAP_WIDTH_BF - 1;
   for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[UR],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[UR], nullptr );
   }
 }  // done
 
@@ -63,14 +63,12 @@ TEST( LayoutTest, check_down_right_neighbour_even ) {
   const uint32_t max_x = MAP_WIDTH_BF - 1;
   for ( uint32_t y = 2; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[DR],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[DR], nullptr );
   }
   // max bottom row
   const uint32_t min_y = 0u;
   for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, min_y ) )[DR],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, min_y ) )[DR], nullptr );
   }
 }  // done
 
@@ -104,8 +102,7 @@ TEST( LayoutTest, check_left_neighbour_even ) {
   const uint32_t min_x = 0u;
   for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L], nullptr );
   }
 }  // done
 
@@ -121,8 +118,7 @@ TEST( LayoutTest, check_up_left_neighbour_even ) {
   }
   const uint32_t max_y = MAP_HEIGHT_BF - 1;
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, max_y ) )[UL],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, max_y ) )[UL], nullptr );
   }
 }  // done
 
@@ -153,8 +149,7 @@ TEST( LayoutTest, check_right_neighbour_odd ) {
   const uint32_t max_x = MAP_WIDTH_BF - 1;
   for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[R],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[R], nullptr );
   }
 }  // done
 
@@ -185,8 +180,7 @@ TEST( LayoutTest, check_down_left_neighbour_odd ) {
   const uint32_t min_x = 0u;
   for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[DL],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[DL], nullptr );
   }
 }  // done
 
@@ -204,8 +198,7 @@ TEST( LayoutTest, check_left_neighbour_odd ) {
   const uint32_t min_x = 0u;
   for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L], nullptr );
   }
 }  // done
 
@@ -223,8 +216,7 @@ TEST( LayoutTest, check_up_left_neighbour_odd ) {
   const uint32_t min_x = 0u;
   for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
     if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[UL],
-               nullptr );
+    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[UL], nullptr );
   }
 }
 

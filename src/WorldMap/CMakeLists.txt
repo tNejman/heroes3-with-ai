@@ -1,4 +1,4 @@
-add_library(WorldMap
+add_library(WorldMap SHARED
     WorldMap.cc
     MapObject.cc
     Building.cc
@@ -6,11 +6,11 @@ add_library(WorldMap
     OverworldObstacle.cc
 )
 
-target_include_directories(WorldMap PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/WorldMap
-    ${CMAKE_SOURCE_DIR}/include/Miscellaneous
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(WorldMap PRIVATE
 )
 
-target_link_libraries(WorldMap PRIVATE Miscellaneous)
+target_link_libraries(WorldMap PRIVATE 
+    Miscellaneous
+    Character
+    SFML::Graphics
+)

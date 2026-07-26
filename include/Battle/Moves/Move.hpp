@@ -9,16 +9,16 @@
 #include <memory>
 #include <string>
 
-#include "Miscellaneous/ProjectLib.h"
+#include "Miscellaneous/Coords.h"
+
 class Battle;
 
-class Move {
+class Move {  // NOLINT(cppcoreguidelines-special-member-functions)
  public:
-  Move() {};
   virtual ~Move() = default;
   virtual void execute( std::shared_ptr<Battle> battle ) = 0;
-  virtual std::string getInfo( std::shared_ptr<Battle> battle ) const = 0;
-  virtual CoordPair destinationCoords() const = 0;
-  virtual std::string getPath() const = 0;
-  virtual std::shared_ptr<Move> copy() const = 0;
+  [[nodiscard]] virtual std::string getInfo( std::shared_ptr<Battle> battle ) const = 0;
+  [[nodiscard]] virtual CoordPair destinationCoords() const = 0;
+  [[nodiscard]] virtual std::string getPath() const = 0;
+  [[nodiscard]] virtual std::shared_ptr<Move> copy() const = 0;
 };

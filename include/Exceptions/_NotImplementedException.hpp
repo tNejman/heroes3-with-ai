@@ -2,15 +2,17 @@
 
 #include <exception>
 #include <string>
+#include <utility>
 
 class NotImplementedException : public std::exception {
  private:
-  std::string message;
+  std::string message_;
 
  public:
-  NotImplementedException( const std::string& msg ) : message( msg ) {}
+  NotImplementedException( std::string msg ) : message_( std::move( msg ) ) {
+  }
 
-  const char* what() const noexcept override {
-    return message.c_str();
+  [[nodiscard]] const char* what() const noexcept override {
+    return message_.c_str();
   }
 };

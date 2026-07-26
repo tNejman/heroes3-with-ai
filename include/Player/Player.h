@@ -4,21 +4,18 @@
     - klasa pozwala na zarządzanie graczem
     - Jest też Interfejsem do zarządzania ruchami AI i człowieka
 */
-// #include <SFML/Graphics.hpp>
 
 #include <array>
 #include <memory>
 #include <vector>
 
-#include "Characters/Character.h"
-#include "Miscellaneous/Printable.h"
+#include "Character/Character.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Resource/Resource.h"
 #include "WorldMap/Castles/Castle.h"
 class Move;
 
-enum Color { RED,
-             BLUE };
+enum Color { RED, BLUE };
 
 // inheritance from Printable is postponed for now
 class Player {
@@ -28,7 +25,8 @@ class Player {
   std::array<std::unique_ptr<Resource>, AMOUNT_OF_RESOURCES> Resources_;
 
  public:
-  Player( std::vector<std::shared_ptr<Character>> characters ) : characters_on_map_( characters ) {}
+  Player( std::vector<std::shared_ptr<Character>> characters ) : characters_on_map_( characters ) {
+  }
   ~Player() = default;
 
   Color color_;

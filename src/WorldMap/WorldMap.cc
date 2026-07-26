@@ -1,5 +1,21 @@
 #include "WorldMap/WorldMap.h"
 
+#include <array>
+#include <cstdint>
+#include <exception>
+#include <iostream>
+#include <memory>
+#include <ostream>
+#include <vector>
+
+#include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/InvalidMoveException.hpp"
+#include "Exceptions/TileNotFoundException.hpp"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+#include "WorldMap/GridTile.h"
+#include "WorldMap/MapObject.h"
+
 void WorldMap::initializeGrid() {
   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
   for ( auto& col : grid_temp ) {
@@ -114,8 +130,7 @@ std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
   if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT )
     throw CoordinateOutOfBoundsException( "Cannot get tile" );
   auto tile = grid_[coords.x_][coords.y_];
-  if ( !tile )
-    throw TileNotFoundException( "Unknown state: no tile but in bounds" );
+  if ( !tile ) throw TileNotFoundException( "Unknown state: no tile but in bounds" );
   return tile;
 }
 
@@ -182,7 +197,8 @@ std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
 
 // }
 
-// void WorldMap::setGrid( std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid ) {
+// void WorldMap::setGrid( std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>&
+// new_grid ) {
 
 // }
 // void WorldMap::setRow( std::array<std::unique_ptr<GridTile>, WORLD_MAP_WIDTH>& new_row ) {

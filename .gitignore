@@ -6,3 +6,5 @@ _deps
 CMakeCache.txt
 CMakeFiles/
 Sprites/
+compile_commands.json
+.clangd

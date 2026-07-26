@@ -2,9 +2,9 @@
 // Autor: Tomasz Naszkowski
 // zawartość: klasa Printable jest interfejsem do wizualizacji obiektów
 
-// #include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
-#include "Graphic/Visitor.h"
+#include "Graphics/Visitor.h"
 
 class Printable {
  public:

@@ -1,9 +1,22 @@
-// #include <gtest/gtest.h>
-#include "../build/_deps/googletest-src/googletest/include/gtest/gtest.h"
-#include "Characters/Character.h"
+#include <gtest/gtest.h>
+
+#include <memory>
+#include <utility>
+
+#include "Artifact/Artifact.h"
+#include "Character/Character.h"
+#include "Exceptions/InvalidArtifactTypeException.hpp"
+#include "Exceptions/NotEmptySlotException.hpp"
+#include "Miscellaneous/ArtifactLib.h"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+#include "Miscellaneous/UnitsLib.h"
+#include "Unit/Faction.hpp"
+#include "Unit/UnitStack.h"
 
 TEST( CharacterTest, createValidCharacter ) {
-  std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
+  std::unique_ptr<Character> character1 =
+      std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
   ASSERT_EQ( character1->getName(), "John" );
   ASSERT_TRUE( character1->getIfAlive() );
   ASSERT_EQ( character1->getCoords(), CoordPair( 0u, 0u ) );
@@ -23,7 +36,8 @@ TEST( CharacterTest, createValidCharacter ) {
 }
 
 TEST( CharacterTest, moveArtifactsAround ) {
-  std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
+  std::unique_ptr<Character> character1 =
+      std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
   std::unique_ptr<Artifact> crown_otsm = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
 
   character1->pickUpArtifact( std::move( crown_otsm ) );
@@ -36,14 +50,16 @@ TEST( CharacterTest, moveArtifactsAround ) {
 }
 
 TEST( CharacterTest, equipUknownArtifact ) {
-  std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
+  std::unique_ptr<Character> character1 =
+      std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
 
   ASSERT_THROW( character1->equipArtifact( ArtifactType::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
                 InvalidArtifactTypeException );
 }
 
 TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
-  std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
+  std::unique_ptr<Character> character1 =
+      std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
   std::unique_ptr<Artifact> crown_otsm1 = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
   std::unique_ptr<Artifact> crown_otsm2 = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
 
@@ -56,7 +72,8 @@ TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
 }
 
 TEST( CharacterTest, copyCharacter ) {
-  std::shared_ptr<Character> character_original = std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
+  std::shared_ptr<Character> character_original =
+      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
 
   auto artifact_1 = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
   auto artifact_2 = Artifact::create( ArtifactType::THUNDER_HELMET );

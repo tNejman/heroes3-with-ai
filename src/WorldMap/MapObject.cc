@@ -1,10 +1,11 @@
 #include "WorldMap/MapObject.h"
 
-MapObject::MapObject()
-    : coords_( CoordPair( 0u, 0u ) ) {};
+#include "Miscellaneous/Coords.h"
 
-MapObject::MapObject( CoordPair coords )
-    : coords_( coords ) {};
+
+MapObject::MapObject() : coords_( CoordPair( 0u, 0u ) ) {};
+
+MapObject::MapObject( CoordPair coords ) : coords_( coords ) {};
 
 CoordPair MapObject::getCoords() const {
   return coords_;

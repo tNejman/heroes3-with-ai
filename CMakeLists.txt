@@ -14,12 +14,16 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message("Build type is: ${CMAKE_BUILD_TYPE}")
 
-find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-if(CLANG_TIDY_EXE)
-    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" --use-color) #  --fix-errors
-endif()
+# find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+# if(CLANG_TIDY_EXE)
+#     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" --use-color) #  --fix-errors
+# endif()
 
 include(FetchContent)
+
+set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS ON)
 
 FetchContent_Declare(
     SFML
@@ -27,48 +31,56 @@ FetchContent_Declare(
     GIT_TAG 3.0.1
     SYSTEM
 )
-set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
-set(CMAKE_CXX_CLANG_TIDY "")
-FetchContent_MakeAvailable(SFML)
-set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
+
+if(CLANG_TIDY_EXE)
+    set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
+    set(CMAKE_CXX_CLANG_TIDY "")
+    FetchContent_MakeAvailable(SFML)
+    set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
+else()
+    FetchContent_MakeAvailable(SFML)
+endif()
 
 set(MODULES
-    Algorithms 
-    Artifacts 
+    Algorithms
+    Artifact 
     Battle 
-    Characters 
+    Character
     Game 
-    Graphic
+    Graphics
     LoadAndSaveTools
     Magic 
     Miscellaneous 
     Player 
     Resource 
-    Units 
+    Unit 
     WorldMap
 )
 
 function(apply_compiler_flags target)
-    target_compile_options(${target} PRIVATE
-        $<$<CONFIG:Debug>:-g -O0
-        -Wall -Wextra -Wpedantic -Werror 
-        -Wcast-align -Wcast-qual 
-        -Wconversion -Wsign-conversion -Wshadow 
-        -Wdouble-promotion -Wnull-dereference 
-        -Wformat=2 
-        -Wzero-as-null-pointer-constant 
-        -Wvla
-        -fno-omit-frame-pointer
-        -fsanitize=address
-        -fsanitize=undefined>
+    # target_compile_options(${target} PRIVATE
+    #     $<$<CONFIG:Debug>:-g -O0
+    #     -Wall -Wextra -Wpedantic -Werror 
+    #     -Wcast-align -Wcast-qual 
+    #     -Wconversion -Wsign-conversion -Wshadow 
+    #     -Wdouble-promotion -Wnull-dereference 
+    #     -Wformat=2 
+    #     -Wzero-as-null-pointer-constant 
+    #     -Wvla
+    #     -fno-omit-frame-pointer
+    #     -fsanitize=address
+    #     -fsanitize=undefined>
 
-        $<$<CONFIG:Release>:-march=native>
-    )
-    target_link_options(${target} PUBLIC $<$<CONFIG:Debug>:-fsanitize=address,undefined>)
+    #     $<$<CONFIG:Release>:-march=native>
+    # )
+    # target_link_options(${target} PUBLIC $<$<CONFIG:Debug>:-fsanitize=address,undefined>)
 endfunction()
 
 foreach(module ${MODULES})
     add_subdirectory(src/${module})
+    target_include_directories(${module} PRIVATE 
+        ${CMAKE_SOURCE_DIR}/include
+    )
     apply_compiler_flags(${module})
 endforeach() 
 

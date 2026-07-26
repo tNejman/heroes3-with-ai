@@ -1,5 +1,15 @@
 #include "Game/KeyHandler.h"
 
+#include <SFML/Window/Keyboard.hpp>
+#include <algorithm>
+#include <cstdint>
+#include <set>
+#include <stdexcept>
+#include <vector>
+
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+
 void KeyHandler::processBufferedInput() {
   while ( !key_press_history_.empty() ) {
     auto &current = key_press_history_.front();
@@ -17,7 +27,9 @@ void KeyHandler::processBufferedInput() {
       bool should_wait = false;
       bool incompatible_pair = false;
 
-      FrameCount max_i = is_buffered_input_ ? std::min<FrameCount>( KEY_BUFFER_DURATION, uint32_t( key_press_history_.size() ) - 1 ) : 1;
+      FrameCount max_i = is_buffered_input_
+                             ? std::min<FrameCount>( KEY_BUFFER_DURATION, uint32_t( key_press_history_.size() ) - 1 )
+                             : 1;
 
       for ( FrameCount i = 1; i <= max_i; ++i ) {
         auto &next = key_press_history_[i];
@@ -74,20 +86,11 @@ ShiftPair KeyHandler::getShiftFromVector( const std::vector<sf::Keyboard::Key> &
   int dy = 0;
   for ( auto &key : key_vec ) {
     switch ( key ) {
-      case W:
-        dy += 1;
-        break;
-      case S:
-        dy -= 1;
-        break;
-      case A:
-        dx -= 1;
-        break;
-      case D:
-        dx += 1;
-        break;
-      default:
-        throw std::runtime_error( "Unexpected key passed to movement control" );
+      case W: dy += 1; break;
+      case S: dy -= 1; break;
+      case A: dx -= 1; break;
+      case D: dx += 1; break;
+      default: throw std::runtime_error( "Unexpected key passed to movement control" );
     };
   }
   return ShiftPair( dx, dy );

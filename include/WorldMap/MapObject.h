@@ -3,8 +3,12 @@
 /*
   - klasa
 */
+#include <SFML/Graphics/Texture.hpp>
+
+#include "Graphics/Visitor.h"
+#include "Miscellaneous/Coords.h"
 #include "Miscellaneous/Printable.h"
-#include "Miscellaneous/ProjectLib.h"
+
 
 class MapObject : public Printable {
  protected:

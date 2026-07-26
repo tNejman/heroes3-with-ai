@@ -1,5 +1,26 @@
 #include "Battle/Battle.h"
 
+#include <sys/types.h>
+
+#include <SFML/Graphics/Texture.hpp>
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <iterator>
+#include <memory>
+#include <stdexcept>
+#include <vector>
+
+#include "Battle/BattleField.h"
+#include "Battle/Tile.h"
+#include "Character/Character.h"
+#include "Exceptions/_NotImplementedException.hpp"
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
+#include "Unit/Unit.h"
+
 void Battle::setAttackingArmy() {
   auto& party = attacker_->getParty();
   for ( uint32_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
@@ -76,7 +97,8 @@ void Battle::nextRound() {
   defender_threw_spell_ = false;
 }
 
-Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, std::shared_ptr<GridTile> background )
+Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                std::shared_ptr<GridTile> background )
     : battlefield_( std::make_shared<BattleField>( background ) ), attacker_( attacker ), defender_( defender ) {
   // attacking_army_.reserve( 7 );
   // defending_army_.reserve( 7 );
@@ -87,7 +109,8 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
   state_ = BattleState::MOVING;
 };
 
-Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, std::shared_ptr<GridTile> background, bool is_minimax )
+Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                std::shared_ptr<GridTile> background, bool is_minimax )
     : Battle( attacker, defender, background ) {
   is_minimax_ = is_minimax;
 }
@@ -114,16 +137,16 @@ bool Battle::killUnit( std::shared_ptr<UnitStack> unit_stack_to_kill ) {
 
   std::shared_ptr<Character> character = ( attacker ) ? attacker_ : defender_;
 
-  for_each( character->getParty().begin(), character->getParty().end(),
-            [&]( std::shared_ptr<UnitStack>& unit ) {
-              if ( unit != nullptr && unit->getCoordsInBattle() == coords ) {
-                // Remove the unit from the round_queue_
-                getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
-                round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ), round_queue_.end() );
-                unit->die();
-                unit.reset();
-              }
-            } );
+  for_each( character->getParty().begin(), character->getParty().end(), [&]( std::shared_ptr<UnitStack>& unit ) {
+    if ( unit != nullptr && unit->getCoordsInBattle() == coords ) {
+      // Remove the unit from the round_queue_
+      getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
+      round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ),
+                          round_queue_.end() );
+      unit->die();
+      unit.reset();
+    }
+  } );
   if ( getAttackingArmy().size() == 0 ) {
     setBattleState( BattleState::WIN_DEFENDER );
     return true;
@@ -174,7 +197,8 @@ bool Battle::attack( std::shared_ptr<UnitStack> attacker, std::shared_ptr<UnitSt
       luck_multiplier = 0.5;
     }
   }
-  int attack_defense = int( attacker_unit->getAttack() + attacker_->getAttack() ) - int( defender_unit->getDefense() ) - int( defender_->getDefense() );
+  int attack_defense = int( attacker_unit->getAttack() + attacker_->getAttack() ) - int( defender_unit->getDefense() )
+                       - int( defender_->getDefense() );
   uint32_t positive_attack = uint32_t( std::max( 0, attack_defense ) );
   positive_attack = std::min( 60u, positive_attack );
   uint32_t positive_defense = uint32_t( std::max( 0, -attack_defense ) );
@@ -183,7 +207,8 @@ bool Battle::attack( std::shared_ptr<UnitStack> attacker, std::shared_ptr<UnitSt
   uint32_t max_damage = attacker_unit->getMaxDamage() * attacker->getSize();
   uint32_t attacker_dmg = min_damage + ( uint32_t( rand() ) % ( max_damage - min_damage + 1 ) );
   // dmg  = base DMG * size * (1+0.05*(attack-defense)) * (1-0.025*(defense-attack)) * luck_multiplier
-  double dmg = double( attacker_dmg ) * ( 1.0 + 0.05 * double( positive_attack ) ) * ( 1.0 - 0.025 * double( positive_defense ) ) * luck_multiplier;
+  double dmg = double( attacker_dmg ) * ( 1.0 + 0.05 * double( positive_attack ) )
+               * ( 1.0 - 0.025 * double( positive_defense ) ) * luck_multiplier;
   int dmg_rounded = static_cast<int>( dmg );
   if ( !defender->modifyCurrentHealth( dmg_rounded ) ) {
     return killUnit( defender );
@@ -211,8 +236,9 @@ std::shared_ptr<UnitStack> Battle::getUnitFromCoords( CoordPair coords ) const {
   const std::vector<std::shared_ptr<UnitStack>> units = getUnitsInBattle();
   std::shared_ptr<UnitStack> unit = nullptr;
   if ( battlefield_->getTileByProxy( coords ) == nullptr ) return nullptr;
-  std::for_each( units.begin(), units.end(),
-                 [&]( std::shared_ptr<UnitStack> unit_tmp ) {if(coords == unit_tmp->getCoordsInBattle())unit=unit_tmp; } );
+  std::for_each( units.begin(), units.end(), [&]( std::shared_ptr<UnitStack> unit_tmp ) {
+    if ( coords == unit_tmp->getCoordsInBattle() ) unit = unit_tmp;
+  } );
   return unit;
 }
 
@@ -265,8 +291,7 @@ std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattle() const {
 
 std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattleSortedToPrint() const {
   auto units_in_battle_sorted = getUnitsInBattle();
-  std::sort( units_in_battle_sorted.begin(),
-             units_in_battle_sorted.end(),
+  std::sort( units_in_battle_sorted.begin(), units_in_battle_sorted.end(),
              []( const std::shared_ptr<UnitStack>& a, const std::shared_ptr<UnitStack>& b ) {
                if ( a->getCoordsInBattle().y_ == b->getCoordsInBattle().y_ ) {
                  return a->getCoordsInBattle().x_ >= b->getCoordsInBattle().x_;
@@ -295,15 +320,15 @@ BattleState Battle::getBattleState() const {
 bool Battle::isSameArmy( const std::shared_ptr<UnitStack> unit1, const std::shared_ptr<UnitStack> unit2 ) const {
   const auto attacking_army = getAttackingArmy();
   const auto defending_army = getDefendingArmy();
-  return ( std::find( attacking_army.begin(), attacking_army.end(), unit1 ) != attacking_army.end() &&
-           std::find( attacking_army.begin(), attacking_army.end(), unit2 ) != attacking_army.end() ) ||
-         ( std::find( defending_army.begin(), defending_army.end(), unit1 ) != defending_army.end() &&
-           std::find( defending_army.begin(), defending_army.end(), unit2 ) != defending_army.end() );
+  return ( std::find( attacking_army.begin(), attacking_army.end(), unit1 ) != attacking_army.end()
+           && std::find( attacking_army.begin(), attacking_army.end(), unit2 ) != attacking_army.end() )
+         || ( std::find( defending_army.begin(), defending_army.end(), unit1 ) != defending_army.end()
+              && std::find( defending_army.begin(), defending_army.end(), unit2 ) != defending_army.end() );
 }
 
 bool Battle::isAIMove() const {
-  return ( isSameArmy( unit_in_action_, attacker_->getParty()[0] ) && !attacker_->getIfUser() ) ||
-         ( isSameArmy( unit_in_action_, defender_->getParty()[0] ) && !defender_->getIfUser() );
+  return ( isSameArmy( unit_in_action_, attacker_->getParty()[0] ) && !attacker_->getIfUser() )
+         || ( isSameArmy( unit_in_action_, defender_->getParty()[0] ) && !defender_->getIfUser() );
 }
 
 void Battle::forceUnplaceUnitStacks() {

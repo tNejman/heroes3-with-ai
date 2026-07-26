@@ -1,4 +1,5 @@
 #include "Resource/Resource.h"
+#include <string>
 
 std::string Resource::getName() const {
   switch ( resource_ ) {

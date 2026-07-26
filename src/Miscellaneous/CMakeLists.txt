@@ -1,8 +1,9 @@
-add_library(Miscellaneous
+add_library(Miscellaneous SHARED
     Coords.cc
 )
 
-target_include_directories(Miscellaneous PUBLIC
-    ${CMAKE_SOURCE_DIR}/include/Exceptions
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Miscellaneous PRIVATE
+)
+
+target_link_libraries(Miscellaneous PRIVATE
 )

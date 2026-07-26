@@ -7,15 +7,19 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <memory>
+#include <optional>
+#include <vector>
 
 #include "Algorithms/MinimaxAI.h"
-#include "Exceptions/UnknownStateException.hpp"
 #include "Game/KeyHandler.h"
-#include "Graphic/Renderers/MapRenderer.h"
-#include "LoadAndSaveTools/MapLoader.h"
+#include "Graphics/Renderers/MapRenderer.h"
+#include "Graphics/SpriteVisitor.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
-#include "Units/Faction.hpp"
+#include "Unit/Faction.hpp"
+#include "WorldMap/GridTile.h"
+#include "WorldMap/MapObject.h"
 #include "WorldMap/WorldMap.h"
 
 class Game {
@@ -38,18 +42,20 @@ class Game {
   int mouse_x_ = 0;
   int mouse_y_ = 0;
   bool waiting_for_print_ = true;
-  int is_player_turn_counter = 0;
+  int is_player_turn_counter_ = 0;
 
-  void _performGameLoopIterationOverworld();
-  void _performGameLoopIterationBattle();
+  void performGameLoopIterationOverworld();
+  void performGameLoopIterationBattle();
 
-  void _performBattleAIMove();
-  void _performBattleUserMove();
+  void performBattleAiMove();
+  void performBattleUserMove();
 
   void placeCharactersOnWorldMap();
-  bool pointInHexagon( int px, int py, double hex_x, double hex_y ) const;
+  // NOLINTNEXTLINE(readability-identifier-length)
+  [[nodiscard]] bool pointInHexagon( int px, int py, double hex_x, double hex_y ) const;
   std::optional<CoordPair> getCoordsFromClick();
-  void startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, std::shared_ptr<GridTile> background );
+  void startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                    std::shared_ptr<GridTile> background );
 
  public:
   Game( std::vector<std::shared_ptr<Player>> players );
@@ -57,10 +63,10 @@ class Game {
   // TODO add to constructor functionality which initializes preset players
 
   void loadObstacles( std::vector<std::shared_ptr<MapObject>>& obstacles );
-  GameState getState() const;
-  void setMouseCoords( int x, int y );
+  [[nodiscard]] GameState getState() const;
+  void setMouseCoords( int x, int y );  // NOLINT(readability-identifier-length)
   void performGameLoopIteration();
-  CoordPair getMainPlayerCoords() const;
+  [[nodiscard]] CoordPair getMainPlayerCoords() const;
   std::shared_ptr<sf::RenderWindow> getRenderWindow();
   void debugStartBattle();
 };

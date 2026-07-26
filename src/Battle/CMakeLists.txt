@@ -1,4 +1,4 @@
-add_library(Battle
+add_library(Battle SHARED
     Battle.cc
     Battlefield.cc
     Tile.cc
@@ -9,11 +9,14 @@ add_library(Battle
     Moves/WaitMove.cc
 )
 
-target_include_directories(Battle PUBLIC
-    SFML::Graphic
-    ${CMAKE_SOURCE_DIR}/include/Battle/Moves
-    ${CMAKE_SOURCE_DIR}/include/Battle/
-    ${CMAKE_SOURCE_DIR}/include/
+target_include_directories(Battle PRIVATE
 )
 
-target_link_libraries(Battle PRIVATE Units Characters)
+target_link_libraries(Battle PUBLIC
+    Character
+    Unit
+)
+
+target_link_libraries(Battle PRIVATE 
+    SFML::Graphics
+)

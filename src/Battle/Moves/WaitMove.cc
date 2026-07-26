@@ -1,14 +1,22 @@
 #include "Battle/Moves/WaitMove.h"
 
-WaitMove::WaitMove( CoordPair coords ) : Move(), coords_( coords ) {}
+#include <memory>
+#include <string>
+
+#include "Battle/Battle.h"
+#include "Battle/Moves/Move.hpp"
+#include "Miscellaneous/Coords.h"
+#include "Unit/UnitStack.h"
+
+WaitMove::WaitMove( CoordPair coords ) : Move(), coords_( coords ) {
+}
 
 void WaitMove::execute( std::shared_ptr<Battle> battle ) {
   coords_ = battle->getUnitInAction()->getCoordsInBattle();
   if ( battle->getBattleState() == BattleState::ATTACKING ) {
     battle->setBattleState( BattleState::MOVING );
     battle->nextUnit();
-  }
-  else if ( battle->getBattleState() == BattleState::MOVING ) {
+  } else if ( battle->getBattleState() == BattleState::MOVING ) {
     battle->setBattleState( BattleState::ATTACKING );
   }
 }
