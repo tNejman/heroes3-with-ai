@@ -4,12 +4,18 @@
   - Klasa RangedUnit dziedziczy po klasie Unit i reprezentuje jednostki dystansowe w grze.
 */
 
+#include <cstdint>
+#include <memory>
+
+#include "Miscellaneous/UnitsLib.h"
+#include "Unit/Faction.hpp"
 #include "Unit/Unit.h"
+
 
 class RangedUnit : public Unit {
  private:
   uint32_t range_;
-  uint32_t shots_;
+  // uint32_t shots_;
 
  public:
   // RangedUnit( const std::weak_ptr<Faction> faction,

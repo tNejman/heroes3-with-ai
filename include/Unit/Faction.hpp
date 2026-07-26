@@ -5,7 +5,11 @@
   - Zawiera metody do tworzenia jednostek, zarządzania dostępnością jednostek i ich typami.
 */
 #include <array>
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "Miscellaneous/UnitsLib.h"
 #include "Unit/Unit.h"
@@ -31,6 +35,7 @@ class Faction : public std::enable_shared_from_this<Faction> {
  public:
   Faction( FactionAttitude faction_attitude ) : faction_attitude_( faction_attitude ) {
   }
+  virtual ~Faction() = default;
   FactionAttitude getFactionAttitude() const {
     return this->faction_attitude_;
   }
@@ -52,6 +57,7 @@ class GenericFaction : public Faction {
   GenericFaction( FactionAttitude faction_attitude,
                   const std::map<FactionUnitEnum, const std::shared_ptr<const UnitData>>& units_preset )
       : Faction::Faction( faction_attitude ), UNITS_PRESET_( units_preset ) {};
+  virtual ~GenericFaction() = default;
 
   const std::shared_ptr<const Unit> getUnit( FactionUnitEnum faction_unit_type ) {
     const auto unit_idx = uint32_t( faction_unit_type );

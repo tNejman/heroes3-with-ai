@@ -13,7 +13,8 @@ AttackMove::AttackMove( CoordPair attacker, CoordPair defender )
 }
 
 void AttackMove::execute( std::shared_ptr<Battle> battle ) {
-  battle->attack( battle->getUnitFromCoords( attacker_ ), battle->getUnitFromCoords( defender_ ) );
+  (void)battle->attack( battle->getUnitFromCoords( attacker_ ),
+                        battle->getUnitFromCoords( defender_ ) );  // TODO handle return value
   if ( battle->getBattleState() != BattleState::WIN_ATTACKER && battle->getBattleState() != BattleState::WIN_DEFENDER )
     battle->setBattleState( BattleState::MOVING );
   battle->nextUnit();

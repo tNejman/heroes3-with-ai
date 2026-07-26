@@ -15,5 +15,6 @@ class TileObject {
   TileObject( std::string name ) : passable_( false ), name_( std::move( name ) ) {};
   TileObject() : passable_( false ) {};
   TileObject( bool passable ) : passable_( passable ) {};
+  [[nodiscard]] bool isPassable() const noexcept;
   [[nodiscard]] const std::string& getName() const;
 };

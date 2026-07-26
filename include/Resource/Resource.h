@@ -4,8 +4,12 @@
 
 // #include <SFML/Graphics.hpp>
 
+#include <SFML/Graphics/Texture.hpp>
+#include <cstdint>
+#include <string>
+
+#include "Graphics/Visitor.h"
 #include "Miscellaneous/Printable.h"
-#include "Miscellaneous/ProjectLib.h"
 
 enum class availableResource { TIMBER, MERCURY, STONE, SULFER, CRYSTAL, GEMSTONE, MONEY };
 
@@ -20,5 +24,6 @@ class Resource : public Printable {
   virtual sf::Texture& accept( Visitor& v ) const override {
     return v.visit( *this );
   }
-  std::string getName() const;
+  const std::string& getName() const noexcept;
+  uint32_t getAmount() const noexcept;
 };

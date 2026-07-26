@@ -58,22 +58,22 @@ set(MODULES
 )
 
 function(apply_compiler_flags target)
-    # target_compile_options(${target} PRIVATE
-    #     $<$<CONFIG:Debug>:-g -O0
-    #     -Wall -Wextra -Wpedantic -Werror 
-    #     -Wcast-align -Wcast-qual 
-    #     -Wconversion -Wsign-conversion -Wshadow 
-    #     -Wdouble-promotion -Wnull-dereference 
-    #     -Wformat=2 
-    #     -Wzero-as-null-pointer-constant 
-    #     -Wvla
-    #     -fno-omit-frame-pointer
-    #     -fsanitize=address
-    #     -fsanitize=undefined>
+    target_compile_options(${target} PRIVATE
+        $<$<CONFIG:Debug>:-g -O0
+        -Wall -Wextra -Wpedantic -Werror 
+        -Wcast-align -Wcast-qual 
+        -Wconversion -Wsign-conversion -Wshadow 
+        -Wdouble-promotion -Wnull-dereference 
+        -Wformat=2 
+        -Wzero-as-null-pointer-constant 
+        -Wvla
+        -fno-omit-frame-pointer
+        -fsanitize=address
+        -fsanitize=undefined>
 
-    #     $<$<CONFIG:Release>:-march=native>
-    # )
-    # target_link_options(${target} PUBLIC $<$<CONFIG:Debug>:-fsanitize=address,undefined>)
+        $<$<CONFIG:Release>:-march=native>
+    )
+    target_link_options(${target} PUBLIC $<$<CONFIG:Debug>:-fsanitize=address,undefined>)
 endfunction()
 
 foreach(module ${MODULES})

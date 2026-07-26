@@ -7,4 +7,4 @@ void MapSaver::doSave( std::ofstream& out ) const {
   return;                       // TODO zaimplementowac zapis mapy
 }
 
-MapSaver::MapSaver( const std::string& path, const WorldMap& mapRef ) : ISaver( path ), map_( mapRef ) {};
+// MapSaver::MapSaver( const std::string& path, const WorldMap& mapRef ) : ISaver( path ), map_( mapRef ) {};

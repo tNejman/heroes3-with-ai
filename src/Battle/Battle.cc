@@ -90,7 +90,7 @@ void Battle::nextRound() {
   // std::vector<std::shared_ptr<UnitStack>> active;
   // active.reserve(units_in_battle_.size());
   for ( auto& unit : getUnitsInBattle() ) {
-    setUnitInQueue( unit );
+    (void)setUnitInQueue( unit );  // TODO handle return value
   }
   ++round_counter_;
   attacker_threw_spell_ = false;

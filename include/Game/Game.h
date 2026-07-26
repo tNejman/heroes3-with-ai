@@ -42,7 +42,7 @@ class Game {
   int mouse_x_ = 0;
   int mouse_y_ = 0;
   bool waiting_for_print_ = true;
-  int is_player_turn_counter_ = 0;
+  //   int is_player_turn_counter_ = 0;
 
   void performGameLoopIterationOverworld();
   void performGameLoopIterationBattle();

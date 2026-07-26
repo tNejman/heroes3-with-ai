@@ -17,7 +17,7 @@ class UnitStack;
 
 class MinimaxAI {
  private:
-  uint32_t max_depth_;
+  // uint32_t max_depth_;
   static std::pair<std::shared_ptr<Move>, double> doMinimax( std::shared_ptr<Battle> battle, uint32_t depth,
                                                              double alpha, double beta, bool maximizing_player,
                                                              std::shared_ptr<Move> move );

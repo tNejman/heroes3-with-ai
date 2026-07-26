@@ -1,11 +1,14 @@
 #pragma once
 
+#include <fstream>
+#include <string>
+
 #include "LoadAndSaveTools/ISaver.hpp"
 #include "WorldMap/WorldMap.h"
 
 class MapSaver : public ISaver {
  private:
-  const WorldMap& map_;
+  // const WorldMap& map_;
   void doSave( std::ofstream& out ) const override;
 
  public:
