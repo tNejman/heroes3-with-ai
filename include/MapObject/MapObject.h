@@ -9,13 +9,11 @@
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 
-
 class MapObject : public Printable {
  protected:
   CoordPair coords_;
 
  public:
-  MapObject();
   MapObject( CoordPair coords );
 
   sf::Texture& accept( Visitor& v ) const override = 0;

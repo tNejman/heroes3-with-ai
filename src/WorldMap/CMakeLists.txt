@@ -1,6 +1,5 @@
 add_library(WorldMap SHARED
     WorldMap.cc
-    MapObject.cc
     Building.cc
     GridTile.cc
     OverworldObstacle.cc

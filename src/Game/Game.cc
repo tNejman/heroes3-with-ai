@@ -30,12 +30,13 @@
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
 #include "LoadAndSaveTools/MapLoader.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
-#include "WorldMap/MapObject.h"
+
 
 void Game::performGameLoopIterationOverworld() {
   key_handler_->monitorKeyPresses();

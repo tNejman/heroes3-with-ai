@@ -30,7 +30,7 @@
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
 #include "Unit/WarMachine.h"
-#include "WorldMap/MapObject.h"
+#include "MapObject/MapObject.h"
 
 class Character : public MapObject {
  private:

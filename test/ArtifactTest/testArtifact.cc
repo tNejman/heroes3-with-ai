@@ -1,6 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "Artifact/Artifact.h"
+#include "Miscellaneous/ArtifactLib.h"
+#include "Miscellaneous/ProjectLib.h"
+
 
 TEST( ArtifactTest, createValidArtifact ) {
   std::unique_ptr<Artifact> crown_of_the_supreme_magi = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
@@ -9,7 +14,7 @@ TEST( ArtifactTest, createValidArtifact ) {
   ASSERT_EQ( crown_of_the_supreme_magi->getPower(), 5 );
   ASSERT_EQ( crown_of_the_supreme_magi->getKnowledge(), 5 );
   ASSERT_EQ( crown_of_the_supreme_magi->getSpeed(), 0 );
-  ASSERT_EQ( crown_of_the_supreme_magi->getCost(), 10'000u );
+  ASSERT_EQ( crown_of_the_supreme_magi->getCost(), 10'000U );
   ASSERT_EQ( crown_of_the_supreme_magi->getType(), ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
   ASSERT_EQ( crown_of_the_supreme_magi->getSlot(), EquipmentSlots::HELMET );
 }

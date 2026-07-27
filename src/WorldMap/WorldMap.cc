@@ -11,10 +11,10 @@
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "Exceptions/InvalidMoveException.hpp"
 #include "Exceptions/TileNotFoundException.hpp"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/GridTile.h"
-#include "WorldMap/MapObject.h"
 
 void WorldMap::initializeGrid() {
   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};

@@ -8,7 +8,7 @@
 #include "Miscellaneous/ProjectLib.h"
 
 // #include "Characters/Character.h"
-#include "WorldMap/MapObject.h"
+#include "MapObject/MapObject.h"
 
 class Character;
 
@@ -20,10 +20,8 @@ class GridTile {
   std::shared_ptr<MapObject> object_present_ = nullptr;
 
  public:
-  GridTile( Terrain terrain )
-      : terrain_( terrain ) {};
-  GridTile( Terrain terrain, CoordPair coords )
-      : terrain_( terrain ) {
+  GridTile( Terrain terrain ) : terrain_( terrain ) {};
+  GridTile( Terrain terrain, CoordPair coords ) : terrain_( terrain ) {
     x_coord_ = coords.x_;
     y_coord_ = coords.y_;
   }

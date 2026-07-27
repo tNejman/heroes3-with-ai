@@ -16,12 +16,13 @@
 #include "Game/KeyHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
-#include "WorldMap/MapObject.h"
 #include "WorldMap/WorldMap.h"
+
 
 class Game {
  private:

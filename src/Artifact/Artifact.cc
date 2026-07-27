@@ -5,12 +5,15 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "Exceptions/InvalidArtifactTypeException.hpp"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/ArtifactLib.h"
 #include "Miscellaneous/ProjectLib.h"
 
-Artifact::Artifact( std::shared_ptr<const ArtifactData> data ) : artifact_data_( data ) {
+Artifact::Artifact( std::shared_ptr<const ArtifactData> data )
+    : MapObject( { .x_ = 0U, .y_ = 0U } ), artifact_data_( std::move( data ) ) {
 }
 
 std::unique_ptr<Artifact> Artifact::create( const ArtifactType type ) {

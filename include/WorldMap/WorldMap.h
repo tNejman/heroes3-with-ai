@@ -16,10 +16,11 @@
 #include <vector>
 
 #include "Character/Character.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/GridTile.h"
-#include "WorldMap/MapObject.h"
+
 
 class Character;
 class Building;

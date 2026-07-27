@@ -4,17 +4,17 @@
 // #include <SFML/Graphics.hpp>
 
 #include <string>
+#include <utility>
 
-#include "Graphics/Printable.h"
-#include "WorldMap/MapObject.h"
+#include "MapObject/MapObject.h"
 
 class Building : public MapObject {
+ private:
+  std::string name_;
+
  public:
   // virtual sf::Texture& accept(Visitor& v) const override {return v.visit(*this); }
-  Building( const std::string& name ) : name_( name ) {
+  Building( std::string name ) : MapObject( { .x_ = 0, .y_ = 0 } ), name_( std::move( name ) ) {
   }
-  std::string getName() const;
-
- private:
-  const std::string name_;
+  [[nodiscard]] std::string getName() const;
 };

@@ -15,10 +15,10 @@
 #include <memory>
 #include <string>
 
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/ArtifactLib.h"
 #include "Miscellaneous/Equippable.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "WorldMap/MapObject.h"
 
 class Visitor;
 

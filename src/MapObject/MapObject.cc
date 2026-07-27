@@ -1,9 +1,6 @@
-#include "WorldMap/MapObject.h"
+#include "MapObject/MapObject.h"
 
 #include "Miscellaneous/Coords.h"
-
-
-MapObject::MapObject() : coords_( CoordPair( 0u, 0u ) ) {};
 
 MapObject::MapObject( CoordPair coords ) : coords_( coords ) {};
 

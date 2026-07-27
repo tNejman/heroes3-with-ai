@@ -10,6 +10,7 @@ target_link_libraries(Character PUBLIC
     Artifact
     Miscellaneous
     Unit
+    MapObject
 )
 
 target_link_libraries(Character PRIVATE

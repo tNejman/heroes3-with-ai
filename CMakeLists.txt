@@ -50,6 +50,7 @@ set(MODULES
     Graphics
     LoadAndSaveTools
     Magic 
+    MapObject
     Miscellaneous 
     Player 
     Resource 

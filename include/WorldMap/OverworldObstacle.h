@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WorldMap/MapObject.h"
+#include "MapObject/MapObject.h"
 
 class OverworldObstacle : public MapObject {
   const std::string name_;

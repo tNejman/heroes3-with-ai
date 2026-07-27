@@ -15,14 +15,15 @@
 
 #include "Character/Character.h"
 #include "Game/Game.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Miscellaneous/UnitsLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "Unit/UnitStack.h"
-#include "WorldMap/MapObject.h"
 #include "WorldMap/OverworldObstacle.h"
+
 
 int main() {
   auto castle = std::make_shared<FactionCastle>();

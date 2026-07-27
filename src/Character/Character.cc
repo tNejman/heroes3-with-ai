@@ -17,6 +17,7 @@
 #include "Exceptions/NotEmptySlotException.hpp"
 #include "Exceptions/_NotImplementedException.hpp"
 #include "Magic/SpellBook.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/ArtifactLib.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -76,7 +77,8 @@ std::optional<EquipmentSlots> Character::checkSlotIfEmpty( EquipmentSlots slot )
 
 Character::Character( std::string name, CoordPair coords, uint32_t attack, uint32_t defense, uint32_t power,
                       uint32_t knowledge, uint32_t max_mana, int morale, int luck )
-    : name_( std::move( name ) ),
+    : MapObject( { .x_ = 0, .y_ = 0 } ),
+      name_( std::move( name ) ),
       alive_( true ),
       coords_( coords ),
       attack_( attack ),

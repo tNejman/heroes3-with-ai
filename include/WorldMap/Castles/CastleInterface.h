@@ -6,7 +6,7 @@
 
 // #include "Characters/Character.h"
 // #include "WorldMap/Building.h"
-#include "WorldMap/MapObject.h"
+#include "MapObject/MapObject.h"
 
 class Character;
 class Building;
