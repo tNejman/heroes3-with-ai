@@ -21,13 +21,16 @@
 #include "Character/Character.h"
 #include "Character/SecondarySkill.h"
 #include "Exceptions/BadCopyException.hpp"
+#include "Exceptions/InvalidSecondarySkillException.hpp"
 #include "Exceptions/InvalidTextureException.hpp"
+#include "Graphics/Visitor.h"
 #include "Magic/Spell.h"
 #include "Miscellaneous/CharacterLib.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Resource/Resource.h"
 #include "Unit/Unit.h"
+#include "WorldMap/Building.h"
 #include "WorldMap/OverworldObstacle.h"
 
 // Nazwa przedmiotu jako path do Sprita
@@ -56,7 +59,21 @@ sf::Texture& SpriteVisitor::visit( const Character& e ) {
 }
 
 sf::Texture& SpriteVisitor::visit( const SecondarySkill& e ) {
-  std::string path = "Sprites/Secondaryskills/" + e.getName() + "_" + std::to_string( (int)e.getLevel() ) + ".png";
+  std::string secondary_skill_name;
+  switch ( e.getType() ) {
+    case SecondarySkillType::AIR_MAGIC: secondary_skill_name = "Air Magic"; break;
+    case SecondarySkillType::FIRE_MAGIC: secondary_skill_name = "Fire Magic"; break;
+    case SecondarySkillType::EARTH_MAGIC: secondary_skill_name = "Earth Magic"; break;
+    case SecondarySkillType::WATER_MAGIC: secondary_skill_name = "Water Magic"; break;
+  }
+  if ( secondary_skill_name == "" ) {
+    throw InvalidSecondarySkillException(
+        "SpriteVisitor tried to fetch sprite but encountered invalid SecondarySkillType: "
+        + std::to_string( static_cast<int>( e.getType() ) ) );
+  }
+
+  std::string path = "Sprites/Secondaryskills/" + secondary_skill_name + "_"
+                     + std::to_string( static_cast<int>( e.getLevel() ) ) + ".png";
   return findTexture( path );
 }
 
@@ -80,10 +97,10 @@ sf::Texture& SpriteVisitor::visit( const Resource& e ) {
   return findTexture( path );
 }
 
-// sf::Texture& SpriteVisitor::visit(const Building& e) {
-//     std::string path = "Sprites/buildings/" + e.getName() + ".png";
-//     return FindTexture(path);
-// }
+sf::Texture& SpriteVisitor::visit( const Building& e ) {
+  std::string path = "Sprites/buildings/" + e.getName() + ".png";
+  return findTexture( path );
+}
 
 sf::Texture& SpriteVisitor::visit( const Terrain& e ) {
   std::string sprite_name;
@@ -132,9 +149,11 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
 
   for ( const auto& unit : units_sorted ) {
     CoordPair unit_coords = unit->getCoordsInBattle();
-    uint32_t offset_x, offset_y;
-    offset_x = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + unit_coords.x_ * BATTLE_MAP_SPRITE_X_DELTA;
-    offset_y = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT + ( 4 - unit_coords.y_ / 2 ) * BATTLE_MAP_SPRITE_Y_DELTA;
+    uint32_t offset_x = 0;
+    uint32_t offset_y = 0;
+    offset_x = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( unit_coords.x_ * BATTLE_MAP_SPRITE_X_DELTA );
+    offset_y =
+        BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT + ( ( 4 - ( unit_coords.y_ / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
     if ( unit_coords.y_ % 2 == 0 ) {
       offset_x += BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
       offset_y += BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
@@ -143,19 +162,19 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
     if ( !image_tmp.loadFromFile( "Sprites/units/" + unit->getUnit()->getName() + ".png" ) ) {
       throw std::runtime_error( "Failed to load image: Sprites/units/" + unit->getUnit()->getName() + ".png" );
     }
-    if ( std::find( units_defender.begin(), units_defender.end(), unit ) != units_defender.end() ) {
+    if ( std::ranges::find( units_defender, unit ) != units_defender.end() ) {
       image_tmp.flipHorizontally();
     }
     (void)combined_image.copy( image_tmp, sf::Vector2u( offset_x, offset_y ), sf::IntRect(), true );
-    path = path + "unit" + unit->getUnit()->getName() + std::to_string( unit->getCoordsInBattle().x_ )
-           + std::to_string( unit->getCoordsInBattle().y_ );
+    path += "unit" + unit->getUnit()->getName() + std::to_string( unit->getCoordsInBattle().x_ )
+            + std::to_string( unit->getCoordsInBattle().y_ );
   }
 
   sf::Texture combined_texture;
   if ( !combined_texture.loadFromImage( combined_image ) ) {
     throw std::runtime_error( "Failed to load texture from image" );
   }
-  if ( textures_.find( path ) == textures_.end() ) {
+  if ( !textures_.contains( path ) ) {
     textures_.emplace( path, combined_texture );
   }
 
@@ -163,9 +182,11 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
 }
 
 sf::Texture& SpriteVisitor::findTexture( const std::string& path ) {
-  if ( textures_.find( path ) == textures_.end() ) {
+  if ( !textures_.contains( path ) ) {
     sf::Texture texture;
-    if ( !texture.loadFromFile( path ) ) throw std::runtime_error( "Failed to load texture from " + path );
+    if ( !texture.loadFromFile( path ) ) {
+      throw std::runtime_error( "Failed to load texture from " + path );
+    }
     textures_.emplace( path, texture );
   }
   return textures_[path];
@@ -189,14 +210,15 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
   if ( !combined_image.loadFromFile( "Sprites/Battle_Backgrounds/CmBkDrTr.png" ) ) {
     throw std::runtime_error( "Failed to load battle background image: Sprites/Battle_Backgrounds/CmBkDrTr.png" );
   }
-  std::string path = "";
+  std::string path;
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
       CoordPair map_tile_coord( x, y );
-      uint32_t offset_x_temp, offset_y_temp;
+      uint32_t offset_x_temp = 0;
+      uint32_t offset_y_temp = 0;
       // set offset for even rows
-      offset_x_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + x * BATTLE_MAP_SPRITE_X_DELTA;
-      offset_y_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD + ( 5 - y / 2 ) * BATTLE_MAP_SPRITE_Y_DELTA;
+      offset_x_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( x * BATTLE_MAP_SPRITE_X_DELTA );
+      offset_y_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD + ( ( 5 - ( y / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
 
       // adjust if even
       if ( ( y % 2 == 0 ) ) {
@@ -206,7 +228,7 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
 
       sf::Image image_hexagon;
       std::shared_ptr<Move> move_to_print;
-      if ( moves.end() != std::find_if( moves.begin(), moves.end(), [&]( const std::shared_ptr<Move> move ) {
+      if ( moves.end() != std::ranges::find_if( moves, [&]( const std::shared_ptr<Move>& move ) {
              move_to_print = move;
              return move->destinationCoords() == map_tile_coord;
            } ) ) {

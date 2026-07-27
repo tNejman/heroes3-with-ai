@@ -1,35 +1,39 @@
 #pragma once
 
-#include <array>
-// chorno is required for this to work: stringstream::operator>>(const std::string& str)
-#include <chrono>
+#include <cctype>
 #include <fstream>
+#include <memory>
+#include <sstream>
 #include <string>
 
+#include "Exceptions/DamagedSaveException.hpp"
 #include "Exceptions/InvalidInputFileException.hpp"
-#include "Miscellaneous/ProjectLib.h"
 
-template <typename T1, typename T2>
+template <typename TypeLoaded, typename TypeContainer>
 class ILoader {
  protected:
-  T2 container_;
+  TypeContainer container_;
 
   virtual void resetCounters() = 0;
-  virtual void moveWordToContainer( const int& word ) = 0;
-  virtual std::shared_ptr<T1> getObjectFromContainer() = 0;
+  virtual void moveWordToContainer( const int word ) = 0;
+  virtual std::shared_ptr<TypeLoaded> getObjectFromContainer() = 0;
 
-  bool isDigit( const std::string& s ) const {
-    if ( s.length() != 1 ) {
-      return false;
-    }
-    return std::isdigit( s[0] );
+  [[nodiscard]] bool isNumber( const std::string& s ) const {
+    return !s.empty()
+           && std::find_if( s.begin(), s.end(), []( unsigned char c ) { return !std::isdigit( c ); } ) == s.end();
   }
 
  public:
-  ILoader() {}
+  ILoader() = default;
+  ILoader( const ILoader& ) = delete;
+  ILoader( ILoader&& ) = delete;
+  ILoader& operator=( const ILoader& ) = delete;
+  ILoader& operator=( ILoader&& ) = delete;
+  explicit ILoader( TypeContainer container ) : container_( std::move( container ) ) {
+  }
   virtual ~ILoader() = default;
 
-  std::shared_ptr<T1> load( const std::string& path ) {
+  std::shared_ptr<TypeLoaded> load( const std::string& path ) {
     resetCounters();
     std::ifstream file( path );
     if ( !file.is_open() ) {
@@ -43,8 +47,8 @@ class ILoader {
 
       while ( ss >> word ) {
         // while ( word = ss.str() ) {
-        if ( !isDigit( word ) ) {
-          throw InvalidInputFileException( "Invalid characters in WorldMap input file" );
+        if ( !isNumber( word ) ) {
+          throw InvalidInputFileException( "Invalid character in input file is not a number: " + word );
         }
         const int word_int = std::stoi( word );
         moveWordToContainer( word_int );

@@ -1,9 +1,12 @@
 #pragma once
 
+#include <array>
 #include <cassert>
+#include <cstdint>
 #include <memory>
 
 #include "LoadAndSaveTools/ILoader.hpp"
+#include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/WorldMap.h"
 /**
  * @brief
@@ -26,10 +29,8 @@ class MapLoader : public ILoader<WorldMap, std::array<std::array<int, WORLD_MAP_
   uint32_t y_counter_ = WORLD_MAP_HEIGHT - 1;
 
   void resetCounters() override;
-  void moveWordToContainer( const int& word ) override;
+  void moveWordToContainer( const int word ) override;
   std::shared_ptr<WorldMap> getObjectFromContainer() override;
 
  public:
-  MapLoader() {}
-  ~MapLoader() override {};
 };

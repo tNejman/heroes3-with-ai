@@ -25,12 +25,12 @@
 #include "Artifact/Artifact.h"
 #include "Character/SecondarySkill.h"
 #include "Magic/SpellBook.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/ArtifactLib.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
 #include "Unit/WarMachine.h"
-#include "MapObject/MapObject.h"
 
 class Character : public MapObject {
  private:
@@ -113,8 +113,6 @@ class Character : public MapObject {
   void modifyMovementPoints( const uint32_t movement_diff );
 
   [[nodiscard]] uint32_t getLevel() const;
-  void levelUp();
-
   [[nodiscard]] uint32_t getExperience() const;
   void gainExperience( const uint32_t experience );
 
@@ -134,10 +132,10 @@ class Character : public MapObject {
   void setLuck( const int new_luck );
   void modifyLuck( const int luck_diff );
 
-  uint32_t getEffectiveSpeed();
+  [[nodiscard]] uint32_t getEffectiveSpeed();
 
   [[nodiscard]] bool getIfAlive() const;
-  //   bool die();
+  bool die();
 
   [[nodiscard]] bool getIfBackpackFull() const;
 

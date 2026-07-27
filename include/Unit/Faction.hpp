@@ -40,7 +40,7 @@ class Faction : public std::enable_shared_from_this<Faction> {
     return this->faction_attitude_;
   }
   virtual std::string getName() const = 0;
-  virtual int getFactionType() const = 0;
+  virtual FactionType getFactionType() const = 0;
 };
 
 template <typename FactionUnitEnum>
@@ -66,8 +66,8 @@ class GenericFaction : public Faction {
     }
     return available_units_[unit_idx];
   }
-  virtual std::string getName() const = 0;
-  virtual int getFactionType() const = 0;
+  std::string getName() const override = 0;
+  FactionType getFactionType() const override = 0;
 };
 
 class FactionForge : public GenericFaction<ForgeUnitType> {
@@ -76,8 +76,8 @@ class FactionForge : public GenericFaction<ForgeUnitType> {
   std::string getName() const override {
     return "forge";
   }
-  int getFactionType() const override {
-    return int( FactionType::FORGE );
+  FactionType getFactionType() const override {
+    return FactionType::FORGE;
   }
 };
 
@@ -87,8 +87,8 @@ class FactionConflux : public GenericFaction<ConfluxUnitType> {
   std::string getName() const override {
     return "conflux";
   }
-  int getFactionType() const override {
-    return int( FactionType::CONFLUX );
+  FactionType getFactionType() const override {
+    return FactionType::CONFLUX;
   }
 };
 
@@ -98,7 +98,7 @@ class FactionCastle : public GenericFaction<CastleUnitType> {
   std::string getName() const override {
     return "castle";
   }
-  int getFactionType() const override {
-    return int( FactionType::CASTLE );
+  FactionType getFactionType() const override {
+    return FactionType::CASTLE;
   }
 };

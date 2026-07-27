@@ -6,9 +6,8 @@
 */
 // #include <SFML/Graphics.hpp>
 
-#include <stdint.h>
-
 #include <SFML/Graphics/Texture.hpp>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -16,8 +15,9 @@
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/UnitsLib.h"
-#include "Unit/Faction.hpp"
 
+
+class Faction;
 
 class Unit : public TileObject, public Printable {
  protected:

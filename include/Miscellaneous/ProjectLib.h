@@ -210,8 +210,17 @@ constexpr std::size_t AMOUNT_OF_RESOURCES = 7;
 
 enum class GameState { OVERWORLD, BATTLE, MENU };
 
+constexpr uint32_t FACTION_FORGE_ID_MARKER = 0;
+constexpr uint32_t FACTION_CONFLUX_ID_MARKER = 1;
+constexpr uint32_t FACTION_CASTLE_ID_MARKER = 2;
+
 /*
 ====== MINIMAX ======
 */
 
 constexpr uint32_t MINIMAX_MAX_DEPTH = 5U;
+
+/*
+====== SAVING AND LOADING ======
+*/
+const std::string CHARACTER_SAVE_START_MARKER = "CHARACTER";

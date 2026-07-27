@@ -32,14 +32,24 @@ FetchContent_Declare(
     SYSTEM
 )
 
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0
+    SYSTEM
+)
+
 if(CLANG_TIDY_EXE)
     set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
     set(CMAKE_CXX_CLANG_TIDY "")
     FetchContent_MakeAvailable(SFML)
+    FetchContent_MakeAvailable(json)
     set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
 else()
     FetchContent_MakeAvailable(SFML)
+    FetchContent_MakeAvailable(json)
 endif()
+
 
 set(MODULES
     Algorithms

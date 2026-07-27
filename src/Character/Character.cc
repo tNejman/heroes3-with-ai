@@ -188,10 +188,6 @@ uint32_t Character::getLevel() const {
   return this->level_;
 }
 
-void Character::levelUp() {
-  this->level_++;
-}
-
 uint32_t Character::getExperience() const {
   return this->experience_;
 }
@@ -202,7 +198,7 @@ void Character::gainExperience( const uint32_t experience ) {
   this->experience_ += experience;
 
   if ( this->experience_ >= EXPERIENCE_THRESHHOLDS.at( old_level + 1 ) ) {
-    levelUp();
+    ++level_;
   }
 }
 
@@ -355,7 +351,7 @@ void Character::recruitUnitStack( std::shared_ptr<UnitStack> unit_stack ) {
   }
   for ( auto& mp : this->party_ ) {
     if ( mp == nullptr ) {
-      mp = std::move( unit_stack );
+      mp = unit_stack;
       return;
     }
   }

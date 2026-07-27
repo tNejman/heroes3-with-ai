@@ -9,11 +9,12 @@
 
 #include "Battle/TileObject.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Unit.h"
 
 class UnitStack : public TileObject {
  private:
-  CoordPair coords_in_battle_ = CoordPair( 0u, 0u );
+  CoordPair coords_in_battle_ = CoordPair( 0U, 0U );
   std::shared_ptr<const Unit> unit_;
   short morale_;
   short luck_;
@@ -28,13 +29,17 @@ class UnitStack : public TileObject {
   void setCoordsInBattle( CoordPair new_coords );
   [[nodiscard]] CoordPair getCoordsInBattle() const;
   [[nodiscard]] uint32_t getSpeed() const;
-  [[nodiscard]] int getFactionType() const;
+  [[nodiscard]] FactionType getFactionType() const;
   [[nodiscard]] int getUnitType() const;
   [[nodiscard]] short getMorale() const;
+  void setMorale( short new_morale ) noexcept;
   [[nodiscard]] short getLuck() const;
+  void setLick( short new_luck ) noexcept;
   [[nodiscard]] uint32_t getRange() const;
   [[nodiscard]] uint32_t getSize() const;
+  void setSize( uint32_t new_size ) noexcept;
   [[nodiscard]] uint32_t getCurrentHealth() const;
+  void setCurrentHealth( uint32_t new_current_health ) noexcept;
   [[nodiscard]] double getEffectiveFightValue() const;
   [[nodiscard]] std::shared_ptr<const Unit> getUnit() const;
   [[nodiscard]] bool modifyCurrentHealth( int health_diff );

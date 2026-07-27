@@ -23,8 +23,8 @@ void WorldMap::initializeGrid() {
   }
   for ( uint32_t i = 0; i < WORLD_MAP_WIDTH; ++i ) {
     for ( uint32_t j = 0; j < WORLD_MAP_HEIGHT; ++j ) {
-      if ( i % 2 && j % 2 ) {
-        grid_temp[i][j] = 0;
+      if ( ( ( i % 2 ) != 0U ) && ( ( j % 2 ) != 0U ) ) {
+        grid_temp.at( i ).at( j ) = 0;
       }
     }
   }
@@ -59,7 +59,7 @@ void WorldMap::loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP
       Terrain terrain = static_cast<Terrain>( new_grid[col][row] );
       CoordPair coords( col, row );
       grid_[col][row].reset();
-      grid_[col][row] = std::make_shared<GridTile>( terrain, coords );
+      grid_[col][row] = std::make_shared<GridTile>( coords, terrain );
     }
   }
 }

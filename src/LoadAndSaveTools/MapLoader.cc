@@ -12,7 +12,7 @@ void MapLoader::resetCounters() {
   y_counter_ = WORLD_MAP_HEIGHT - 1;
 }
 
-void MapLoader::moveWordToContainer( const int& word ) {
+void MapLoader::moveWordToContainer( const int word ) {
   // for explanation look in header
   if ( x_counter_ >= WORLD_MAP_WIDTH || y_counter_ >= WORLD_MAP_HEIGHT ) {
     throw CoordinateOutOfBoundsException( "MapLoader exceeds WorldMap coordinates" );

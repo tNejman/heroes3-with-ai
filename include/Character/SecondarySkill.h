@@ -7,11 +7,12 @@
 // #include <SFML/Graphics.hpp>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
 #include <memory>
-#include <string>
 
 #include "Graphics/Printable.h"
+#include "Graphics/Visitor.h"
 
 enum class SecondarySkillType : int { AIR_MAGIC = 0, FIRE_MAGIC = 1, EARTH_MAGIC = 2, WATER_MAGIC = 3 };
 
@@ -23,12 +24,16 @@ class SecondarySkill : public Printable {
   SecondarySkillLevel level_;
   uint32_t cost_;
 
- public:
   SecondarySkill( SecondarySkillType skill_type );
-  sf::Texture& accept( Visitor& vis ) const;
+  SecondarySkill( SecondarySkillType skill_type, SecondarySkillLevel skill_level );
+
+ public:
+  static std::unique_ptr<SecondarySkill> create( SecondarySkillType type, SecondarySkillLevel level );
+  static std::unique_ptr<SecondarySkill> create( SecondarySkillType type );
+
+  sf::Texture& accept( Visitor& vis ) const override;
   [[nodiscard]] SecondarySkillType getType() const;
   [[nodiscard]] SecondarySkillLevel getLevel() const;
-  [[nodiscard]] std::string getName() const;
   [[nodiscard]] std::unique_ptr<SecondarySkill> copy() const;
 };
 

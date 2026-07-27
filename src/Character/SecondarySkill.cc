@@ -1,18 +1,15 @@
 #include "Character/SecondarySkill.h"
 
-SecondarySkill::SecondarySkill( SecondarySkillType skill_type )
-    : type_( skill_type ), level_( SecondarySkillLevel::BASIC ) {};
+#include <SFML/Graphics/Texture.hpp>
+#include <memory>
 
-std::string SecondarySkill::getName() const {
-  std::string name;
-  switch ( this->type_ ) {
-    case SecondarySkillType::AIR_MAGIC: return "Air Magic";
-    case SecondarySkillType::FIRE_MAGIC: return "Fire Magic";
-    case SecondarySkillType::EARTH_MAGIC: return "Earth Magic";
-    case SecondarySkillType::WATER_MAGIC: return "Water Magic";
-    default: return "";
-  }
-}
+#include "Graphics/Visitor.h"
+
+SecondarySkill::SecondarySkill( SecondarySkillType skill_type )
+    : type_( skill_type ), level_( SecondarySkillLevel::BASIC ), cost_( 0 ) {};
+
+SecondarySkill::SecondarySkill( SecondarySkillType skill_type, SecondarySkillLevel skill_level )
+    : type_( skill_type ), level_( skill_level ), cost_( 0 ) {};
 
 sf::Texture& SecondarySkill::accept( Visitor& v ) const {
   return v.visit( *this );
@@ -27,20 +24,8 @@ SecondarySkillLevel SecondarySkill::getLevel() const {
 }
 
 std::unique_ptr<SecondarySkill> SecondarySkill::copy() const {
-  std::unique_ptr<SecondarySkill> copy = std::make_unique<SecondarySkill>( this->type_ );
-  copy->level_ = this->level_;
-  copy->cost_ = this->cost_;
-  return copy;
-  // switch ( this->type_ ) {
-  //   case SecondarySkillType::AIR_MAGIC:
-  //     return std::make_unique<AirMagic>();
-  //   case SecondarySkillType::FIRE_MAGIC:
-  //     return std::make_unique<FireMagic>();
-  //   case SecondarySkillType::EARTH_MAGIC:
-  //     return std::make_unique<EarthMagic>();
-  //   case SecondarySkillType::WATER_MAGIC:
-  //     return std::make_unique<WaterMagic>();
-  //   default:
-  //     throw BadCopyException( "Cannot copy SecondarySkill of unknown type." );
-  // }
+  // std::unique_ptr<SecondarySkill> copy = std::make_unique<SecondarySkill>( this->type_, this->level_ );
+  // copy->cost_ = this->cost_;
+  // return copy;
+  return nullptr;  // TODO make actual copy
 }

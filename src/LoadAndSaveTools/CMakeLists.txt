@@ -1,6 +1,8 @@
 add_library(LoadAndSaveTools SHARED
-    CharacterSaver.cc
-    MapSaver.cc
+    # ISaver.cc
+    # CharacterJsonLoader.cc
+    # CharacterSaver.cc
+    # MapSaver.cc
     MapLoader.cc
 )
 

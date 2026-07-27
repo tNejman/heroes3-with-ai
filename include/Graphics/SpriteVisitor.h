@@ -42,7 +42,7 @@ class SpriteVisitor : public Visitor {
   sf::Texture& visit( const Unit& e ) override;
   sf::Texture& visit( const Resource& e ) override;
   sf::Texture& visit( const OverworldObstacle& e ) override;
-  // sf::Texture& visit(const Building& e) override;
+  sf::Texture& visit( const Building& e ) override;
   sf::Texture& visit( const Terrain& e );
   // sf::Texture& visit(const WorldMap& e) override;
   // sf::Texture& visit(const Player& e) override;

@@ -10,9 +10,6 @@
 #include <memory>
 #include <string>
 
-class Faction;
-class Resource;
-
 enum class FactionAttitude { EVIL, NEUTRAL, GOOD };
 
 enum class FactionType : int { FORGE, CONFLUX, CASTLE };

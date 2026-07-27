@@ -21,7 +21,6 @@
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/GridTile.h"
 
-
 class Character;
 class Building;
 
@@ -34,8 +33,8 @@ class WorldMap {
 
   void initializeGrid();
 
-  bool getIfCoordsInBounds( CoordPair coords ) const;
-  bool getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) const;
+  [[nodiscard]] bool getIfCoordsInBounds( CoordPair coords ) const;
+  [[nodiscard]] bool getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) const;
   //  uint32_t calculateTravelCost(const std::string& character_name, const CoordPair destination_coords);
 
  public:

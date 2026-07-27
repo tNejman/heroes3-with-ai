@@ -6,16 +6,15 @@
 #include <cmath>
 #include <cstdint>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <ostream>
 #include <utility>
-#include <vector>
 
 #include "Character/Character.h"
 #include "Game/Game.h"
-#include "MapObject/MapObject.h"
+// #include "LoadAndSaveTools/CharacterSaver.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Miscellaneous/UnitsLib.h"
@@ -23,7 +22,6 @@
 #include "Unit/Faction.hpp"
 #include "Unit/UnitStack.h"
 #include "WorldMap/OverworldObstacle.h"
-
 
 int main() {
   auto castle = std::make_shared<FactionCastle>();
@@ -96,6 +94,14 @@ int main() {
     return -1;
   }
   game->loadObstacles( obstacles );
+
+  // std::ofstream out( "CharacterSave2.txt" );
+  // CharacterSaver character_saver = CharacterSaver( "CharacterSave2.txt", characters[0] );
+  // character_saver.save();
+  // CharacterSaver character_saver2 = CharacterSaver( "CharacterSave2.txt", characters_2[0] );
+  // character_saver2.save();
+  // CharacterSaver character_saver3 = CharacterSaver( "CharacterSave2.txt", characters_2[1] );
+  // character_saver3.save();
 
   std::shared_ptr<sf::RenderWindow> window = game->getRenderWindow();
   window->setSize( sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) );

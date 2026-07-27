@@ -35,6 +35,8 @@ set(TEST_DIRS
     ArtifactTest
     BattleTest
     CharacterTest
+    UnitTest
+    WorldMapTest
 )
 
 foreach(test_dir ${TEST_DIRS})

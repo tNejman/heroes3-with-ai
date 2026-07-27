@@ -47,6 +47,10 @@ uint32_t Unit::getGrowth() const {
   return unit_data_->growth_;
 }
 
+uint32_t Unit::getCost() const {
+  return unit_data_->cost_;
+}
+
 uint32_t Unit::getDmg() const {
   return getMinDamage() + ( uint32_t( std::rand() ) % ( getMaxDamage() - getMinDamage() + 1 ) );
 }

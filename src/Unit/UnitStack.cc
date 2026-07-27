@@ -1,9 +1,21 @@
 #include "Unit/UnitStack.h"
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#include "Miscellaneous/Coords.h"
+#include "Miscellaneous/UnitsLib.h"
+#include "Unit/Faction.hpp"  // IWYU pragma: keep
+#include "Unit/Unit.h"
+
 UnitStack::UnitStack( std::shared_ptr<const Unit> unit, uint32_t size )
-    : coords_in_battle_( CoordPair( 0u, 0u ) ), unit_( unit ), morale_( 0 ), luck_( 0 ), size_( size ) {
-  current_health_ = unit_->getHealth();
-};
+    : coords_in_battle_( CoordPair( 0U, 0U ) ),
+      unit_( std::move( unit ) ),
+      morale_( 0 ),
+      luck_( 0 ),
+      size_( size ),
+      current_health_( unit_->getHealth() ) {};
 
 void UnitStack::setCoordsInBattle( CoordPair new_coords ) {
   this->coords_in_battle_ = new_coords;
@@ -17,7 +29,7 @@ uint32_t UnitStack::getSpeed() const {
   return unit_->getSpeed();
 };
 
-int UnitStack::getFactionType() const {
+FactionType UnitStack::getFactionType() const {
   return unit_->getFaction().lock()->getFactionType();
 };
 
