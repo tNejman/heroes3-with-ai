@@ -14,6 +14,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message("Build type is: ${CMAKE_BUILD_TYPE}")
 
+option(CODE_COVERAGE "code coverage" ON)
+
 # find_program(CLANG_TIDY_EXE NAMES clang-tidy)
 # if(CLANG_TIDY_EXE)
 #     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" --use-color) #  --fix-errors
@@ -70,7 +72,8 @@ set(MODULES
 
 function(apply_compiler_flags target)
     target_compile_options(${target} PRIVATE
-        $<$<CONFIG:Debug>:-g -O0
+        $<$<CONFIG:Debug>:
+        -g -O0
         -Wall -Wextra -Wpedantic -Werror 
         -Wcast-align -Wcast-qual 
         -Wconversion -Wsign-conversion -Wshadow 
@@ -80,11 +83,17 @@ function(apply_compiler_flags target)
         -Wvla
         -fno-omit-frame-pointer
         -fsanitize=address
-        -fsanitize=undefined>
+        -fsanitize=undefined
+        
+        --coverage>
 
         $<$<CONFIG:Release>:-march=native>
     )
-    target_link_options(${target} PUBLIC $<$<CONFIG:Debug>:-fsanitize=address,undefined>)
+    target_link_options(${target} PUBLIC 
+        $<$<CONFIG:Debug>:
+        -fsanitize=address,undefined 
+        --coverage>
+    )
 endfunction()
 
 foreach(module ${MODULES})

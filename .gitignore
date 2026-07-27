@@ -9,3 +9,4 @@ Sprites/
 compile_commands.json
 .clangd
 lsan.supp
+notes.md
