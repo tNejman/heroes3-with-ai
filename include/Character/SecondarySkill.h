@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "Miscellaneous/Printable.h"
+#include "Graphics/Printable.h"
 
 enum class SecondarySkillType : int { AIR_MAGIC = 0, FIRE_MAGIC = 1, EARTH_MAGIC = 2, WATER_MAGIC = 3 };
 

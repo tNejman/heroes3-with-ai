@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Battle/Tile.h"
@@ -10,13 +11,8 @@
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 
-BattleField::BattleField( std::shared_ptr<GridTile> background ) : background_( background ) {
-  for ( auto& col : battle_grid_ ) {
-    for ( auto& tile_ptr : col ) {
-      tile_ptr = nullptr;
-    }
-  }
-};
+BattleField::BattleField( std::shared_ptr<GridTile> background )
+    : battle_grid_(), background_( std::move( background ) ) {};
 
 std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPair coords ) {
   const uint32_t x = coords.x_;
@@ -40,7 +36,7 @@ std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPa
   return neighbours;
 };
 
-std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const std::shared_ptr<Tile> tile ) {
+std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const std::shared_ptr<Tile>& tile ) {
   return getTileNeighbours( tile->getCoords() );
 }
 
@@ -52,30 +48,54 @@ std::shared_ptr<Tile> BattleField::getTileByProxy( CoordPair coords ) {
     exc_mess += std::to_string( x ) + " y=" + std::to_string( y );
     throw CoordinateOutOfBoundsException( exc_mess );
   }
-  if ( battle_grid_[x][y] == nullptr ) {
-    battle_grid_[x][y] = std::make_shared<Tile>( coords );
+  if ( battle_grid_.at( x ).at( y ) == nullptr ) {
+    battle_grid_.at( x ).at( y ) = std::make_shared<Tile>( coords );
   };
-  return battle_grid_[x][y];
+  return battle_grid_.at( x ).at( y );
 }
 
 std::vector<CoordPair> BattleField::getCoordPairs( CoordPair coords ) {
   uint32_t x = coords.x_;
   uint32_t y = coords.y_;
   std::vector<CoordPair> tmp;
-  if ( !( y % 2 ) ) {
-    if ( y < (int)MAP_HEIGHT_BF - 1 && x < (int)MAP_WIDTH_BF - 1 ) tmp.push_back( CoordPair( x + 1, y + 1 ) );
-    if ( x < (int)MAP_WIDTH_BF - 1 ) tmp.push_back( CoordPair( x + 1, y ) );
-    if ( y > 0 && x < (int)MAP_WIDTH_BF - 1 ) tmp.push_back( CoordPair( x + 1, y - 1 ) );
-    if ( y > 0 ) tmp.push_back( CoordPair( x, y - 1 ) );
-    if ( x > 0 ) tmp.push_back( CoordPair( x - 1, y ) );
-    if ( y < (int)MAP_HEIGHT_BF - 1 ) tmp.push_back( CoordPair( x, y + 1 ) );
+  if ( y % 2 == 0U ) {
+    if ( y < (int)MAP_HEIGHT_BF - 1 && x < (int)MAP_WIDTH_BF - 1 ) {
+      tmp.push_back( CoordPair( x + 1, y + 1 ) );
+    }
+    if ( x < (int)MAP_WIDTH_BF - 1 ) {
+      tmp.push_back( CoordPair( x + 1, y ) );
+    }
+    if ( y > 0 && x < (int)MAP_WIDTH_BF - 1 ) {
+      tmp.push_back( CoordPair( x + 1, y - 1 ) );
+    }
+    if ( y > 0 ) {
+      tmp.push_back( CoordPair( x, y - 1 ) );
+    }
+    if ( x > 0 ) {
+      tmp.push_back( CoordPair( x - 1, y ) );
+    }
+    if ( y < (int)MAP_HEIGHT_BF - 1 ) {
+      tmp.push_back( CoordPair( x, y + 1 ) );
+    }
   } else {
-    if ( y < (int)MAP_HEIGHT_BF - 1 ) tmp.push_back( CoordPair( x, y + 1 ) );
-    if ( x < (int)MAP_WIDTH_BF - 1 ) tmp.push_back( CoordPair( x + 1, y ) );
-    if ( y > 0 ) tmp.push_back( CoordPair( x, y - 1 ) );
-    if ( x > 0 && y > 0 ) tmp.push_back( CoordPair( x - 1, y - 1 ) );
-    if ( x > 0 ) tmp.push_back( CoordPair( x - 1, y ) );
-    if ( x > 0 && y < (int)MAP_HEIGHT_BF - 1 ) tmp.push_back( CoordPair( x - 1, y + 1 ) );
+    if ( y < (int)MAP_HEIGHT_BF - 1 ) {
+      tmp.push_back( CoordPair( x, y + 1 ) );
+    }
+    if ( x < (int)MAP_WIDTH_BF - 1 ) {
+      tmp.push_back( CoordPair( x + 1, y ) );
+    }
+    if ( y > 0 ) {
+      tmp.push_back( CoordPair( x, y - 1 ) );
+    }
+    if ( x > 0 && y > 0 ) {
+      tmp.push_back( CoordPair( x - 1, y - 1 ) );
+    }
+    if ( x > 0 ) {
+      tmp.push_back( CoordPair( x - 1, y ) );
+    }
+    if ( x > 0 && y < (int)MAP_HEIGHT_BF - 1 ) {
+      tmp.push_back( CoordPair( x - 1, y + 1 ) );
+    }
   }
   return tmp;
 }

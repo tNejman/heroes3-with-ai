@@ -39,13 +39,15 @@
 
 void Game::performGameLoopIterationOverworld() {
   key_handler_->monitorKeyPresses();
-  ShiftPair move_delta = key_handler_->getMove();
+  CharacterMoveDirection move_direction = key_handler_->getMove();
 
   for ( auto& player : players_ ) {
     for ( auto it = player->getCharacters().begin(); it != player->getCharacters().end(); ++it ) {
       bool all_empty = true;
       for ( auto& unit : ( *it )->getParty() ) {
-        if ( unit ) all_empty = false;
+        if ( unit ) {
+          all_empty = false;
+        }
       }
       if ( all_empty ) {
         world_map_->setMapObject( ( *it )->getCoords(), nullptr );
@@ -54,20 +56,25 @@ void Game::performGameLoopIterationOverworld() {
       }
     }
   }
-
-  CoordPair center_coords = getMainPlayerCoords();
-  if ( move_delta != ShiftPair( 0, 0 ) ) {
+  CoordPair center_coords = getMainCharacter()->getCoords();
+  if ( move_direction != CharacterMoveDirection::NONE ) {
     try {
-      world_map_->moveMapObject( getMainPlayerCoords(), move_delta );
-      center_coords = getMainPlayerCoords();
+      world_map_->moveMapObject( getMainCharacter()->getCoords(), WORLD_MAP_DIRECTIONS.at( (size_t)move_direction ) );
+      center_coords = getMainCharacter()->getCoords();
+      getMainCharacter()->setOrientation( move_direction );
       // std::cout << "DEBUG: Game moves character to: x=" << center_coords.x_ << " y=" << center_coords.y_ <<
       // std::endl;
+      // CharacterMoveDirection new_orientation = static_cast<CharacterMoveDirection>(std::distance(
+      //     WORLD_MAP_DIRECTIONS, std::find(WORLD_MAP_DIRECTIONS.begin(), WORLD_MAP_DIRECTIONS.end(), move_delta)
+      // ));
     } catch ( const CoordinateOutOfBoundsException& e ) {
-      std::cout << e.what() << std::endl;
+      std::cout << e.what() << '\n';
     } catch ( const InvalidMoveException& e ) {
       try {
-        auto player_coords = getMainPlayerCoords();
-        CoordPair new_coords = player_coords + move_delta;  // exception caught earlier, this is safe
+        auto player_coords = getMainCharacter()->getCoords();
+        CoordPair new_coords =
+            player_coords
+            + WORLD_MAP_DIRECTIONS.at( (size_t)move_direction );  // exception caught earlier, this is safe
         auto new_tile_obj = world_map_->getTile( new_coords )->getMapObject();
         if ( new_tile_obj != nullptr ) {
           if ( auto character_ptr = std::dynamic_pointer_cast<Character>( new_tile_obj ) ) {
@@ -215,7 +222,7 @@ Game::Game( std::vector<std::shared_ptr<Player>> players ) : Game( players, fals
 
 Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input )
     : players_( std::move( players ) ),
-      factions_( { std::make_unique<FactionForge>(), std::make_unique<FactionConflux>() } ),
+      factions_( { std::make_shared<FactionForge>(), std::make_shared<FactionConflux>() } ),
       render_window_( std::make_shared<sf::RenderWindow>( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME,
                                                           sf::Style::Titlebar | sf::Style::Close ) ),
       sprite_visitor_( std::make_shared<SpriteVisitor>() ),
@@ -250,8 +257,8 @@ void Game::performGameLoopIteration() {
   }
 }
 
-CoordPair Game::getMainPlayerCoords() const {
-  return players_[0]->getCharacters()[0]->getCoords();
+std::shared_ptr<Character> Game::getMainCharacter() const {
+  return players_[0]->getCharacters()[0];
 }
 
 std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
@@ -260,7 +267,7 @@ std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
 
 void Game::debugStartBattle() {
   battle_ = std::make_shared<Battle>( players_[0]->getCharacters()[0], players_[1]->getCharacters()[0],
-                                      world_map_->getTile( CoordPair( 0u, 0u ) ) );
+                                      world_map_->getTile( CoordPair( 0U, 0U ) ) );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
 }

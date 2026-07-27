@@ -9,7 +9,7 @@
 #include <string>
 
 #include "Miscellaneous/Equippable.h"
-// #include "Miscellaneous/Printable.h"
+// #include "Graphics/Printable.h"
 
 enum class MagicSchool : int { EARTH = 0, AIR = 1, FIRE = 2, WATER = 3 };
 
@@ -19,21 +19,26 @@ enum class SpellType : int { MAGIC_ARROW = 0, LIGHTNING_BOL = 1, DESTROY_UNDEAD 
 class Spell : public Equippable {
  private:
   // TODO zrobic fabryke jak art i unit
-  const SpellType type_;
+  SpellType type_;
   MagicSchool magic_school_;
-  uint32_t level_;
+  uint32_t level_{ 1 };
   uint32_t mana_cost_;
 
+  [[nodiscard]] static MagicSchool getMagicSchoolFromSpellType( SpellType type ) noexcept;
+  [[nodiscard]] static uint32_t getManaCostFromSpellType( SpellType type ) noexcept;
+
  public:
+  // TODO rewrite to a factory
   Spell( const SpellType spell_type )
-      : type_( spell_type ) {
-          // magic_shcool_ = TODO automatyczne przypisanie
-        };
+      : type_( spell_type ),
+        magic_school_( getMagicSchoolFromSpellType( spell_type ) ),
+        mana_cost_( getManaCostFromSpellType( spell_type ) ) {
+  }
   // sf::Texture& accept( Visitor& v ) const override;
-  std::string getName() const;
-  SpellType getType() const;
-  MagicSchool getSchool() const;
-  uint32_t getLevel() const;
-  uint32_t getManaCost() const;
-  std::unique_ptr<Spell> copy() const;
+  [[nodiscard]] std::string getName() const;
+  [[nodiscard]] SpellType getType() const;
+  [[nodiscard]] MagicSchool getSchool() const;
+  [[nodiscard]] uint32_t getLevel() const;
+  [[nodiscard]] uint32_t getManaCost() const;
+  [[nodiscard]] std::unique_ptr<Spell> copy() const;
 };

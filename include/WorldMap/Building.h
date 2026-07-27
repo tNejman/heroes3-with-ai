@@ -5,13 +5,14 @@
 
 #include <string>
 
-#include "Miscellaneous/Printable.h"
+#include "Graphics/Printable.h"
 #include "WorldMap/MapObject.h"
 
 class Building : public MapObject {
  public:
   // virtual sf::Texture& accept(Visitor& v) const override {return v.visit(*this); }
-  Building( const std::string& name ) : name_( name ) {}
+  Building( const std::string& name ) : name_( name ) {
+  }
   std::string getName() const;
 
  private:

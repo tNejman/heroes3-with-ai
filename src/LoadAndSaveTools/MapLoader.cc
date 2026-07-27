@@ -27,7 +27,7 @@ void MapLoader::moveWordToContainer( const int& word ) {
 }
 
 std::shared_ptr<WorldMap> MapLoader::getObjectFromContainer() {
-  // for explanation lokk in header
+  // for explanation look in header
   assert( y_counter_ == 4'294'967'295 );
   assert( x_counter_ == 0 );
   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>();

@@ -9,7 +9,6 @@
 
 #include "Magic/Spell.h"
 #include "Miscellaneous/Equippable.h"
-#include "Miscellaneous/Printable.h"
 
 // public Printable
 class SpellBook : public Equippable {
@@ -18,9 +17,7 @@ class SpellBook : public Equippable {
 
  public:
   friend class CharacterSaver;
-  SpellBook();
-  ~SpellBook();
   //  virtual sf::Texture& accept(Visitor& v) const override { return v.visit(*this); }
   void learnSpell( std::unique_ptr<Spell> spell );
-  std::unique_ptr<SpellBook> copy() const;
+  [[nodiscard]] std::unique_ptr<SpellBook> copy() const;
 };

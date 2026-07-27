@@ -226,11 +226,11 @@ double MinimaxAI::seekEnemy( std::shared_ptr<Battle> battle, std::shared_ptr<Mov
     enemy_army = battle->getDefendingArmy();
   else
     enemy_army = battle->getAttackingArmy();
-  CoordPair to_be_seeked = centerOfPowerOfArmy( enemy_army );
+  CoordPair to_be_sought = centerOfPowerOfArmy( enemy_army );
   CoordPair move_dest = move->destinationCoords();
-  double dist = seeker->getCoordsInBattle().distance( to_be_seeked );
+  double dist = seeker->getCoordsInBattle().distance( to_be_sought );
   // if(seeker->getUnit()->getName()=="angel")
   //   std::cout<<"I'm an angel, I'm an angel'"<<std::endl;
   if ( dist == 0 ) return 0.05 * seeker->getEffectiveFightValue();
-  return ( 0.05 * seeker->getEffectiveFightValue() * ( dist - move_dest.distance( to_be_seeked ) ) / dist );
+  return ( 0.05 * seeker->getEffectiveFightValue() * ( dist - move_dest.distance( to_be_sought ) ) / dist );
 }

@@ -11,7 +11,6 @@
 #include "Miscellaneous/Coords.h"
 #include "Unit/Unit.h"
 
-
 class UnitStack : public TileObject {
  private:
   CoordPair coords_in_battle_ = CoordPair( 0u, 0u );
@@ -27,20 +26,20 @@ class UnitStack : public TileObject {
   UnitStack( std::shared_ptr<const Unit> unit, uint32_t size );
   ~UnitStack() = default;
   void setCoordsInBattle( CoordPair new_coords );
-  CoordPair getCoordsInBattle() const;
-  uint32_t getSpeed() const;
-  int getFactionType() const;
-  int getUnitType() const;
-  short getMorale() const;
-  short getLuck() const;
-  uint32_t getRange() const;
-  uint32_t getSize() const;
-  uint32_t getCurrentHealth() const;
-  double getEffectiveFightValue() const;
-  std::shared_ptr<const Unit> getUnit() const;
-  bool modifyCurrentHealth( int health_diff );
-  uint32_t getHealthPool() const;
-  bool getIfAlive() const;
-  std::shared_ptr<UnitStack> copy() const;
+  [[nodiscard]] CoordPair getCoordsInBattle() const;
+  [[nodiscard]] uint32_t getSpeed() const;
+  [[nodiscard]] int getFactionType() const;
+  [[nodiscard]] int getUnitType() const;
+  [[nodiscard]] short getMorale() const;
+  [[nodiscard]] short getLuck() const;
+  [[nodiscard]] uint32_t getRange() const;
+  [[nodiscard]] uint32_t getSize() const;
+  [[nodiscard]] uint32_t getCurrentHealth() const;
+  [[nodiscard]] double getEffectiveFightValue() const;
+  [[nodiscard]] std::shared_ptr<const Unit> getUnit() const;
+  [[nodiscard]] bool modifyCurrentHealth( int health_diff );
+  [[nodiscard]] uint32_t getHealthPool() const;
+  [[nodiscard]] bool getIfAlive() const;
+  [[nodiscard]] std::shared_ptr<UnitStack> copy() const;
   void die();
 };

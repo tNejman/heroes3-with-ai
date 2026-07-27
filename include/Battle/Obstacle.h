@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "Battle/TileObject.h"
-#include "Miscellaneous/Printable.h"
+#include "Graphics/Printable.h"
 
 class Visitor;
 

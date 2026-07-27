@@ -8,8 +8,9 @@
 #include <cstdint>
 #include <string>
 
+#include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
-#include "Miscellaneous/Printable.h"
+
 
 enum class availableResource { TIMBER, MERCURY, STONE, SULFER, CRYSTAL, GEMSTONE, MONEY };
 

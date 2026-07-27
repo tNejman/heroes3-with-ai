@@ -23,53 +23,68 @@
 #include "Exceptions/BadCopyException.hpp"
 #include "Exceptions/InvalidTextureException.hpp"
 #include "Magic/Spell.h"
+#include "Miscellaneous/CharacterLib.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Resource/Resource.h"
 #include "Unit/Unit.h"
 #include "WorldMap/OverworldObstacle.h"
+
 // Nazwa przedmiotu jako path do Sprita
 //
 //====================================
+
 sf::Texture& SpriteVisitor::visit( const Artifact& e ) {
   std::string path = "Sprites/artifacts/" + e.getName() + ".png";
-  return FindTexture( path );
+  return findTexture( path );
 }
+
 sf::Texture& SpriteVisitor::visit( const Obstacle& e ) {
   std::string path = "Sprites/obstacles/" + e.getName() + ".png";
-  return FindTexture( path );
+  return findTexture( path );
 }
+
 sf::Texture& SpriteVisitor::visit( const Character& e ) {
-  std::string path = "Sprites/heroes/" + e.getName() + ".png";
-  sf::Texture& tex_temp = FindTexture( path );
+  std::string path = "Sprites/heroes/";
+  path += CHARACTER_TYPE_TO_STRING.find( e.getCharacterType() )->second;
+  path += CHARACTER_ORIENTATION_TO_STRING.find( e.getOrientation() )->second;
+  path += ".png";
+  sf::Texture& tex_temp = findTexture( path );
   assert( tex_temp.getSize().x == 95 );
   assert( tex_temp.getSize().y == 64 );
   return tex_temp;
 }
+
 sf::Texture& SpriteVisitor::visit( const SecondarySkill& e ) {
   std::string path = "Sprites/Secondaryskills/" + e.getName() + "_" + std::to_string( (int)e.getLevel() ) + ".png";
-  return FindTexture( path );
+  return findTexture( path );
 }
+
 sf::Texture& SpriteVisitor::visit( const Spell& e ) {
   std::string path = "Sprites/spells/" + e.getName() + ".png";
-  return FindTexture( path );
+  return findTexture( path );
 }
+
 // sf::Texture& SpriteVisitor::visit(const SpellBook& e) {
 //     std::string path = "Sprites/spellbooks/Spellbook.png";
 //     return FindTexture(path);
 // }
+
 sf::Texture& SpriteVisitor::visit( const Unit& e ) {
   std::string path = "Sprites/units/" + e.getName() + ".png";
-  return FindTexture( path );
+  return findTexture( path );
 }
+
 sf::Texture& SpriteVisitor::visit( const Resource& e ) {
   std::string path = "Sprites/resources/" + e.getName() + ".png";
-  return FindTexture( path );
+  return findTexture( path );
 }
+
 // sf::Texture& SpriteVisitor::visit(const Building& e) {
 //     std::string path = "Sprites/buildings/" + e.getName() + ".png";
 //     return FindTexture(path);
 // }
+
 sf::Texture& SpriteVisitor::visit( const Terrain& e ) {
   std::string sprite_name;
   switch ( e ) {
@@ -82,17 +97,18 @@ sf::Texture& SpriteVisitor::visit( const Terrain& e ) {
     default: throw InvalidTextureException( "Unknown terrain type" );
   }
   const std::string path = "Sprites/terrain/tiles/" + sprite_name + ".png";
-  sf::Texture& tex_temp = FindTexture( path );
+  sf::Texture& tex_temp = findTexture( path );
   assert( tex_temp.getSize().x == 32 );
   assert( tex_temp.getSize().y == 32 );
   return tex_temp;
 }
+
 sf::Texture& SpriteVisitor::visit( const OverworldObstacle& e ) {
   std::string path = "Sprites/terrain/Overworld_obstacles/" + e.getName() + ".png";
-  sf::Texture& tex_temp = FindTexture( path );
+  sf::Texture& tex_temp = findTexture( path );
   assert( tex_temp.getSize().x == 32 );
   assert( tex_temp.getSize().y == 32 );
-  return FindTexture( path );
+  return findTexture( path );
 }
 
 // sf::Texture& SpriteVisitor::visit(const WorldMap& e) @warning done in Renderer
@@ -146,7 +162,7 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
   return textures_[path];
 }
 
-sf::Texture& SpriteVisitor::FindTexture( const std::string& path ) {
+sf::Texture& SpriteVisitor::findTexture( const std::string& path ) {
   if ( textures_.find( path ) == textures_.end() ) {
     sf::Texture texture;
     if ( !texture.loadFromFile( path ) ) throw std::runtime_error( "Failed to load texture from " + path );

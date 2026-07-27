@@ -9,8 +9,13 @@
 #include <stdint.h>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <map>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "Artifact/Artifact.h"
 #include "Battle/Battle.h"
@@ -47,6 +52,6 @@ class SpriteVisitor : public Visitor {
 
  private:
   std::map<std::string, sf::Texture> textures_;
-  sf::Texture& FindTexture( const std::string& path );
-  sf::Image mirrorImageHorizontally( const sf::Image& original ) const;
+  sf::Texture& findTexture( const std::string& path );
+  [[nodiscard]] sf::Image mirrorImageHorizontally( const sf::Image& original ) const;
 };

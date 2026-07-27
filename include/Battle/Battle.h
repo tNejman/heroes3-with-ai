@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "Battle/BattleField.h"
+#include "Graphics/Printable.h"
 #include "Miscellaneous/Coords.h"
-#include "Miscellaneous/Printable.h"
 
 class MoveFactory;
 class Move;
@@ -49,7 +49,7 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
 
   void setAttackingArmy();
   void setDefendingArmy();
-  [[nodiscard]] uint32_t setUnitInQueue( std::shared_ptr<UnitStack> unit );
+  [[nodiscard]] uint32_t setUnitInQueue( const std::shared_ptr<UnitStack>& unit );
   void createObstacles();
   void nextRound();
   std::shared_ptr<UnitStack> unit_in_action_;

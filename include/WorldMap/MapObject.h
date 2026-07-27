@@ -5,9 +5,9 @@
 */
 #include <SFML/Graphics/Texture.hpp>
 
+#include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
-#include "Miscellaneous/Printable.h"
 
 
 class MapObject : public Printable {
@@ -17,9 +17,8 @@ class MapObject : public Printable {
  public:
   MapObject();
   MapObject( CoordPair coords );
-  virtual ~MapObject() = default;
 
-  virtual sf::Texture& accept( Visitor& v ) const = 0;
-  CoordPair getCoords() const;
+  sf::Texture& accept( Visitor& v ) const override = 0;
+  [[nodiscard]] CoordPair getCoords() const;
   void setCoords( CoordPair new_coords );
 };

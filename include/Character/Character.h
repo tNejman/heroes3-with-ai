@@ -13,6 +13,7 @@
 // #include <SFML/Graphics.hpp>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <array>
 #include <cstdint>
 #include <map>
@@ -35,6 +36,9 @@ class Character : public MapObject {
  private:
   // Coords already implemented in MapObject
 
+  CharacterMoveDirection orientation_ = CharacterMoveDirection::RIGHT;
+  const CharacterType character_type_ = CharacterType::FIRE_HERO;
+
   // Basic information
   std::string name_;
   bool alive_;
@@ -53,8 +57,8 @@ class Character : public MapObject {
   uint32_t max_mana_;
   uint32_t current_mana_;
   uint32_t movement_points_;
-  short morale_;
-  short luck_;
+  int morale_;
+  int luck_;
 
   std::array<std::unique_ptr<SecondarySkill>, SECONDARY_SKILLS_SLOTS_COUNT> secondary_skills_;
   std::map<EquipmentSlots, std::unique_ptr<const Artifact>> equipment_;
@@ -74,65 +78,68 @@ class Character : public MapObject {
   //   Character() = default;
   //   Character(const Character&) = default;
   //   Character(Character&&) = default;
-  Character( const std::string& name, const CoordPair coords, const uint32_t attack, const uint32_t defense,
-             const uint32_t power, const uint32_t knowledge, const uint32_t max_mana, const short morale,
-             const short luck );
-  virtual sf::Texture& accept( Visitor& v ) const override {
-    return v.visit( *this );
-  }
-  const std::string& getName() const;
+  Character( std::string name, CoordPair coords, uint32_t attack, uint32_t defense, uint32_t power, uint32_t knowledge,
+             uint32_t max_mana, int morale, int luck );
+  sf::Texture& accept( Visitor& v ) const override;
 
-  bool getIfUser() const;
+  [[nodiscard]] CharacterMoveDirection getOrientation() const;
+  void setOrientation( CharacterMoveDirection new_orientation );
+
+  [[nodiscard]] CharacterType getCharacterType() const;
+
+  [[nodiscard]] const std::string& getName() const;
+
+  [[nodiscard]] bool getIfUser() const;
   void setIfUser( bool is_user );
 
-  uint32_t getAttack() const;
+  [[nodiscard]] uint32_t getAttack() const;
   void setAttack( const uint32_t new_attack );
   void modifyAttack( const uint32_t attack_diff );
 
-  uint32_t getDefense() const;
+  [[nodiscard]] uint32_t getDefense() const;
   void setDefense( const uint32_t new_defense );
   void modifyDefense( const uint32_t defense_diff );
 
-  uint32_t getPower() const;
+  [[nodiscard]] uint32_t getPower() const;
   void setPower( const uint32_t new_power );
   void modifyPower( const uint32_t power_diff );
 
-  uint32_t getKnowledge() const;
+  [[nodiscard]] uint32_t getKnowledge() const;
   void setKnowledge( const uint32_t new_knowledge );
   void modifyKnowledge( const uint32_t knowledge_diff );
 
-  uint32_t getMovementPoints() const;
+  [[nodiscard]] uint32_t getMovementPoints() const;
   void setMovementPoints( const uint32_t new_movement );
   void modifyMovementPoints( const uint32_t movement_diff );
 
-  uint32_t getLevel() const;
+  [[nodiscard]] uint32_t getLevel() const;
   void levelUp();
 
-  uint32_t getExperience() const;
+  [[nodiscard]] uint32_t getExperience() const;
   void gainExperience( const uint32_t experience );
 
-  uint32_t getMaxMana() const;
+  [[nodiscard]] uint32_t getMaxMana() const;
   void setMaxMana( const uint32_t new_max_mana );
   void modifyMaxMana( const uint32_t max_mana_diff );
 
-  uint32_t getCurrentMana() const;
+  [[nodiscard]] uint32_t getCurrentMana() const;
   void setCurrentMana( const uint32_t new_current_mana );
   void modifyCurrentMana( const uint32_t current_mana_diff );
 
-  short getMorale() const;
-  void setMorale( const short new_morale );
-  void modifyMorale( const short morale_diff );
+  [[nodiscard]] int getMorale() const;
+  void setMorale( const int new_morale );
+  void modifyMorale( const int morale_diff );
 
-  short getLuck() const;
-  void setLuck( const short new_luck );
-  void modifyLuck( const short luck_diff );
+  [[nodiscard]] int getLuck() const;
+  void setLuck( const int new_luck );
+  void modifyLuck( const int luck_diff );
 
   uint32_t getEffectiveSpeed();
 
-  bool getIfAlive() const;
+  [[nodiscard]] bool getIfAlive() const;
   //   bool die();
 
-  bool getIfBackpackFull() const;
+  [[nodiscard]] bool getIfBackpackFull() const;
 
   void pickUpArtifact( std::unique_ptr<const Artifact> artifact );
   void equipArtifact( ArtifactType type, EquipmentSlots slot );

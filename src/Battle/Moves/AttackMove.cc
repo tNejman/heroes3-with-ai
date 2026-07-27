@@ -6,7 +6,7 @@
 #include "Battle/Battle.h"
 #include "Battle/Moves/Move.hpp"
 #include "Miscellaneous/Coords.h"
-#include "Unit/UnitStack.h"
+#include "Unit/UnitStack.h"  // IWYU pragma: keep
 
 AttackMove::AttackMove( CoordPair attacker, CoordPair defender )
     : Move(), attacker_( attacker ), defender_( defender ) {
@@ -15,8 +15,10 @@ AttackMove::AttackMove( CoordPair attacker, CoordPair defender )
 void AttackMove::execute( std::shared_ptr<Battle> battle ) {
   (void)battle->attack( battle->getUnitFromCoords( attacker_ ),
                         battle->getUnitFromCoords( defender_ ) );  // TODO handle return value
-  if ( battle->getBattleState() != BattleState::WIN_ATTACKER && battle->getBattleState() != BattleState::WIN_DEFENDER )
+  if ( battle->getBattleState() != BattleState::WIN_ATTACKER
+       && battle->getBattleState() != BattleState::WIN_DEFENDER ) {
     battle->setBattleState( BattleState::MOVING );
+  }
   battle->nextUnit();
 }
 CoordPair AttackMove::destinationCoords() const {

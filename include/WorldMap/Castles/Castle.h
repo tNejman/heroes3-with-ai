@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "Miscellaneous/Printable.h"
+#include "Graphics/Printable.h"
 #include "WorldMap/Castles/CastleInterface.h"
 
 // inheritance from Printable is postponed for now

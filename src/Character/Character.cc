@@ -1,5 +1,6 @@
 #include "Character/Character.h"
 
+#include <SFML/Graphics/Texture.hpp>
 #include <array>
 #include <cstdint>
 #include <memory>
@@ -47,32 +48,35 @@ void Character::initializeWarMachines() {
 
 std::optional<EquipmentSlots> Character::checkSlotIfEmpty( EquipmentSlots slot ) const {
   if ( slot == EquipmentSlots::RING ) {
-    if ( equipment_.find( EquipmentSlots::RING_1 )->second == nullptr )
+    if ( equipment_.find( EquipmentSlots::RING_1 )->second == nullptr ) {
       return EquipmentSlots::RING_1;
-    else if ( equipment_.find( EquipmentSlots::RING_2 )->second == nullptr ) {
-      return EquipmentSlots::RING_2;
-    } else {
-      return std::nullopt;
     }
+    if ( equipment_.find( EquipmentSlots::RING_2 )->second == nullptr ) {
+      return EquipmentSlots::RING_2;
+    }
+    return std::nullopt;
   }
   if ( slot == EquipmentSlots::MISC ) {
-    for ( int i = 10; i < 15; ++i ) {
-      EquipmentSlots actual_slot = static_cast<EquipmentSlots>( i );
-      if ( equipment_.find( actual_slot )->second == nullptr ) return actual_slot;
+    static constexpr int MISC_FIRST_SLOT_ID = static_cast<int>( EquipmentSlots::MISC_1 );
+    static constexpr int MISC_LAST_SLOT_ID = static_cast<int>( EquipmentSlots::MISC_5 );
+    for ( int i = MISC_FIRST_SLOT_ID; i <= MISC_LAST_SLOT_ID; ++i ) {
+      auto actual_slot = static_cast<EquipmentSlots>( i );
+      if ( equipment_.find( actual_slot )->second == nullptr ) {
+        return actual_slot;
+      }
     }
     return std::nullopt;
   }
 
-  if ( equipment_.find( slot )->second == nullptr )
+  if ( equipment_.find( slot )->second == nullptr ) {
     return slot;
-  else
-    return std::nullopt;
+  }
+  return std::nullopt;
 }
 
-Character::Character( const std::string& name, const CoordPair coords, const uint32_t attack, const uint32_t defense,
-                      const uint32_t power, const uint32_t knowledge, const uint32_t max_mana, const short morale,
-                      const short luck )
-    : name_( name ),
+Character::Character( std::string name, CoordPair coords, uint32_t attack, uint32_t defense, uint32_t power,
+                      uint32_t knowledge, uint32_t max_mana, int morale, int luck )
+    : name_( std::move( name ) ),
       alive_( true ),
       coords_( coords ),
       attack_( attack ),
@@ -83,11 +87,28 @@ Character::Character( const std::string& name, const CoordPair coords, const uin
       experience_( 0 ),
       max_mana_( max_mana ),
       current_mana_( max_mana ),
+      movement_points_( 0 ),
       morale_( morale ),
       luck_( luck ) {
   initializeEquipment();
   initializeWarMachines();
 };
+
+sf::Texture& Character::accept( Visitor& v ) const {
+  return v.visit( *this );
+}
+
+CharacterMoveDirection Character::getOrientation() const {
+  return this->orientation_;
+}
+
+void Character::setOrientation( CharacterMoveDirection new_orientation ) {
+  this->orientation_ = new_orientation;
+}
+
+CharacterType Character::getCharacterType() const {
+  return this->character_type_;
+}
 
 const std::string& Character::getName() const {
   return this->name_;
@@ -178,7 +199,7 @@ void Character::gainExperience( const uint32_t experience ) {
 
   this->experience_ += experience;
 
-  if ( this->experience_ >= EXPERIENCE_THRESHHOLDS[old_level + 1] ) {
+  if ( this->experience_ >= EXPERIENCE_THRESHHOLDS.at( old_level + 1 ) ) {
     levelUp();
   }
 }
@@ -203,23 +224,23 @@ void Character::modifyCurrentMana( const uint32_t current_mana_diff ) {
   this->current_mana_ += current_mana_diff;
 }
 
-short Character::getMorale() const {
+int Character::getMorale() const {
   return this->morale_;
 }
-void Character::setMorale( const short new_morale ) {
+void Character::setMorale( const int new_morale ) {
   this->morale_ = new_morale;
 }
-void Character::modifyMorale( const short morale_diff ) {
+void Character::modifyMorale( const int morale_diff ) {
   this->morale_ += morale_diff;
 }
 
-short Character::getLuck() const {
+int Character::getLuck() const {
   return this->luck_;
 }
-void Character::setLuck( const short new_luck ) {
+void Character::setLuck( const int new_luck ) {
   this->luck_ = new_luck;
 }
-void Character::modifyLuck( const short luck_diff ) {
+void Character::modifyLuck( const int luck_diff ) {
   this->luck_ += luck_diff;
 }
 
@@ -382,10 +403,10 @@ std::shared_ptr<Character> Character::copy() {
   }
 
   for ( uint32_t i = 0; i < MAX_PARTY_SIZE; ++i ) {
-    if ( this->party_[i] != nullptr ) {
-      copy->party_[i] = this->party_[i]->copy();
+    if ( this->party_.at( i ) != nullptr ) {
+      copy->party_.at( i ) = this->party_.at( i )->copy();
     } else {
-      copy->party_[i] = nullptr;
+      copy->party_.at( i ) = nullptr;
     }
   }
   return copy;

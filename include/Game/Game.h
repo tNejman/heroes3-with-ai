@@ -6,6 +6,7 @@
 */
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window.hpp>
 #include <memory>
 #include <optional>
@@ -66,7 +67,7 @@ class Game {
   [[nodiscard]] GameState getState() const;
   void setMouseCoords( int x, int y );  // NOLINT(readability-identifier-length)
   void performGameLoopIteration();
-  [[nodiscard]] CoordPair getMainPlayerCoords() const;
+  [[nodiscard]] std::shared_ptr<Character> getMainCharacter() const;
   std::shared_ptr<sf::RenderWindow> getRenderWindow();
   void debugStartBattle();
 };

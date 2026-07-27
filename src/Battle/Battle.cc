@@ -11,6 +11,7 @@
 #include <iterator>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 #include "Battle/BattleField.h"
@@ -24,54 +25,54 @@
 void Battle::setAttackingArmy() {
   auto& party = attacker_->getParty();
   for ( uint32_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party[i] == nullptr ) {
+    if ( party.at( i ) == nullptr ) {
       continue;
     }
-    CoordPair coords_in_battle = CoordPair( 0u, 0u );
+    CoordPair coords_in_battle{ .x_ = 0U, .y_ = 0U };
     if ( i < 3 ) {
-      coords_in_battle = CoordPair( 0u, i * 2 );
+      coords_in_battle = CoordPair( 0U, i * 2 );
     } else if ( i == 3 ) {
-      coords_in_battle = CoordPair( 0u, 5u );
+      coords_in_battle = CoordPair( 0U, 5U );
     } else if ( i > 3 ) {
-      coords_in_battle = CoordPair( 0u, ( i - 4 ) * 2 + 6 );
+      coords_in_battle = CoordPair( 0U, ( ( i - 4 ) * 2 ) + 6 );
     }
-    party[i]->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party[i] );
+    party.at( i )->setCoordsInBattle( coords_in_battle );
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( i ) );
   }
 }
 
 void Battle::setDefendingArmy() {
   auto& party = defender_->getParty();
   for ( uint32_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party[i] == nullptr ) {
+    if ( party.at( i ) == nullptr ) {
       continue;
     }
-    CoordPair coords_in_battle = CoordPair( 0u, 0u );
+    CoordPair coords_in_battle{ .x_ = 0U, .y_ = 0U };
     if ( i < 3 ) {
-      coords_in_battle = CoordPair( 14u, i * 2 );
+      coords_in_battle = CoordPair( 14U, i * 2 );
     } else if ( i == 3 ) {
       coords_in_battle = CoordPair( 14u, 5u );
     } else if ( i > 3 ) {
-      coords_in_battle = CoordPair( 14u, ( i - 4 ) * 2 + 6 );
+      coords_in_battle = CoordPair( 14u, ( ( i - 4 ) * 2 ) + 6 );
     }
-    party[i]->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party[i] );
+    party.at( i )->setCoordsInBattle( coords_in_battle );
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( i ) );
   }
 }
 
-uint32_t Battle::setUnitInQueue( std::shared_ptr<UnitStack> unit ) {
+uint32_t Battle::setUnitInQueue( const std::shared_ptr<UnitStack>& unit ) {
   uint32_t speed = unit->getSpeed();
   if ( round_queue_.size() == 0 ) {
     round_queue_.push_back( unit );
     return 0;
-  } else {
-    for ( auto it = round_queue_.begin(); it != round_queue_.end(); ++it ) {
-      if ( ( *it )->getSpeed() < speed ) {
-        round_queue_.insert( it, unit );
-        return (uint)std::distance( round_queue_.begin(), it );
-      }
+  }
+  for ( auto it = round_queue_.begin(); it != round_queue_.end(); ++it ) {
+    if ( ( *it )->getSpeed() < speed ) {
+      round_queue_.insert( it, unit );
+      return (uint)std::distance( round_queue_.begin(), it );
     }
   }
+
   round_queue_.push_back( unit );
   return uint32_t( round_queue_.size() - 1 );
 }
@@ -99,19 +100,21 @@ void Battle::nextRound() {
 
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
                 std::shared_ptr<GridTile> background )
-    : battlefield_( std::make_shared<BattleField>( background ) ), attacker_( attacker ), defender_( defender ) {
+    : state_( BattleState::MOVING ),
+      battlefield_( std::make_shared<BattleField>( background ) ),
+      attacker_( std::move( attacker ) ),
+      defender_( std::move( defender ) ) {
   // attacking_army_.reserve( 7 );
   // defending_army_.reserve( 7 );
   // units_in_battle_.reserve( 14 );
   setAttackingArmy();
   setDefendingArmy();
   nextUnit();
-  state_ = BattleState::MOVING;
 };
 
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
                 std::shared_ptr<GridTile> background, bool is_minimax )
-    : Battle( attacker, defender, background ) {
+    : Battle( std::move( attacker ), std::move( defender ), std::move( background ) ) {
   is_minimax_ = is_minimax;
 }
 
