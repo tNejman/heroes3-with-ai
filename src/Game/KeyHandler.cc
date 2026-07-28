@@ -3,6 +3,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <set>
 #include <stdexcept>
@@ -28,11 +29,10 @@ void KeyHandler::processBufferedInput() {
       bool should_wait = false;
       bool incompatible_pair = false;
 
-      FrameCount avail = key_press_history_.empty() ? 0 : FrameCount( key_press_history_.size() - 1 );
-      FrameCount max_i =
-          is_buffered_input_ ? std::min<FrameCount>( KEY_BUFFER_DURATION, avail ) : std::min<FrameCount>( 1, avail );
+      int avail = key_press_history_.empty() ? 0 : static_cast<int>( key_press_history_.size() - 1 );
+      int max_i = is_buffered_input_ ? std::min( KEY_BUFFER_DURATION, avail ) : std::min( 1, avail );
 
-      for ( FrameCount i = 1; i <= max_i; ++i ) {
+      for ( size_t i = 1; i <= static_cast<size_t>( max_i ); ++i ) {
         auto &next = key_press_history_[i];
 
         if ( isDoublePress( next ) ) {
@@ -95,7 +95,7 @@ CharacterMoveDirection KeyHandler::getMoveFromKeys( const std::vector<sf::Keyboa
     };
   }
 
-  ShiftPair shift{ .dx_ = dx, .dy_ = dy };
+  ShiftPair shift{ dx, dy };
 
   const auto *itr = std::ranges::find( WORLD_MAP_DIRECTIONS.begin(), WORLD_MAP_DIRECTIONS.end(), shift );
 

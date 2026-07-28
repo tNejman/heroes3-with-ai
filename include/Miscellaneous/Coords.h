@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include <concepts>
-#include <cstdint>
+#include <cstddef>
 #include <iostream>
 
 /**
@@ -17,19 +16,23 @@
  */
 struct ShiftPair {
  public:
-  int dx_{ 0 };  // NOLINT(misc-non-private-member-variables-in-classes)
-  int dy_{ 0 };  // NOLINT(misc-non-private-member-variables-in-classes)
+  int dx_;  // NOLINT(misc-non-private-member-variables-in-classes)
+  int dy_;  // NOLINT(misc-non-private-member-variables-in-classes)
 
-  // explicit constexpr ShiftPair( int dx, int dy ) noexcept;
-  // constexpr ShiftPair( const ShiftPair& other ) noexcept = default;
-  // constexpr ShiftPair( ShiftPair&& other ) noexcept = default;
-  // constexpr ShiftPair& operator=( const ShiftPair& other ) noexcept = default;
-  // constexpr ShiftPair& operator=( ShiftPair&& other ) noexcept = default;
-  ShiftPair& operator+( const ShiftPair& other ) noexcept;
-  ShiftPair& operator-( const ShiftPair& other ) noexcept;
-  bool operator==( const ShiftPair& other ) const noexcept;
-  bool operator!=( const ShiftPair& other ) const noexcept;
+  ShiftPair() = delete;
+  constexpr ShiftPair( int dx, int dy ) : dx_( dx ), dy_( dy ) {
+  }
+
+  ShiftPair operator+( const ShiftPair& other ) const noexcept;
+  ShiftPair operator-( const ShiftPair& other ) const noexcept;
+  auto operator<=>( const ShiftPair& other ) const noexcept = default;
 };
+
+namespace {
+// these two need to be macros; assert must take in literal
+#define NEGATIVE_X_ASSERT_MSG "x_ in CoordPair must be non-negative"  // NOLINT(cppcoreguidelines-macro-usage)
+#define NEGATIVE_Y_ASSERT_MSG "y_ in CoordPair must be non-negative"  // NOLINT(cppcoreguidelines-macro-usage)
+}  // namespace
 
 /**
  * @brief
@@ -41,26 +44,25 @@ struct ShiftPair {
  * @param y_
  * y coordinate
  */
-class CoordPair {
- public:
-  uint32_t x_{ 0 };
-  uint32_t y_{ 0 };
+struct CoordPair {
+  int x_;  // NOLINT(misc-non-private-member-variables-in-classes)
+  int y_;  // NOLINT(misc-non-private-member-variables-in-classes)
 
-  // explicit constexpr CoordPair( uint32_t x, uint32_t y ) noexcept;
+  CoordPair() = delete;
+  constexpr CoordPair( int x, int y )  // NOLINT(bugprone-easily-swappable-parameters)
+      : x_( x ), y_( y ) {
+    assert( x >= 0 && NEGATIVE_X_ASSERT_MSG );
+    assert( y >= 0 && NEGATIVE_Y_ASSERT_MSG );
+  }
+  CoordPair operator+( const CoordPair& other ) const noexcept;
+  CoordPair operator+( const ShiftPair& shift ) const noexcept;
+  CoordPair operator-( const CoordPair& other ) const noexcept;
+  CoordPair& operator+=( const CoordPair& other ) noexcept;
+  CoordPair& operator+=( const ShiftPair& shift ) noexcept;
+  friend std::ostream& operator<<( std::ostream& os, const CoordPair& coord ) noexcept;  // TODO make run only in debug
+  auto operator<=>( const CoordPair& other ) const noexcept = default;
 
-  CoordPair& operator+( const CoordPair& other ) noexcept;
-  CoordPair& operator+( const ShiftPair& shift );
-  CoordPair& operator-( const CoordPair& other );
-  CoordPair& operator+=( const ShiftPair& shift );
-  friend std::ostream& operator<<( std::ostream& os, const CoordPair& coord );  // TODO make run only in debug
-  bool operator==( const CoordPair& other ) const noexcept;
-  bool operator!=( const CoordPair& other ) const noexcept;
-
-  // @Warning lexicographical order, please do not use without a thought
-  bool operator<( const CoordPair& other ) const noexcept;
-  bool operator<=( const CoordPair& other ) const noexcept;
-  bool operator>( const CoordPair& other ) const noexcept;
-  bool operator>=( const CoordPair& other ) const noexcept;
-
-  double distance( const CoordPair& other ) const;
+  [[nodiscard]] double distanceFrom( const CoordPair& other ) const noexcept;
+  [[nodiscard]] size_t xAsId() const noexcept;
+  [[nodiscard]] size_t yAsId() const noexcept;
 };

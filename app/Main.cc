@@ -6,15 +6,17 @@
 #include <cmath>
 #include <cstdint>
 #include <exception>
-#include <fstream>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <utility>
+#include <vector>
 
 #include "Character/Character.h"
 #include "Game/Game.h"
 // #include "LoadAndSaveTools/CharacterSaver.h"
+#include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Miscellaneous/UnitsLib.h"
@@ -69,20 +71,21 @@ int main() {
   players.push_back( std::make_shared<Player>( std::move( characters ) ) );
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
-  const uint32_t obstacle_count = 1'000u;
+  const uint32_t obstacle_count = 1'000U;
   std::vector<std::shared_ptr<MapObject>> obstacles;
   double step = std::sqrt( ( WORLD_MAP_WIDTH * WORLD_MAP_HEIGHT ) / static_cast<double>( obstacle_count ) );
   uint32_t count = 0;
   for ( double y = step / 2; y < WORLD_MAP_HEIGHT && count < obstacle_count; y += step ) {
     for ( double x = step / 2; x < WORLD_MAP_WIDTH && count < obstacle_count; x += step ) {
-      auto x_loc = uint32_t( x );
-      auto y_loc = uint32_t( y );
+      auto x_loc = static_cast<int>( x );
+      auto y_loc = static_cast<int>( y );
       // if ( int( x * y ) % 3 == 0 )
       // obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLs11s0", CoordPair( x_loc, y_loc ) ) );
-      if ( int( x * y ) % 2 == 0 )
+      if ( int( x * y ) % 2 == 0 ) {
         obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLtRo06", CoordPair( x_loc, y_loc ) ) );
-      else
+      } else {
         obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLswt15", CoordPair( x_loc, y_loc ) ) );
+      }
     }
   }
 

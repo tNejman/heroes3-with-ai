@@ -13,7 +13,7 @@
 #include "Miscellaneous/ProjectLib.h"
 
 Artifact::Artifact( std::shared_ptr<const ArtifactData> data )
-    : MapObject( { .x_ = 0U, .y_ = 0U } ), artifact_data_( std::move( data ) ) {
+    : MapObject( { 0U, 0U } ), artifact_data_( std::move( data ) ) {
 }
 
 std::unique_ptr<Artifact> Artifact::create( const ArtifactType type ) {

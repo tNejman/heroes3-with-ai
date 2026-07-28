@@ -149,8 +149,8 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
 
   for ( const auto& unit : units_sorted ) {
     CoordPair unit_coords = unit->getCoordsInBattle();
-    uint32_t offset_x = 0;
-    uint32_t offset_y = 0;
+    int offset_x = 0;
+    int offset_y = 0;
     offset_x = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( unit_coords.x_ * BATTLE_MAP_SPRITE_X_DELTA );
     offset_y =
         BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT + ( ( 4 - ( unit_coords.y_ / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
@@ -165,7 +165,9 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
     if ( std::ranges::find( units_defender, unit ) != units_defender.end() ) {
       image_tmp.flipHorizontally();
     }
-    (void)combined_image.copy( image_tmp, sf::Vector2u( offset_x, offset_y ), sf::IntRect(), true );
+    (void)combined_image.copy(
+        image_tmp, sf::Vector2u( static_cast<unsigned int>( offset_x ), static_cast<unsigned int>( offset_y ) ),
+        sf::IntRect(), true );
     path += "unit" + unit->getUnit()->getName() + std::to_string( unit->getCoordsInBattle().x_ )
             + std::to_string( unit->getCoordsInBattle().y_ );
   }
@@ -211,11 +213,11 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
     throw std::runtime_error( "Failed to load battle background image: Sprites/Battle_Backgrounds/CmBkDrTr.png" );
   }
   std::string path;
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
+  for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
+    for ( int y = 0; y < MAP_HEIGHT_BF; ++y ) {
       CoordPair map_tile_coord( x, y );
-      uint32_t offset_x_temp = 0;
-      uint32_t offset_y_temp = 0;
+      int offset_x_temp = 0;
+      int offset_y_temp = 0;
       // set offset for even rows
       offset_x_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( x * BATTLE_MAP_SPRITE_X_DELTA );
       offset_y_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD + ( ( 5 - ( y / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
@@ -243,7 +245,10 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
         path += "n";
       }
       try {
-        (void)combined_image.copy( image_hexagon, sf::Vector2u( offset_x_temp, offset_y_temp ), sf::IntRect(), true );
+        (void)combined_image.copy(
+            image_hexagon,
+            sf::Vector2u( static_cast<unsigned int>( offset_x_temp ), static_cast<unsigned int>( offset_y_temp ) ),
+            sf::IntRect(), true );
       } catch ( const std::exception& e ) {
         throw BadCopyException( "hex creation failed" );
       }

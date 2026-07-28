@@ -18,19 +18,19 @@
 ====== WORLD MAP ======
 */
 
-constexpr uint32_t WORLD_MAP_WIDTH = 100;   // 20
-constexpr uint32_t WORLD_MAP_HEIGHT = 100;  // 20
+constexpr inline int WORLD_MAP_WIDTH = 100;   // 20
+constexpr inline int WORLD_MAP_HEIGHT = 100;  // 20
 
 constexpr double INF_SCORE = 1e9;
 
-constexpr std::array<ShiftPair, 8> WORLD_MAP_DIRECTIONS = { { { .dx_ = -1, .dy_ = 1 },      // UL
-                                                              { .dx_ = 0, .dy_ = 1 },       // U
-                                                              { .dx_ = 1, .dy_ = 1 },       // UR
-                                                              { .dx_ = -1, .dy_ = 0 },      // R
-                                                              { .dx_ = 1, .dy_ = 0 },       // DR
-                                                              { .dx_ = -1, .dy_ = -1 },     // D
-                                                              { .dx_ = 0, .dy_ = -1 },      // DL
-                                                              { .dx_ = 1, .dy_ = -1 } } };  // L
+constexpr std::array<ShiftPair, 8> WORLD_MAP_DIRECTIONS = { { ShiftPair{ -1, 1 },      // UL
+                                                              ShiftPair{ 0, 1 },       // U
+                                                              ShiftPair{ 1, 1 },       // UR
+                                                              ShiftPair{ -1, 0 },      // R
+                                                              ShiftPair{ 1, 0 },       // DR
+                                                              ShiftPair{ -1, -1 },     // D
+                                                              ShiftPair{ 0, -1 },      // DL
+                                                              ShiftPair{ 1, -1 } } };  // L
 
 enum class CharacterMoveDirection { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, NONE };
 
@@ -38,19 +38,19 @@ enum class CharacterMoveDirection { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DO
 ====== BATTLE ======
 */
 
-constexpr uint32_t MAP_WIDTH_BF = 15;
-constexpr uint32_t MAP_HEIGHT_BF = 11;
+constexpr inline int MAP_WIDTH_BF = 15;
+constexpr inline int MAP_HEIGHT_BF = 11;
 
 enum BATTLE_DIRECTIONS : int { UR, R, DR, DL, L, UL };
 
 // {0,0} in the middle, top and bottom rows are shifted right
 constexpr std::array<ShiftPair, 6> EVEN_DIRECTIONS_BATTLE = { {
-    { .dx_ = 1, .dy_ = 1 },   // UR
-    { .dx_ = 1, .dy_ = 0 },   // R
-    { .dx_ = 1, .dy_ = -1 },  // DR
-    { .dx_ = 0, .dy_ = -1 },  // DL
-    { .dx_ = -1, .dy_ = 0 },  // L
-    { .dx_ = 0, .dy_ = 1 }    // UL
+    { 1, 1 },   // UR
+    { 1, 0 },   // R
+    { 1, -1 },  // DR
+    { 0, -1 },  // DL
+    { -1, 0 },  // L
+    { 0, 1 }    // UL
 } };
 /*
    EVEN_DIRECTIONS_BATTLE visual below
@@ -61,12 +61,12 @@ constexpr std::array<ShiftPair, 6> EVEN_DIRECTIONS_BATTLE = { {
 
 // {0,0} in the middle, top and bottom rows are shifted left
 constexpr std::array<ShiftPair, 6> ODD_DIRECTIONS_BATTLE = { {
-    { .dx_ = 0, .dy_ = 1 },    // UR
-    { .dx_ = 1, .dy_ = 0 },    // R
-    { .dx_ = 0, .dy_ = -1 },   // DR
-    { .dx_ = -1, .dy_ = -1 },  // DL
-    { .dx_ = -1, .dy_ = 0 },   // L
-    { .dx_ = -1, .dy_ = 1 }    // UL
+    { 0, 1 },    // UR
+    { 1, 0 },    // R
+    { 0, -1 },   // DR
+    { -1, -1 },  // DL
+    { -1, 0 },   // L
+    { -1, 1 }    // UL
 } };
 /*
     ODD_DIRECTIONSS_BATTLE visual below
@@ -75,10 +75,10 @@ constexpr std::array<ShiftPair, 6> ODD_DIRECTIONS_BATTLE = { {
         {-1,-1}, {0, -1}
 */
 
-constexpr uint32_t MELEE_UNIT_RANGE = 1;
+constexpr inline int MELEE_UNIT_RANGE = 1;
 
-constexpr CoordPair BATTLE_MAP_TOP_RIGHT_COORDS{ .x_ = MAP_WIDTH_BF - 1, .y_ = MAP_HEIGHT_BF - 1 };
-constexpr CoordPair BATTLE_MAP_NOT_FOUND_COORDS{ .x_ = 69'420U, .y_ = 69'420U };
+constexpr CoordPair BATTLE_MAP_TOP_RIGHT_COORDS{ MAP_WIDTH_BF - 1, MAP_HEIGHT_BF - 1 };
+constexpr CoordPair BATTLE_MAP_NOT_FOUND_COORDS{ 69'420U, 69'420U };
 // constexpr CoordPair BATTLE_MAP_PASS_COORDS = CoordPair( 100u, 100u );
 
 /*
@@ -94,10 +94,10 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 ====== CHARACTER ======
 */
 
-constexpr uint32_t SECONDARY_SKILLS_SLOTS_COUNT = 8;
-constexpr uint32_t EQUIPMENT_SLOTS_COUNT = 14;
-constexpr uint32_t MAX_BACKPACK_SIZE = 64;
-constexpr uint32_t MAX_PARTY_SIZE = 7;
+constexpr inline int SECONDARY_SKILLS_SLOTS_COUNT = 8;
+constexpr inline int EQUIPMENT_SLOTS_COUNT = 14;
+constexpr inline int MAX_BACKPACK_SIZE = 64;
+constexpr inline int MAX_PARTY_SIZE = 7;
 
 enum class CharacterType { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
 
@@ -120,7 +120,7 @@ enum class EquipmentSlots {
   MISC_5 = 14
 };
 
-constexpr std::array<uint32_t, 11> EXPERIENCE_THRESHHOLDS = {
+constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0
     0,      // 1
     1000,   // 2
@@ -134,7 +134,7 @@ constexpr std::array<uint32_t, 11> EXPERIENCE_THRESHHOLDS = {
     14700   // 10 and above
 };
 
-const std::map<uint32_t, uint32_t> SPEED_TO_MOVEMENT = { {
+const std::map<int, int> SPEED_TO_MOVEMENT = { {
     { 3, 1500 },
     { 4, 1560 },
     { 5, 1630 },
@@ -150,11 +150,9 @@ const std::map<uint32_t, uint32_t> SPEED_TO_MOVEMENT = { {
 ===== RENDERING =====
 */
 
-using FrameCount = uint32_t;
-
 // constexpr sf::Time FRAME_DURATION = sf::seconds( 1.f / 30.f );
 
-constexpr FrameCount KEY_BUFFER_DURATION = 5;
+constexpr inline int KEY_BUFFER_DURATION = 5;
 
 constexpr sf::Keyboard::Key W = sf::Keyboard::Key::W;
 constexpr sf::Keyboard::Key S = sf::Keyboard::Key::S;
@@ -165,36 +163,36 @@ constexpr std::array<sf::Keyboard::Key, 4> MOVEMENT_KEYS = { W, S, A, D };
 const std::map<sf::Keyboard::Key, std::vector<sf::Keyboard::Key>> VALID_DIAGONAL_MOVE_COMP = {
     { W, { A, D } }, { S, { A, D } }, { A, { W, S } }, { D, { W, S } } };
 
-constexpr uint32_t WORLD_MAP_MAX_TILES_SEEN_LEFT = 12U;
-constexpr uint32_t WORLD_MAP_MAX_TILES_SEEN_RIGHT = 12U;
-constexpr uint32_t WORLD_MAP_MAX_TILES_SEEN_UP = 9U;
-constexpr uint32_t WORLD_MAP_MAX_TILES_SEEN_DOWN = 9U;
+constexpr inline int WORLD_MAP_MAX_TILES_SEEN_LEFT = 12U;
+constexpr inline int WORLD_MAP_MAX_TILES_SEEN_RIGHT = 12U;
+constexpr inline int WORLD_MAP_MAX_TILES_SEEN_UP = 9U;
+constexpr inline int WORLD_MAP_MAX_TILES_SEEN_DOWN = 9U;
 
-constexpr uint32_t WINDOW_WIDTH = 800;
-constexpr uint32_t WINDOW_HEIGHT = 600;
+constexpr inline int WINDOW_WIDTH = 800;
+constexpr inline int WINDOW_HEIGHT = 600;
 
-constexpr uint32_t TERRAIN_SPRITE_HEIGHT = 32;
-constexpr uint32_t TERRAIN_SPRITE_WIDTH = 32;
+constexpr inline int TERRAIN_SPRITE_HEIGHT = 32;
+constexpr inline int TERRAIN_SPRITE_WIDTH = 32;
 
-constexpr uint32_t HERO_SPRITE_WIDTH = 95;
-constexpr uint32_t HERO_SPRITE_HEIGHT = 64;
+constexpr inline int HERO_SPRITE_WIDTH = 95;
+constexpr inline int HERO_SPRITE_HEIGHT = 64;
 
 const std::string HEXAGON_SPRITE_DEFAULT_PATH = "Sprites/Battle/Auxiliary/Hexagon.png";
 const std::string HEXAGON_MOVEMENT_SPRITE_PATH = "Sprites/Battle/Auxiliary/Hexagon_Movement.png";
 const std::string HEXAGON_ATTACK_SPRITE_PATH = "Sprites/Battle/Auxiliary/Hexagon_Attack.png";
 
-constexpr uint32_t HEXAGON_SPRITE_WIDTH = 48;
-constexpr uint32_t HEXAGON_SPRITE_HEIGHT = 56;
+constexpr inline int HEXAGON_SPRITE_WIDTH = 48;
+constexpr inline int HEXAGON_SPRITE_HEIGHT = 56;
 
-constexpr uint32_t BATTLE_MAP_SPRITE_X_DELTA = 48;
-constexpr uint32_t BATTLE_MAP_SPRITE_Y_DELTA = 86;
+constexpr inline int BATTLE_MAP_SPRITE_X_DELTA = 48;
+constexpr inline int BATTLE_MAP_SPRITE_Y_DELTA = 86;
 
-constexpr uint32_t BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD = 24;
-constexpr uint32_t BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD = 24;
-constexpr uint32_t BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT = 64;
+constexpr inline int BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD = 24;
+constexpr inline int BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD = 24;
+constexpr inline int BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT = 64;
 
-constexpr uint32_t BATTLE_MAP_SPRITE_ADJUST_EVEN_X = 24;
-constexpr uint32_t BATTLE_MAP_SPRITE_ADJUST_EVEN_Y = 43;
+constexpr inline int BATTLE_MAP_SPRITE_ADJUST_EVEN_X = 24;
+constexpr inline int BATTLE_MAP_SPRITE_ADJUST_EVEN_Y = 43;
 
 constexpr double HEXAGON_SPRITE_MAX_RADIUS = HEXAGON_SPRITE_WIDTH / 2.0;
 
@@ -210,15 +208,15 @@ constexpr std::size_t AMOUNT_OF_RESOURCES = 7;
 
 enum class GameState { OVERWORLD, BATTLE, MENU };
 
-constexpr uint32_t FACTION_FORGE_ID_MARKER = 0;
-constexpr uint32_t FACTION_CONFLUX_ID_MARKER = 1;
-constexpr uint32_t FACTION_CASTLE_ID_MARKER = 2;
+constexpr inline int FACTION_FORGE_ID_MARKER = 0;
+constexpr inline int FACTION_CONFLUX_ID_MARKER = 1;
+constexpr inline int FACTION_CASTLE_ID_MARKER = 2;
 
 /*
 ====== MINIMAX ======
 */
 
-constexpr uint32_t MINIMAX_MAX_DEPTH = 5U;
+constexpr inline int MINIMAX_MAX_DEPTH = 5U;
 
 /*
 ====== SAVING AND LOADING ======

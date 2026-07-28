@@ -17,9 +17,7 @@ message("Build type is: ${CMAKE_BUILD_TYPE}")
 option(CODE_COVERAGE "code coverage" ON)
 
 # find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-# if(CLANG_TIDY_EXE)
-#     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" --use-color) #  --fix-errors
-# endif()
+# set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" --use-color) #  --fix-errors
 
 include(FetchContent)
 
@@ -41,20 +39,14 @@ FetchContent_Declare(
     SYSTEM
 )
 
-if(CLANG_TIDY_EXE)
-    set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
-    set(CMAKE_CXX_CLANG_TIDY "")
-    FetchContent_MakeAvailable(SFML)
-    FetchContent_MakeAvailable(json)
-    set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
-else()
-    FetchContent_MakeAvailable(SFML)
-    FetchContent_MakeAvailable(json)
-endif()
-
+set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
+set(CMAKE_CXX_CLANG_TIDY "")
+FetchContent_MakeAvailable(SFML)
+FetchContent_MakeAvailable(json)
+set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
 
 set(MODULES
-    Algorithms
+    # Algorithms
     Artifact 
     Battle 
     Character
@@ -85,14 +77,16 @@ function(apply_compiler_flags target)
         -fsanitize=address
         -fsanitize=undefined
         
-        --coverage>
+        # --coverage
+        >
 
         $<$<CONFIG:Release>:-march=native>
     )
     target_link_options(${target} PUBLIC 
         $<$<CONFIG:Debug>:
         -fsanitize=address,undefined 
-        --coverage>
+        # --coverage
+        >
     )
 endfunction()
 

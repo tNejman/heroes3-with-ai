@@ -1,11 +1,11 @@
 #include "WorldMap/WorldMap.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <iostream>
 #include <memory>
-#include <ostream>
 #include <vector>
 
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
@@ -53,23 +53,25 @@ WorldMap::WorldMap( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDT
   this->loadGrid( new_grid );
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
 void WorldMap::loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid ) {
-  for ( uint32_t col = 0; col < WORLD_MAP_WIDTH; ++col ) {
-    for ( uint32_t row = 0; row < WORLD_MAP_HEIGHT; ++row ) {
-      Terrain terrain = static_cast<Terrain>( new_grid[col][row] );
-      CoordPair coords( col, row );
+  for ( size_t col = 0; col < WORLD_MAP_WIDTH; ++col ) {
+    for ( size_t row = 0; row < WORLD_MAP_HEIGHT; ++row ) {
+      Terrain terrain{ static_cast<Terrain>( new_grid[col][row] ) };
+      CoordPair coords( static_cast<int>( col ), static_cast<int>( row ) );
       grid_[col][row].reset();
       grid_[col][row] = std::make_shared<GridTile>( coords, terrain );
     }
   }
 }
+// NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
 void WorldMap::loadObstacles( std::vector<std::shared_ptr<MapObject>>& obstacels ) {
   for ( auto& obstacle : obstacels ) {
     try {
       setMapObject( obstacle->getCoords(), obstacle );
     } catch ( const std::exception& e ) {
-      std::cout << e.what() << std::endl;
+      std::cout << e.what() << '\n';
     }
   }
 }
@@ -127,10 +129,13 @@ void WorldMap::moveMapObject( CoordPair old_coords, ShiftPair shift ) {
 }
 
 std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
-  if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT )
+  if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
     throw CoordinateOutOfBoundsException( "Cannot get tile" );
-  auto tile = grid_[coords.x_][coords.y_];
-  if ( !tile ) throw TileNotFoundException( "Unknown state: no tile but in bounds" );
+  }
+  auto tile = grid_[coords.xAsId()][coords.yAsId()];
+  if ( !tile ) {
+    throw TileNotFoundException( "Unknown state: no tile but in bounds" );
+  }
   return tile;
 }
 

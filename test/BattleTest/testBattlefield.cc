@@ -10,7 +10,7 @@
 #include "WorldMap/GridTile.h"
 
 TEST( LayoutTest, check_up_right_neighbour_even ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
     for ( uint32_t y = 0; y < MAP_HEIGHT_BF - 1; ++ ++y ) {
@@ -33,7 +33,7 @@ TEST( LayoutTest, check_up_right_neighbour_even ) {
 }  // done
 
 TEST( LayoutTest, check_right_neighbour_even ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
     for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
@@ -50,7 +50,7 @@ TEST( LayoutTest, check_right_neighbour_even ) {
 }  // done
 
 TEST( LayoutTest, check_down_right_neighbour_even ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
     for ( uint32_t y = 2; y < MAP_HEIGHT_BF; ++ ++y ) {
@@ -73,7 +73,7 @@ TEST( LayoutTest, check_down_right_neighbour_even ) {
 }  // done
 
 TEST( LayoutTest, check_down_left_neighbour_even ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( uint32_t y = 2; y < MAP_HEIGHT_BF; ++ ++y ) {
@@ -90,7 +90,7 @@ TEST( LayoutTest, check_down_left_neighbour_even ) {
 }  // done
 
 TEST( LayoutTest, check_left_neighbour_even ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
     for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
@@ -107,7 +107,7 @@ TEST( LayoutTest, check_left_neighbour_even ) {
 }  // done
 
 TEST( LayoutTest, check_up_left_neighbour_even ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( uint32_t y = 0; y < MAP_HEIGHT_BF - 1; ++ ++y ) {
@@ -123,7 +123,7 @@ TEST( LayoutTest, check_up_left_neighbour_even ) {
 }  // done
 
 TEST( LayoutTest, check_up_right_neighbour_odd ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
 
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
@@ -136,7 +136,7 @@ TEST( LayoutTest, check_up_right_neighbour_odd ) {
 }  // done
 
 TEST( LayoutTest, check_right_neighbour_odd ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
 
   for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
@@ -154,7 +154,7 @@ TEST( LayoutTest, check_right_neighbour_odd ) {
 }  // done
 
 TEST( LayoutTest, check_down_right_neighbour_odd ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
 
   for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
@@ -167,7 +167,7 @@ TEST( LayoutTest, check_down_right_neighbour_odd ) {
 }  // done
 
 TEST( LayoutTest, check_down_left_neighbour_odd ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
 
   for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
@@ -185,7 +185,7 @@ TEST( LayoutTest, check_down_left_neighbour_odd ) {
 }  // done
 
 TEST( LayoutTest, check_left_neighbour_odd ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
 
   for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
@@ -203,7 +203,7 @@ TEST( LayoutTest, check_left_neighbour_odd ) {
 }  // done
 
 TEST( LayoutTest, check_up_left_neighbour_odd ) {
-  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ .x_ = 0, .y_ = 0 }, Terrain::GRASS );
+  std::shared_ptr<GridTile> grid_tile = std::make_shared<GridTile>( CoordPair{ 0, 0 }, Terrain::GRASS );
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
 
   for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {

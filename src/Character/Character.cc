@@ -77,7 +77,7 @@ std::optional<EquipmentSlots> Character::checkSlotIfEmpty( EquipmentSlots slot )
 
 Character::Character( std::string name, CoordPair coords, uint32_t attack, uint32_t defense, uint32_t power,
                       uint32_t knowledge, uint32_t max_mana, int morale, int luck )
-    : MapObject( { .x_ = 0, .y_ = 0 } ),
+    : MapObject( { 0, 0 } ),
       name_( std::move( name ) ),
       alive_( true ),
       coords_( coords ),
@@ -197,7 +197,7 @@ void Character::gainExperience( const uint32_t experience ) {
 
   this->experience_ += experience;
 
-  if ( this->experience_ >= EXPERIENCE_THRESHHOLDS.at( old_level + 1 ) ) {
+  if ( this->experience_ >= static_cast<uint32_t>( EXPERIENCE_THRESHHOLDS.at( old_level + 1 ) ) ) {
     ++level_;
   }
 }

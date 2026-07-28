@@ -6,7 +6,7 @@
 #include <vector>
 
 class Move;
-class CoordPair;
+struct CoordPair;
 class Battle;
 class UnitStack;
 

@@ -24,30 +24,30 @@
 
 void Battle::setAttackingArmy() {
   auto& party = attacker_->getParty();
-  for ( uint32_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party.at( i ) == nullptr ) {
+  for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
+    if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
       continue;
     }
-    CoordPair coords_in_battle{ .x_ = 0U, .y_ = 0U };
+    CoordPair coords_in_battle{ 0U, 0U };
     if ( i < 3 ) {
-      coords_in_battle = CoordPair( 0U, i * 2 );
+      coords_in_battle = CoordPair{ 0, i * 2 };
     } else if ( i == 3 ) {
-      coords_in_battle = CoordPair( 0U, 5U );
+      coords_in_battle = CoordPair{ 0, 5 };
     } else if ( i > 3 ) {
-      coords_in_battle = CoordPair( 0U, ( ( i - 4 ) * 2 ) + 6 );
+      coords_in_battle = CoordPair{ 0, ( ( i - 4 ) * 2 ) + 6 };
     }
-    party.at( i )->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( i ) );
+    party.at( static_cast<size_t>( i ) )->setCoordsInBattle( coords_in_battle );
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( static_cast<size_t>( i ) ) );
   }
 }
 
 void Battle::setDefendingArmy() {
   auto& party = defender_->getParty();
-  for ( uint32_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party.at( i ) == nullptr ) {
+  for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
+    if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
       continue;
     }
-    CoordPair coords_in_battle{ .x_ = 0U, .y_ = 0U };
+    CoordPair coords_in_battle{ 0U, 0U };
     if ( i < 3 ) {
       coords_in_battle = CoordPair( 14U, i * 2 );
     } else if ( i == 3 ) {
@@ -55,8 +55,8 @@ void Battle::setDefendingArmy() {
     } else if ( i > 3 ) {
       coords_in_battle = CoordPair( 14u, ( ( i - 4 ) * 2 ) + 6 );
     }
-    party.at( i )->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( i ) );
+    party.at( static_cast<size_t>( i ) )->setCoordsInBattle( coords_in_battle );
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( static_cast<size_t>( i ) ) );
   }
 }
 
@@ -294,13 +294,13 @@ std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattle() const {
 
 std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattleSortedToPrint() const {
   auto units_in_battle_sorted = getUnitsInBattle();
-  std::sort( units_in_battle_sorted.begin(), units_in_battle_sorted.end(),
-             []( const std::shared_ptr<UnitStack>& a, const std::shared_ptr<UnitStack>& b ) {
-               if ( a->getCoordsInBattle().y_ == b->getCoordsInBattle().y_ ) {
-                 return a->getCoordsInBattle().x_ >= b->getCoordsInBattle().x_;
-               }
-               return a->getCoordsInBattle().y_ >= b->getCoordsInBattle().y_;
-             } );
+  std::ranges::sort( units_in_battle_sorted,
+                     []( const std::shared_ptr<UnitStack>& a, const std::shared_ptr<UnitStack>& b ) {
+                       if ( a->getCoordsInBattle().y_ == b->getCoordsInBattle().y_ ) {
+                         return a->getCoordsInBattle().x_ >= b->getCoordsInBattle().x_;
+                       }
+                       return a->getCoordsInBattle().y_ >= b->getCoordsInBattle().y_;
+                     } );
   return units_in_battle_sorted;
 }
 
@@ -323,10 +323,10 @@ BattleState Battle::getBattleState() const {
 bool Battle::isSameArmy( const std::shared_ptr<UnitStack> unit1, const std::shared_ptr<UnitStack> unit2 ) const {
   const auto attacking_army = getAttackingArmy();
   const auto defending_army = getDefendingArmy();
-  return ( std::find( attacking_army.begin(), attacking_army.end(), unit1 ) != attacking_army.end()
-           && std::find( attacking_army.begin(), attacking_army.end(), unit2 ) != attacking_army.end() )
-         || ( std::find( defending_army.begin(), defending_army.end(), unit1 ) != defending_army.end()
-              && std::find( defending_army.begin(), defending_army.end(), unit2 ) != defending_army.end() );
+  return ( std::ranges::find( attacking_army, unit1 ) != attacking_army.end()
+           && std::ranges::find( attacking_army, unit2 ) != attacking_army.end() )
+         || ( std::ranges::find( defending_army, unit1 ) != defending_army.end()
+              && std::ranges::find( defending_army, unit2 ) != defending_army.end() );
 }
 
 bool Battle::isAIMove() const {
@@ -335,16 +335,16 @@ bool Battle::isAIMove() const {
 }
 
 void Battle::forceUnplaceUnitStacks() {
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
+  for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
+    for ( int y = 0; y < MAP_HEIGHT_BF; ++y ) {
       auto tile = battlefield_->getTileByProxy( CoordPair( x, y ) );
       tile->setObject( nullptr );
     }
   }
-  for ( auto unit_stack : getAttackingArmy() ) {
+  for ( const auto& unit_stack : getAttackingArmy() ) {
     unit_stack->setCoordsInBattle( BATTLE_MAP_NOT_FOUND_COORDS );
   }
-  for ( auto unit_stack : getDefendingArmy() ) {
+  for ( const auto& unit_stack : getDefendingArmy() ) {
     unit_stack->setCoordsInBattle( BATTLE_MAP_NOT_FOUND_COORDS );
   }
 }

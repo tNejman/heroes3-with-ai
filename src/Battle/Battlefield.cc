@@ -1,5 +1,7 @@
 #include "Battle/BattleField.h"
 
+#include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -15,8 +17,8 @@ BattleField::BattleField( std::shared_ptr<GridTile> background )
     : battle_grid_(), background_( std::move( background ) ) {};
 
 std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPair coords ) {
-  const uint32_t x = coords.x_;
-  const uint32_t y = coords.y_;
+  const int x = coords.x_;
+  const int y = coords.y_;
 
   const auto& directions = ( y % 2 == 0 ) ? EVEN_DIRECTIONS_BATTLE : ODD_DIRECTIONS_BATTLE;
   std::vector<std::shared_ptr<Tile>> neighbours;
@@ -26,7 +28,7 @@ std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPa
     int ny = (int)y + delta.dy_;
 
     if ( nx >= 0 && nx < (int)MAP_WIDTH_BF && ny >= 0 && ny < (int)MAP_HEIGHT_BF ) {
-      const auto& tile_ptr = getTileByProxy( CoordPair( uint32_t( nx ), uint32_t( ny ) ) );
+      const auto& tile_ptr = getTileByProxy( CoordPair{ nx, ny } );
       neighbours.push_back( tile_ptr );
     } else {
       neighbours.push_back( nullptr );
@@ -41,13 +43,13 @@ std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const std::sh
 }
 
 std::shared_ptr<Tile> BattleField::getTileByProxy( CoordPair coords ) {
-  uint32_t x = coords.x_;
-  uint32_t y = coords.y_;
-  if ( x >= MAP_WIDTH_BF || y >= MAP_HEIGHT_BF ) {
+  if ( coords.x_ >= MAP_WIDTH_BF || coords.y_ >= MAP_HEIGHT_BF || coords.x_ < 0 || coords.y_ < 0 ) {
     std::string exc_mess = "Battlefield::getTileByProxy exceeds battlefield cooridnates: x=";
-    exc_mess += std::to_string( x ) + " y=" + std::to_string( y );
+    exc_mess += std::to_string( coords.x_ ) + " y=" + std::to_string( coords.y_ );
     throw CoordinateOutOfBoundsException( exc_mess );
   }
+  auto x = static_cast<size_t>( coords.x_ );
+  auto y = static_cast<size_t>( coords.y_ );
   if ( battle_grid_.at( x ).at( y ) == nullptr ) {
     battle_grid_.at( x ).at( y ) = std::make_shared<Tile>( coords );
   };
@@ -55,8 +57,8 @@ std::shared_ptr<Tile> BattleField::getTileByProxy( CoordPair coords ) {
 }
 
 std::vector<CoordPair> BattleField::getCoordPairs( CoordPair coords ) {
-  uint32_t x = coords.x_;
-  uint32_t y = coords.y_;
+  int x = coords.x_;
+  int y = coords.y_;
   std::vector<CoordPair> tmp;
   if ( y % 2 == 0U ) {
     if ( y < (int)MAP_HEIGHT_BF - 1 && x < (int)MAP_WIDTH_BF - 1 ) {

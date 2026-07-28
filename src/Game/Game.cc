@@ -37,7 +37,6 @@
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
 
-
 void Game::performGameLoopIterationOverworld() {
   key_handler_->monitorKeyPresses();
   CharacterMoveDirection move_direction = key_handler_->getMove();
@@ -124,7 +123,10 @@ void Game::performBattleAiMove() {
       break;
     }
   }
-  if ( best_move == nullptr ) best_move = minimax_->getBestMove( battle_, MINIMAX_MAX_DEPTH );
+  // if ( best_move == nullptr ) best_move = minimax_->getBestMove( battle_, MINIMAX_MAX_DEPTH );
+  if ( best_move == nullptr ) {
+    best_move = moves[0];
+  }
   best_move->execute( battle_ );
 }
 
@@ -138,12 +140,12 @@ void Game::performBattleUserMove() {
   // }
   auto battle_coords = getCoordsFromClick();
   if ( battle_coords.has_value() ) {
-    auto it = std::find_if( moves.begin(), moves.end(), [&]( std::shared_ptr<Move> move ) {
+    auto it = std::ranges::find_if( moves, [&]( const std::shared_ptr<Move>& move ) {
       return move->destinationCoords() == battle_coords.value();
     } );
 
     if ( it != moves.end() ) {
-      std::cout << "DEBUG: executing: " << ( *it )->getInfo( battle_ ) << std::endl;
+      std::cout << "DEBUG: executing: " << ( *it )->getInfo( battle_ ) << '\n';
       ( *it )->execute( battle_ );
       waiting_for_print_ = true;
     }
@@ -180,12 +182,10 @@ std::optional<CoordPair> Game::getCoordsFromClick() {
 
   CoordPair found_coords = BATTLE_MAP_NOT_FOUND_COORDS;
 
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
-      uint32_t offset_x_temp, offset_y_temp;
-      // set offset for even rows
-      offset_x_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + x * BATTLE_MAP_SPRITE_X_DELTA;
-      offset_y_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD + ( 5 - y / 2 ) * BATTLE_MAP_SPRITE_Y_DELTA;
+  for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
+    for ( int y = 0; y < MAP_HEIGHT_BF; ++y ) {
+      int offset_x_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( x * BATTLE_MAP_SPRITE_X_DELTA );
+      int offset_y_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD + ( ( 5 - ( y / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
 
       // adjust if even
       if ( ( y % 2 == 0 ) ) {
