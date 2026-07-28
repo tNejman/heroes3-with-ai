@@ -30,7 +30,6 @@ std::shared_ptr<WorldMap> MapLoader::getObjectFromContainer() {
   // for explanation look in header
   assert( y_counter_ == 4'294'967'295 );
   assert( x_counter_ == 0 );
-  std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>();
-  world_map->loadGrid( container_ );
-  return world_map;
+  return std::make_shared<WorldMap>( container_ );
+  ;
 }

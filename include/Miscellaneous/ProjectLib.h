@@ -78,7 +78,7 @@ constexpr std::array<ShiftPair, 6> ODD_DIRECTIONS_BATTLE = { {
 constexpr inline int MELEE_UNIT_RANGE = 1;
 
 constexpr CoordPair BATTLE_MAP_TOP_RIGHT_COORDS{ MAP_WIDTH_BF - 1, MAP_HEIGHT_BF - 1 };
-constexpr CoordPair BATTLE_MAP_NOT_FOUND_COORDS{ 69'420U, 69'420U };
+constexpr CoordPair BATTLE_MAP_NOT_FOUND_COORDS{ 69'420, 69'420 };
 // constexpr CoordPair BATTLE_MAP_PASS_COORDS = CoordPair( 100u, 100u );
 
 /*

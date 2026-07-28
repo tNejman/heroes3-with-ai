@@ -4,12 +4,12 @@
 #include <string>
 #include <utility>
 
-class InvalidMoveException : public std::exception {
+class InvalidMapMoveException : public std::exception {
  private:
   std::string message_;
 
  public:
-  InvalidMoveException( std::string msg ) : message_( std::move( msg ) ) {
+  InvalidMapMoveException( std::string msg ) : message_( std::move( msg ) ) {
   }
 
   [[nodiscard]] const char* what() const noexcept override {

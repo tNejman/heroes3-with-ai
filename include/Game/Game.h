@@ -21,8 +21,8 @@
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
+#include "WorldMap/OverworldObstacle.h"
 #include "WorldMap/WorldMap.h"
-
 
 class Game {
  private:
@@ -64,7 +64,8 @@ class Game {
   Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input );
   // TODO add to constructor functionality which initializes preset players
 
-  void loadObstacles( std::vector<std::shared_ptr<MapObject>>& obstacles );
+  void mapLoadObstacles(
+      std::vector<std::shared_ptr<OverworldObstacle>>& obstacles );  // TODO expose map rather than proxy methods
   [[nodiscard]] GameState getState() const;
   void setMouseCoords( int x, int y );  // NOLINT(readability-identifier-length)
   void performGameLoopIteration();

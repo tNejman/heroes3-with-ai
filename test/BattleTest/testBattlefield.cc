@@ -94,14 +94,18 @@ TEST( LayoutTest, check_left_neighbour_even ) {
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( grid_tile );
   for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
     for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
+      if ( y >= MAP_HEIGHT_BF ) {
+        continue;
+      }
       ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[L],
                  battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[L] ) );
     }
   }
   const uint32_t min_x = 0u;
   for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) continue;
+    if ( y >= MAP_HEIGHT_BF ) {
+      continue;
+    }
     ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L], nullptr );
   }
 }  // done

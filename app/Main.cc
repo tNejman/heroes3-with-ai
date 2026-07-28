@@ -72,7 +72,7 @@ int main() {
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
   const uint32_t obstacle_count = 1'000U;
-  std::vector<std::shared_ptr<MapObject>> obstacles;
+  std::vector<std::shared_ptr<OverworldObstacle>> obstacles;
   double step = std::sqrt( ( WORLD_MAP_WIDTH * WORLD_MAP_HEIGHT ) / static_cast<double>( obstacle_count ) );
   uint32_t count = 0;
   for ( double y = step / 2; y < WORLD_MAP_HEIGHT && count < obstacle_count; y += step ) {
@@ -96,7 +96,7 @@ int main() {
     std::cout << e.what() << std::endl;
     return -1;
   }
-  game->loadObstacles( obstacles );
+  game->mapLoadObstacles( obstacles );
 
   // std::ofstream out( "CharacterSave2.txt" );
   // CharacterSaver character_saver = CharacterSaver( "CharacterSave2.txt", characters[0] );

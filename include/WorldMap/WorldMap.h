@@ -20,6 +20,7 @@
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/GridTile.h"
+#include "WorldMap/OverworldObstacle.h"
 
 class Character;
 class Building;
@@ -31,25 +32,22 @@ class WorldMap {
   std::vector<std::shared_ptr<Character>> characters_;
   std::vector<std::shared_ptr<Building>> buildings_;
 
-  void initializeGrid();
-
+  void loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid );
   [[nodiscard]] bool getIfCoordsInBounds( CoordPair coords ) const;
   [[nodiscard]] bool getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) const;
   //  uint32_t calculateTravelCost(const std::string& character_name, const CoordPair destination_coords);
 
  public:
-  WorldMap();
+  WorldMap() = delete;
   WorldMap( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid );
-  void loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid );
-  void loadObstacles( std::vector<std::shared_ptr<MapObject>>& obstacels );
-  std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> getGridTransposed();
+  void loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacels );
+  // std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> getGridTransposed();
 
   void setMapObject( CoordPair coords, std::shared_ptr<MapObject> object );
   void moveMapObject( CoordPair old_coords, CoordPair new_coords );
-  void moveMapObject( CoordPair old_coords, short shift_x, short shift_y );
   void moveMapObject( CoordPair old_coords, ShiftPair shift );
 
-  std::shared_ptr<GridTile> getTile( const CoordPair coords );
+  [[nodiscard]] std::shared_ptr<GridTile> getTile( const CoordPair coords );
 
   //  sf::Texture& accept(Visitor& v) const { return v.visit(*this); }
   //  std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& getGrid() const;

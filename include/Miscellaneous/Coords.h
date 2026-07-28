@@ -49,11 +49,12 @@ struct CoordPair {
   int y_;  // NOLINT(misc-non-private-member-variables-in-classes)
 
   CoordPair() = delete;
-  constexpr CoordPair( int x, int y )  // NOLINT(bugprone-easily-swappable-parameters)
+  constexpr CoordPair( int x, int y ) noexcept  // NOLINT(bugprone-easily-swappable-parameters)
       : x_( x ), y_( y ) {
     assert( x >= 0 && NEGATIVE_X_ASSERT_MSG );
     assert( y >= 0 && NEGATIVE_Y_ASSERT_MSG );
   }
+
   CoordPair operator+( const CoordPair& other ) const noexcept;
   CoordPair operator+( const ShiftPair& shift ) const noexcept;
   CoordPair operator-( const CoordPair& other ) const noexcept;

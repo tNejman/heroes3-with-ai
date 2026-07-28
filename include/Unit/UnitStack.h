@@ -14,7 +14,7 @@
 
 class UnitStack : public TileObject {
  private:
-  CoordPair coords_in_battle_ = CoordPair( 0U, 0U );
+  CoordPair coords_in_battle_{ 0, 0 };
   std::shared_ptr<const Unit> unit_;
   short morale_;
   short luck_;

@@ -24,7 +24,7 @@
 #include "Battle/Moves/MoveFactory.h"
 #include "Character/Character.h"
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
-#include "Exceptions/InvalidMoveException.hpp"
+#include "Exceptions/InvalidMapMoveException.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Game/KeyHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
@@ -36,6 +36,7 @@
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
+#include "WorldMap/OverworldObstacle.h"
 
 void Game::performGameLoopIterationOverworld() {
   key_handler_->monitorKeyPresses();
@@ -69,7 +70,7 @@ void Game::performGameLoopIterationOverworld() {
       // ));
     } catch ( const CoordinateOutOfBoundsException& e ) {
       std::cout << e.what() << '\n';
-    } catch ( const InvalidMoveException& e ) {
+    } catch ( const InvalidMapMoveException& e ) {
       try {
         auto player_coords = getMainCharacter()->getCoords();
         CoordPair new_coords =
@@ -237,7 +238,7 @@ Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input
   map_renderer_ = std::make_shared<MapRenderer>( sprite_visitor_, world_map_ );
 }
 
-void Game::loadObstacles( std::vector<std::shared_ptr<MapObject>>& obstacles ) {
+void Game::mapLoadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) {
   world_map_->loadObstacles( obstacles );
 }
 
@@ -268,7 +269,7 @@ std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
 
 void Game::debugStartBattle() {
   battle_ = std::make_shared<Battle>( players_[0]->getCharacters()[0], players_[1]->getCharacters()[0],
-                                      world_map_->getTile( CoordPair( 0U, 0U ) ) );
+                                      world_map_->getTile( { 0, 0 } ) );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
 }

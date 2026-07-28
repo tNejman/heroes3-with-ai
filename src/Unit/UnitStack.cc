@@ -10,7 +10,7 @@
 #include "Unit/Unit.h"
 
 UnitStack::UnitStack( std::shared_ptr<const Unit> unit, uint32_t size )
-    : coords_in_battle_( CoordPair( 0U, 0U ) ),
+    : coords_in_battle_( 0, 0 ),
       unit_( std::move( unit ) ),
       morale_( 0 ),
       luck_( 0 ),
