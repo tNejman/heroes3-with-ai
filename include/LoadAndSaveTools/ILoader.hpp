@@ -37,7 +37,7 @@ class ILoader {
     resetCounters();
     std::ifstream file( path );
     if ( !file.is_open() ) {
-      throw InvalidInputFileException( "Could not open file with WorldMap data; path:" + path );
+      throw InvalidInputFileException( "ILoader::load -> could not open file with data; path=" + path );
     }
 
     std::string line;
@@ -48,7 +48,7 @@ class ILoader {
       while ( ss >> word ) {
         // while ( word = ss.str() ) {
         if ( !isNumber( word ) ) {
-          throw InvalidInputFileException( "Invalid character in input file is not a number: " + word );
+          throw InvalidInputFileException( "ILoader::load -> Invalid character in input file is not a number: " + word );
         }
         const int word_int = std::stoi( word );
         moveWordToContainer( word_int );

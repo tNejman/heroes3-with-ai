@@ -17,6 +17,8 @@
 #include "Battle/BattleField.h"
 #include "Battle/Tile.h"
 #include "Character/Character.h"
+#include "Exceptions/Err.hpp"
+#include "Exceptions/UnknownStateException.hpp"
 #include "Exceptions/_NotImplementedException.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -69,7 +71,7 @@ uint32_t Battle::setUnitInQueue( const std::shared_ptr<UnitStack>& unit ) {
   for ( auto it = round_queue_.begin(); it != round_queue_.end(); ++it ) {
     if ( ( *it )->getSpeed() < speed ) {
       round_queue_.insert( it, unit );
-      return (uint)std::distance( round_queue_.begin(), it );
+      return (uint32_t)std::distance( round_queue_.begin(), it );
     }
   }
 
@@ -84,7 +86,7 @@ void Battle::createObstacles() {
   //     tile->setObject( std::make_shared<Obstacle>( "Obstacle" ) );
   //   }
   // }
-  throw NotImplementedException( "createObstacles" );
+  err::raise<NotImplementedException>( "Battle::createObstacles" );
 }
 
 void Battle::nextRound() {
@@ -128,7 +130,9 @@ BattleState Battle::getState() const {
 
 bool Battle::setUnit( std::shared_ptr<UnitStack> unit_stack, CoordPair new_coords ) {
   std::shared_ptr<Tile> new_tile = battlefield_->getTileByProxy( new_coords );
-  if ( new_tile == nullptr ) return false;
+  if ( new_tile == nullptr ) {
+    return false;
+  }
   new_tile->setObject( unit_stack );
   unit_stack->setCoordsInBattle( new_coords );
   return true;
@@ -167,11 +171,11 @@ void Battle::setBattleState( BattleState state ) {
 
 bool Battle::move( std::shared_ptr<UnitStack> unit_stack, CoordPair new_coords ) {
   if ( !battlefield_ ) {
-    throw std::runtime_error( "Battle::move while battlefield_==nullptr" );
+    err::raise<UnknownStateException>( "expected battlefield_ to be initialized but is nullptr" );
   }
   CoordPair old_coords = unit_stack->getCoordsInBattle();
 
-  std::shared_ptr<UnitStack> unit_stack_tmp = unit_stack;
+  const std::shared_ptr<UnitStack>& unit_stack_tmp = unit_stack;
   auto old_tile = battlefield_->getTileByProxy( old_coords );
   auto new_tile = battlefield_->getTileByProxy( new_coords );
 
@@ -238,9 +242,13 @@ size_t Battle::getRoundCounter() const {
 std::shared_ptr<UnitStack> Battle::getUnitFromCoords( CoordPair coords ) const {
   const std::vector<std::shared_ptr<UnitStack>> units = getUnitsInBattle();
   std::shared_ptr<UnitStack> unit = nullptr;
-  if ( battlefield_->getTileByProxy( coords ) == nullptr ) return nullptr;
-  std::for_each( units.begin(), units.end(), [&]( std::shared_ptr<UnitStack> unit_tmp ) {
-    if ( coords == unit_tmp->getCoordsInBattle() ) unit = unit_tmp;
+  if ( battlefield_->getTileByProxy( coords ) == nullptr ) {
+    return nullptr;
+  }
+  std::ranges::for_each( units, [&]( const std::shared_ptr<UnitStack>& unit_tmp ) {
+    if ( coords == unit_tmp->getCoordsInBattle() ) {
+      unit = unit_tmp;
+    }
   } );
   return unit;
 }
@@ -371,10 +379,10 @@ std::shared_ptr<Battle> Battle::copy() {
   for ( uint32_t i = 0; i < units_in_battle_new.size(); ++i ) {
     // new_coords from old units because old battle holds correct coordinates
     CoordPair new_coords = units_in_battle_old[i]->getCoordsInBattle();
-    auto unit_stack_new = units_in_battle_new[i];
+    const auto& unit_stack_new = units_in_battle_new[i];
     copy->forcePlaceUnitStack( unit_stack_new, new_coords );
 
-    auto unit_stack_old = units_in_battle_old[i];
+    const auto& unit_stack_old = units_in_battle_old[i];
     if ( unit_stack_old == this->unit_in_action_ ) {
       copy->unit_in_action_ = unit_stack_new;
     }
@@ -382,9 +390,9 @@ std::shared_ptr<Battle> Battle::copy() {
   auto& round_queue_old = this->round_queue_;
   auto& round_queue_new = copy->round_queue_;
 
-  for ( uint32_t i = 0; i < round_queue_old.size(); ++i ) {
+  for ( const auto& i : round_queue_old ) {
     for ( uint32_t j = 0; j < units_in_battle_old.size(); ++j ) {
-      if ( round_queue_old[i] == units_in_battle_old[j] ) {
+      if ( i == units_in_battle_old[j] ) {
         round_queue_new.push_back( units_in_battle_new[j] );
       }
     }

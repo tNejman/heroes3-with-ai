@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/WorldMap.h"
 
@@ -15,7 +16,7 @@ void MapLoader::resetCounters() {
 void MapLoader::moveWordToContainer( const int word ) {
   // for explanation look in header
   if ( x_counter_ >= WORLD_MAP_WIDTH || y_counter_ >= WORLD_MAP_HEIGHT ) {
-    throw CoordinateOutOfBoundsException( "MapLoader exceeds WorldMap coordinates" );
+    err::raise<CoordinateOutOfBoundsException>( "MapLoader exceeds WorldMap coordinates" );
   }
   container_[x_counter_][y_counter_] = word;
 

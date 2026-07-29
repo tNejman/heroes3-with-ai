@@ -10,4 +10,5 @@ target_link_libraries(Game PRIVATE
     # Algorithms
     Graphics
     Miscellaneous
+    LoadAndSaveTools
 )

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Exceptions/DamagedSaveException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidInputFileException.hpp"
 
 using json = nlohmann::json;
@@ -20,7 +21,7 @@ class IJsonLoader {
       message += typeid( TypeLoaded ).name();
       message += "-Loader Exptected to read json file but instead got: ";
       message += path;
-      throw InvalidInputFileException( message );
+      err::raise<InvalidInputFileException>( message );
     }
     std::ifstream file( path );
     data_ = json::parse( file );

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidMapMoveException.hpp"
 #include "Exceptions/TileNotFoundException.hpp"
 #include "Exceptions/UnknownStateException.hpp"
@@ -24,7 +25,7 @@
 void WorldMap::loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid ) {
   static bool is_initialized = false;
   if ( is_initialized ) {
-    throw UnknownStateException( "WorldMap::loadGrid -> called second time" );
+    err::raise<UnknownStateException>( "called second time" );
   }
   is_initialized = true;
 
@@ -64,8 +65,8 @@ void WorldMap::loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& o
 
 void WorldMap::setMapObject( CoordPair coords, std::shared_ptr<MapObject> object ) {
   if ( !getIfCoordsInBounds( coords ) ) {
-    throw CoordinateOutOfBoundsException(
-        std::format( "WorldMap::setMapObject -> Cannot set object out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
+    err::raise<CoordinateOutOfBoundsException>(
+        std::format( "Cannot set object out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
   }
   auto tile = this->getTile( coords );
   tile->setMapObject( std::move( object ) );
@@ -78,12 +79,12 @@ void WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
     return;
   }
   if ( !getIfCoordsInBounds( old_coords ) ) {
-    throw CoordinateOutOfBoundsException(
-        std::format( "WorldMap::moveMapObject -> Origin out of bounds: x={}, y={}", old_coords.x_, old_coords.y_ ) );
+    err::raise<CoordinateOutOfBoundsException>(
+        std::format( "Origin out of bounds: x={}, y={}", old_coords.x_, old_coords.y_ ) );
   }
   if ( !getIfCoordsInBounds( new_coords ) ) {
-    throw CoordinateOutOfBoundsException( std::format(
-        "WorldMap::moveMapObject -> Destination out of bounds: x={}, y={}", old_coords.x_, old_coords.y_ ) );
+    err::raise<CoordinateOutOfBoundsException>(
+        std::format( "Destination out of bounds: x={}, y={}", old_coords.x_, old_coords.y_ ) );
   }
   auto old_tile = this->getTile( old_coords );
   auto new_tile = this->getTile( new_coords );
@@ -91,14 +92,12 @@ void WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
   auto map_obj_dest = new_tile->getMapObject();
 
   if ( !map_obj_src ) {
-    throw InvalidMapMoveException(
-        std::format( "WorldMap::moveMapObject -> Tried moving object from an empty tile. Source coords: x={}, y={}",
-                     old_coords.x_, old_coords.y_ ) );
+    err::raise<InvalidMapMoveException>( std::format(
+        "Tried moving object from an empty tile. Source coords: x={}, y={}", old_coords.x_, old_coords.y_ ) );
   }
   if ( map_obj_dest ) {
-    throw InvalidMapMoveException( std::format(
-        "WorldMap::moveMapObject -> Tried moving object onto an occupied tile. Destination coords: x={}, y={}",
-        new_coords.x_, new_coords.y_ ) );
+    err::raise<InvalidMapMoveException>( std::format(
+        "Tried moving object onto an occupied tile. Destination coords: x={}, y={}", new_coords.x_, new_coords.y_ ) );
   }
   new_tile->setMapObject( map_obj_src );
   old_tile->deleteObject();
@@ -123,8 +122,8 @@ void WorldMap::moveMapObject( CoordPair old_coords, ShiftPair shift ) {
 
 std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
   if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
-    throw CoordinateOutOfBoundsException(
-        std::format( "WorldMap::getTile -> Coordinates out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
+    err::raise<CoordinateOutOfBoundsException>(
+        std::format( "Coordinates out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
   }
   return grid_[coords.xAsId()][coords.yAsId()];
 }

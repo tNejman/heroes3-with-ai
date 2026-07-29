@@ -35,6 +35,7 @@ set(TEST_DIRS
     ArtifactTest
     BattleTest
     CharacterTest
+    # GameTest
     MiscellaneousTest
     UnitTest
     WorldMapTest

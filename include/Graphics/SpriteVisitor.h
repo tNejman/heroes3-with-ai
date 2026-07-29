@@ -6,8 +6,6 @@
   - Zawiera metody do odwiedzania różnych typów obiektów.
   - Każda metoda zwraca odpowiednią teksturę dla danego obiektu.
 */
-#include <stdint.h>
-
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>

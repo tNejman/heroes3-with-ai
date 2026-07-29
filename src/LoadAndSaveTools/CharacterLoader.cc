@@ -5,6 +5,8 @@
 #include <string>
 
 #include "Character/Character.h"
+#include "Exceptions/DamagedSaveException.hpp"
+#include "Exceptions/Err.hpp"
 
 CharacterSaveContainer::CharacterSaveContainer()
     : name_( std::nullopt ),
@@ -32,7 +34,8 @@ void CharacterLoader::moveWordToContainer( const int word ) {
   switch ( mode_ ) {
     case CharacterDataLoadMode::NONE:
       if ( !verifySaveMarker( word ) ) {
-        throw DamagedSaveException( "CharacterLoader detected damaged save start marker: " + word );
+        err::raise<DamagedSaveException>( "CharacterLoader detected damaged save start marker: "
+                                          + std::to_string( word ) );
       }
       break;
     case CharacterDataLoadMode::NAME: loadName( word ); break;

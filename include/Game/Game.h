@@ -16,7 +16,6 @@
 #include "Game/KeyHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
-#include "MapObject/MapObject.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
@@ -44,6 +43,7 @@ class Game {
   int mouse_x_ = 0;
   int mouse_y_ = 0;
   bool waiting_for_print_ = true;
+  int frames_since_start_ = 0;
   //   int is_player_turn_counter_ = 0;
 
   void performGameLoopIterationOverworld();
@@ -70,6 +70,7 @@ class Game {
   void setMouseCoords( int x, int y );  // NOLINT(readability-identifier-length)
   void performGameLoopIteration();
   [[nodiscard]] std::shared_ptr<Character> getMainCharacter() const;
-  std::shared_ptr<sf::RenderWindow> getRenderWindow();
+  [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow();
   void debugStartBattle();
+  [[nodiscard]] int getFrameCountSinceStart() const noexcept;
 };

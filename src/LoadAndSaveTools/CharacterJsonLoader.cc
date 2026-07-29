@@ -11,8 +11,12 @@
 #include <string>
 
 #include "Character/Character.h"
+#include "Exceptions/DamagedSaveException.hpp"
+#include "Exceptions/Err.hpp"
+#include "Exceptions/_NotImplementedException.hpp"
 #include "Magic/SpellBook.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
 #include "Unit/WarMachine.h"
 
@@ -22,7 +26,7 @@ std::shared_ptr<Character> CharacterJsonLoader::doGetObject() {
       std::string message;
       message += "CharacterJsonLoader expected json to begin with \"CHARACTER\" marker but instead read: ";
       message += data_["marker"];
-      throw DamagedSaveException( message );
+      err::raise<DamagedSaveException>( message );
     }
     auto name = loadName();
     auto coords = loadCoords();
@@ -85,7 +89,7 @@ std::shared_ptr<Character> CharacterJsonLoader::doGetObject() {
       character->recruitUnitStack( unit_stack_ptr );
     }
 
-    throw NotImplementedException( "CharacterJsonLoader::doGetObject() is not finished" );
+    err::raise<NotImplementedException>( "" );
   } catch ( const std::exception& e ) {
     std::cout << "Error occured when creating Character from save: " << e.what() << std::endl;
     return nullptr;

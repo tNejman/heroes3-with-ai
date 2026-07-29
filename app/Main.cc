@@ -3,6 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <exception>
@@ -10,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <ostream>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -91,9 +93,9 @@ int main() {
 
   std::shared_ptr<Game> game = nullptr;
   try {
-    game = std::make_shared<Game>( players );
+    game = std::make_shared<Game>( players, false );
   } catch ( const std::exception& e ) {
-    std::cout << e.what() << std::endl;
+    std::cout << e.what() << '\n';
     return -1;
   }
   game->mapLoadObstacles( obstacles );
@@ -117,8 +119,9 @@ int main() {
       if ( event->is<sf::Event::Closed>() ) {
         window->close();
         return 0;
-      } else if ( event->is<sf::Event::MouseButtonPressed>()
-                  && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left ) {
+      }
+      if ( event->is<sf::Event::MouseButtonPressed>()
+           && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left ) {
         int mouse_x = event->getIf<sf::Event::MouseButtonPressed>()->position.x;
         int mouse_y = event->getIf<sf::Event::MouseButtonPressed>()->position.y;
         game->setMouseCoords( mouse_x, mouse_y );
@@ -126,6 +129,10 @@ int main() {
     }
     window->clear( sf::Color( 4 ) );
     game->performGameLoopIteration();
+    // if ( game->getFrameCountSinceStart() == 4 ) {
+    //   std::chrono::milliseconds timespan{ 5'000 };
+    //   std::this_thread::sleep_for( timespan );
+    // }
     window->display();
   }
 };

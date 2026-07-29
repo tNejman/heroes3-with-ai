@@ -5,10 +5,13 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <set>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
+#include "Exceptions/Err.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 
@@ -91,7 +94,8 @@ CharacterMoveDirection KeyHandler::getMoveFromKeys( const std::vector<sf::Keyboa
       case S: dy -= 1; break;
       case A: dx -= 1; break;
       case D: dx += 1; break;
-      default: throw std::runtime_error( "Unexpected key passed to movement control" );
+      default:
+        err::raise<std::runtime_error>( "KeyHandler::getMoveFromKeys -> Unexpected key passed to movement control" );
     };
   }
 
@@ -122,18 +126,34 @@ bool KeyHandler::isSinglePress( const std::vector<sf::Keyboard::Key> &keys ) con
   return keys.size() == 1;
 }
 
-KeyHandler::KeyHandler( bool is_buffered_input ) : is_buffered_input_( is_buffered_input ) {};
+KeyHandler::KeyHandler( bool is_buffered_input )
+    : is_buffered_input_( is_buffered_input ), input_( std::make_shared<RealKeyboardInput>() ) {};
+
+KeyHandler::KeyHandler( bool is_buffered_input, bool is_mock_input ) : is_buffered_input_( is_buffered_input ) {
+  if ( is_mock_input ) {
+    input_ = std::make_shared<MockKeyboardInput>();
+  } else {
+    input_ = std::make_shared<RealKeyboardInput>();
+  }
+}
+
+void KeyHandler::debugMockInput( std::shared_ptr<IKeyboardInput> input ) {
+  input_ = std::move( input );
+}
 
 void KeyHandler::monitorKeyPresses() {
   std::vector<sf::Keyboard::Key> keys_this_frame;
-  std::set<sf::Keyboard::Key> currently_pressed;
+  std::set<sf::Keyboard::Key> currently_pressed = input_->pressedNow();
 
   for ( const auto &key : MOVEMENT_KEYS ) {
-    if ( sf::Keyboard::isKeyPressed( key ) ) {
-      currently_pressed.insert( key );
-      if ( !held_keys_.contains( key ) && keys_this_frame.size() < 2 ) {
-        keys_this_frame.push_back( key );
-      }
+    //   if ( sf::Keyboard::isKeyPressed( key ) ) {
+    //     currently_pressed.insert( key );
+    //     if ( !held_keys_.contains( key ) && keys_this_frame.size() < 2 ) {
+    //       keys_this_frame.push_back( key );
+    //     }
+    //   }
+    if ( currently_pressed.contains( key ) && !held_keys_.contains( key ) && keys_this_frame.size() < 2 ) {
+      keys_this_frame.push_back( key );
     }
   }
   held_keys_ = currently_pressed;

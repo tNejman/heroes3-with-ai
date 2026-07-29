@@ -21,6 +21,7 @@
 #include "Character/Character.h"
 #include "Character/SecondarySkill.h"
 #include "Exceptions/BadCopyException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidSecondarySkillException.hpp"
 #include "Exceptions/InvalidTextureException.hpp"
 #include "Graphics/Visitor.h"
@@ -67,9 +68,8 @@ sf::Texture& SpriteVisitor::visit( const SecondarySkill& e ) {
     case SecondarySkillType::WATER_MAGIC: secondary_skill_name = "Water Magic"; break;
   }
   if ( secondary_skill_name == "" ) {
-    throw InvalidSecondarySkillException(
-        "SpriteVisitor tried to fetch sprite but encountered invalid SecondarySkillType: "
-        + std::to_string( static_cast<int>( e.getType() ) ) );
+    err::raise<InvalidSecondarySkillException>( "Tried to fetch sprite but encountered invalid SecondarySkillType: "
+                                                + std::to_string( static_cast<int>( e.getType() ) ) );
   }
 
   std::string path = "Sprites/Secondaryskills/" + secondary_skill_name + "_"
@@ -111,7 +111,7 @@ sf::Texture& SpriteVisitor::visit( const Terrain& e ) {
     case Terrain::ROCKS: sprite_name = "trob000"; break;
     case Terrain::ROCKS_CRUSHED: sprite_name = "trob024"; break;
     case Terrain::SAND: sprite_name = "tsub000"; break;
-    default: throw InvalidTextureException( "Unknown terrain type" );
+    default: err::raise<InvalidTextureException>( "Unknown terrain type" );
   }
   const std::string path = "Sprites/terrain/tiles/" + sprite_name + ".png";
   sf::Texture& tex_temp = findTexture( path );
@@ -135,9 +135,9 @@ sf::Texture& SpriteVisitor::visit( const OverworldObstacle& e ) {
 sf::Texture& SpriteVisitor::visit( const Battle& e ) {
   // CmBkDrTr.png
   sf::Image combined_image;
-  std::string path = "Sprites/Battle_Backgrounds/CmBkDrTr";
-  if ( !combined_image.loadFromFile( "Sprites/Battle_Backgrounds/CmBkDrTr.png" ) ) {
-    throw std::runtime_error( "Failed to load battle background image: Sprites/Battle_Backgrounds/CmBkDrTr.png" );
+  std::string path = "Sprites/Battle_Backgrounds/CmBkDrTr.png";
+  if ( !combined_image.loadFromFile( path ) ) {
+    err::raise<std::runtime_error>( "Failed to load battle background image: " + path );
   }
   const auto units_sorted = e.getUnitsInBattleSortedToPrint();
   const auto units_defender = e.getDefendingArmy();
@@ -160,7 +160,7 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
     }
     sf::Image image_tmp;
     if ( !image_tmp.loadFromFile( "Sprites/units/" + unit->getUnit()->getName() + ".png" ) ) {
-      throw std::runtime_error( "Failed to load image: Sprites/units/" + unit->getUnit()->getName() + ".png" );
+      err::raise<std::runtime_error>( "Failed to load image: Sprites/units/" + unit->getUnit()->getName() + ".png" );
     }
     if ( std::ranges::find( units_defender, unit ) != units_defender.end() ) {
       image_tmp.flipHorizontally();
@@ -174,7 +174,7 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
 
   sf::Texture combined_texture;
   if ( !combined_texture.loadFromImage( combined_image ) ) {
-    throw std::runtime_error( "Failed to load texture from image" );
+    err::raise<std::runtime_error>( "Failed to load texture from image" );
   }
   if ( !textures_.contains( path ) ) {
     textures_.emplace( path, combined_texture );
@@ -187,7 +187,7 @@ sf::Texture& SpriteVisitor::findTexture( const std::string& path ) {
   if ( !textures_.contains( path ) ) {
     sf::Texture texture;
     if ( !texture.loadFromFile( path ) ) {
-      throw std::runtime_error( "Failed to load texture from " + path );
+      err::raise<std::runtime_error>( "Failed to load texture from " + path );
     }
     textures_.emplace( path, texture );
   }
@@ -209,13 +209,14 @@ sf::Image SpriteVisitor::mirrorImageHorizontally( const sf::Image& original ) co
 
 std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vector<std::shared_ptr<Move>> moves ) {
   sf::Image combined_image;
-  if ( !combined_image.loadFromFile( "Sprites/Battle_Backgrounds/CmBkDrTr.png" ) ) {
-    throw std::runtime_error( "Failed to load battle background image: Sprites/Battle_Backgrounds/CmBkDrTr.png" );
+  std::string path_org = "Sprites/Battle_Backgrounds/CmBkDrTr.png";
+  if ( !combined_image.loadFromFile( path_org ) ) {
+    err::raise<std::runtime_error>( "Failed to load battle background image: " + path_org );
   }
   std::string path;
   for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( int y = 0; y < MAP_HEIGHT_BF; ++y ) {
-      CoordPair map_tile_coord( x, y );
+      CoordPair map_tile_coord{ x, y };
       int offset_x_temp = 0;
       int offset_y_temp = 0;
       // set offset for even rows
@@ -235,12 +236,12 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
              return move->destinationCoords() == map_tile_coord;
            } ) ) {
         if ( !image_hexagon.loadFromFile( move_to_print->getPath() ) ) {
-          throw std::runtime_error( "Failed to load image: " + move_to_print->getPath() );
+          err::raise<std::runtime_error>( "Failed to load image: " + move_to_print->getPath() );
         }
         path += move_to_print->getPath();
       } else {
         if ( !image_hexagon.loadFromFile( HEXAGON_SPRITE_DEFAULT_PATH ) ) {
-          throw std::runtime_error( "Failed to load image: " + HEXAGON_SPRITE_DEFAULT_PATH );
+          err::raise<std::runtime_error>( "Failed to load image: " + HEXAGON_SPRITE_DEFAULT_PATH );
         }
         path += "n";
       }
@@ -250,13 +251,13 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
             sf::Vector2u( static_cast<unsigned int>( offset_x_temp ), static_cast<unsigned int>( offset_y_temp ) ),
             sf::IntRect(), true );
       } catch ( const std::exception& e ) {
-        throw BadCopyException( "hex creation failed" );
+        err::raise<BadCopyException>( "hex creation failed" );
       }
     }
   }
   sf::Texture combined_texture;
   if ( !combined_texture.loadFromImage( combined_image ) ) {
-    throw std::runtime_error( "Failed to load textur from image" );
+    err::raise<std::runtime_error>( "Failed to load textur from image" );
   }
   textures_.emplace( path, combined_texture );
 

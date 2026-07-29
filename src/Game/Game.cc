@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -24,13 +23,13 @@
 #include "Battle/Moves/MoveFactory.h"
 #include "Character/Character.h"
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidMapMoveException.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Game/KeyHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
 #include "LoadAndSaveTools/MapLoader.h"
-#include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
@@ -82,10 +81,10 @@ void Game::performGameLoopIterationOverworld() {
             startBattle( players_[0]->getCharacters()[0], character_ptr, world_map_->getTile( new_coords ) );
           }
         }
-        std::cout << e.what() << std::endl;
+        std::cout << e.what() << '\n';
       } catch ( const std::exception& start_battle_failed_exception ) {
         std::cout << "Game::_performGameLoopIterationOverworld() failed to start battle"
-                  << start_battle_failed_exception.what() << std::endl;
+                  << start_battle_failed_exception.what() << '\n';
       }
     }
   }
@@ -193,8 +192,8 @@ std::optional<CoordPair> Game::getCoordsFromClick() {
         offset_x_temp += BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
         offset_y_temp += BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
       }
-      double hex_center_x = double( offset_x_temp ) + HEXAGON_SPRITE_WIDTH / 2.0;
-      double hex_center_y = double( offset_y_temp ) + HEXAGON_SPRITE_HEIGHT / 2.0;
+      double hex_center_x = double( offset_x_temp ) + ( HEXAGON_SPRITE_WIDTH / 2.0 );
+      double hex_center_y = double( offset_y_temp ) + ( HEXAGON_SPRITE_HEIGHT / 2.0 );
 
       if ( pointInHexagon( mouse_x_, mouse_y_, hex_center_x, hex_center_y ) ) {
         found_coords = CoordPair( x, y );
@@ -219,7 +218,7 @@ void Game::startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Cha
   waiting_for_print_ = true;
 }
 
-Game::Game( std::vector<std::shared_ptr<Player>> players ) : Game( players, false ) {
+Game::Game( std::vector<std::shared_ptr<Player>> players ) : Game( std::move( players ), false ) {
 }
 
 Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input )
@@ -255,8 +254,9 @@ void Game::performGameLoopIteration() {
   switch ( game_state_ ) {
     case GameState::OVERWORLD: performGameLoopIterationOverworld(); break;
     case GameState::BATTLE: performGameLoopIterationBattle(); break;
-    default: throw UnknownStateException( "Game loop tried to perform action regarding forbidden game state" );
+    default: err::raise<UnknownStateException>( "tried to perform action regarding forbidden game state" );
   }
+  ++frames_since_start_;
 }
 
 std::shared_ptr<Character> Game::getMainCharacter() const {
@@ -272,4 +272,8 @@ void Game::debugStartBattle() {
                                       world_map_->getTile( { 0, 0 } ) );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
+}
+
+[[nodiscard]] int Game::getFrameCountSinceStart() const noexcept {
+  return frames_since_start_;
 }

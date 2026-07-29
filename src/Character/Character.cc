@@ -11,6 +11,7 @@
 
 #include "Artifact/Artifact.h"
 #include "Exceptions/EmptySlotException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Exceptions/FullBackpackException.hpp"
 #include "Exceptions/InvalidArtifactTypeException.hpp"
 #include "Exceptions/InvalidSlotException.hpp"
@@ -243,7 +244,7 @@ void Character::modifyLuck( const int luck_diff ) {
 }
 
 uint32_t Character::getEffectiveSpeed() {
-  throw NotImplementedException( "Character::getEffectiveSpeed" );
+  err::raise<NotImplementedException>( "" );
   return 0;  // TODO
 }
 
@@ -257,7 +258,7 @@ bool Character::getIfBackpackFull() const {
 
 void Character::pickUpArtifact( std::unique_ptr<const Artifact> artifact ) {
   if ( this->getIfBackpackFull() ) {
-    throw FullBackpackException( "Backpack full. Cannot pick up." );
+    err::raise<FullBackpackException>( "Backpack full. Cannot pick up." );
   }
   backpack_.push_back( std::move( artifact ) );
 }
@@ -265,64 +266,75 @@ void Character::pickUpArtifact( std::unique_ptr<const Artifact> artifact ) {
 void Character::equipArtifact( ArtifactType type, EquipmentSlots slot ) {
   std::optional<EquipmentSlots> slot_if_empty = this->checkSlotIfEmpty( slot );
   EquipmentSlots slot_specific;
-  if ( !slot_if_empty.has_value() )
-    throw NotEmptySlotException( "Cannot equip into a full slot" );
-  else
-    slot_specific = slot_if_empty.value();
+  if ( !slot_if_empty.has_value() ) {
+    err::raise<NotEmptySlotException>( "Cannot equip into a full slot" );
+  }
+  slot_specific = slot_if_empty.value();
 
   std::unique_ptr<const Artifact> artifact_temp = nullptr;
   for ( auto itr = backpack_.begin(); itr != backpack_.end(); ++itr ) {
     if ( ( *itr )->getType() != type ) {
       continue;
-    } else if ( ( *itr )->getSlot() != slot ) {
-      throw InvalidSlotException( "This artifact cannot be equipped into that slot" );
-
-    } else {
-      artifact_temp = std::move( *itr );
-      backpack_.erase( itr );
-      break;
     }
+    if ( ( *itr )->getSlot() != slot ) {
+      err::raise<InvalidSlotException>( "This artifact cannot be equipped into that slot" );
+    }
+    artifact_temp = std::move( *itr );
+    backpack_.erase( itr );
+    break;
   }
   if ( artifact_temp == nullptr ) {
-    throw InvalidArtifactTypeException( "No such artifact found in backpack" );
+    err::raise<InvalidArtifactTypeException>( "No such artifact found in backpack" );
   }
   equipment_[slot_specific] = std::move( artifact_temp );
 }
 
 void Character::unequipArtifact( EquipmentSlots slot ) {
-  if ( equipment_[slot] == nullptr ) throw EmptySlotException( "This slot is empty. Cannot unequip." );
+  if ( equipment_[slot] == nullptr ) {
+    err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
+  }
   if ( this->getIfBackpackFull() ) {
-    throw FullBackpackException( "Backpack full. Cannot unequip." );
+    err::raise<FullBackpackException>( "Backpack full. Cannot unequip." );
   }
   backpack_.push_back( std::move( equipment_[slot] ) );
   equipment_[slot].reset( nullptr );
 }
 
 void Character::recruitWarMachine( std::unique_ptr<const Ballista> war_machine ) {
-  if ( war_machines_["ballista"] != nullptr ) throw NotEmptySlotException( "This slot is not empty. Cannot recruit." );
+  if ( war_machines_["ballista"] != nullptr ) {
+    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+  }
   war_machines_["ballista"] = std::move( war_machine );
 }
 void Character::recruitWarMachine( std::unique_ptr<const AmmoCart> war_machine ) {
-  if ( war_machines_["ammo_cart"] != nullptr ) throw NotEmptySlotException( "This slot is not empty. Cannot recruit." );
+  if ( war_machines_["ammo_cart"] != nullptr ) {
+    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+  }
   war_machines_["ammo_cart"] = std::move( war_machine );
 }
 void Character::recruitWarMachine( std::unique_ptr<const FirstAidTent> war_machine ) {
-  if ( war_machines_["first_aid_tent"] != nullptr )
-    throw NotEmptySlotException( "This slot is not empty. Cannot recruit." );
+  if ( war_machines_["first_aid_tent"] != nullptr ) {
+    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+  }
   war_machines_["first_aid_tent"] = std::move( war_machine );
 }
 void Character::recruitWarMachine( std::unique_ptr<const Catapult> war_machine ) {
-  if ( war_machines_["catapult"] != nullptr ) throw NotEmptySlotException( "This slot is not empty. Cannot recruit." );
+  if ( war_machines_["catapult"] != nullptr ) {
+    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+  }
   war_machines_["catapult"] = std::move( war_machine );
 }
 void Character::unequipWarMachine( const std::string& slot_name ) {
-  if ( war_machines_[slot_name] == nullptr ) throw EmptySlotException( "This slot is empty. Cannot unequip." );
+  if ( war_machines_[slot_name] == nullptr ) {
+    err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
+  }
   // TODO empty slot, drop machine
 }
 
 void Character::equipSpellBook( std::unique_ptr<SpellBook> spell_book ) {
-  if ( this->spell_book_ == nullptr ) throw NotEmptySlotException( "This slot is not empty. Cannot equip." );
-
+  if ( this->spell_book_ == nullptr ) {
+    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot equip." );
+  }
   this->spell_book_ = std::move( spell_book );
 }
 std::unique_ptr<SpellBook> Character::unequipSpellBook() {
@@ -340,14 +352,16 @@ std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>& Character::getParty() {
 uint32_t Character::getPartySize() {
   uint32_t party_count = 0;
   for ( const auto& mp : this->party_ ) {
-    if ( mp != nullptr ) ++party_count;
+    if ( mp != nullptr ) {
+      ++party_count;
+    }
   }
   return party_count;
 }
 
 void Character::recruitUnitStack( std::shared_ptr<UnitStack> unit_stack ) {
   if ( getPartySize() == MAX_PARTY_SIZE ) {
-    throw NotEmptySlotException( "No empty slot in Party to recuit a new unit" );
+    err::raise<NotEmptySlotException>( "No empty slot in Party to recuit a new unit" );
   }
   for ( auto& mp : this->party_ ) {
     if ( mp == nullptr ) {

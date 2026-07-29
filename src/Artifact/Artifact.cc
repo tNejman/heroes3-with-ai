@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -17,14 +18,11 @@ Artifact::Artifact( std::shared_ptr<const ArtifactData> data )
 }
 
 std::unique_ptr<Artifact> Artifact::create( const ArtifactType type ) {
-  auto it = std::find_if( ARTIFACTS_PRESET.begin(), ARTIFACTS_PRESET.end(),
-                          [type]( const std::shared_ptr<const ArtifactData>& data ) { return data->type_ == type; } );
+  auto it = std::ranges::find_if(
+      ARTIFACTS_PRESET, [type]( const std::shared_ptr<const ArtifactData>& data ) { return data->type_ == type; } );
 
-  if ( it == ARTIFACTS_PRESET.end() ) {
-    throw InvalidArtifactTypeException( "Artifact type not found: " + std::to_string( static_cast<int>( type ) ) );
-  } else {
-    return std::make_unique<Artifact>( *it );
-  }
+  assert( it != ARTIFACTS_PRESET.end() && "Artifact::create -> Artifact type not found: " );
+  return std::make_unique<Artifact>( *it );
 }
 
 sf::Texture& Artifact::accept( Visitor& v ) const {

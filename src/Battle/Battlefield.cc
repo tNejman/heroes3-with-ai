@@ -10,6 +10,7 @@
 
 #include "Battle/Tile.h"
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/Err.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 
@@ -44,9 +45,9 @@ std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const std::sh
 
 std::shared_ptr<Tile> BattleField::getTileByProxy( CoordPair coords ) {
   if ( coords.x_ >= MAP_WIDTH_BF || coords.y_ >= MAP_HEIGHT_BF || coords.x_ < 0 || coords.y_ < 0 ) {
-    std::string exc_mess = "Battlefield::getTileByProxy exceeds battlefield cooridnates: x=";
+    std::string exc_mess = "exceeded battlefield cooridnates: x=";
     exc_mess += std::to_string( coords.x_ ) + " y=" + std::to_string( coords.y_ );
-    throw CoordinateOutOfBoundsException( exc_mess );
+    err::raise<CoordinateOutOfBoundsException>( exc_mess );
   }
   auto x = static_cast<size_t>( coords.x_ );
   auto y = static_cast<size_t>( coords.y_ );

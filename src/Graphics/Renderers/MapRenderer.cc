@@ -10,6 +10,7 @@
 
 #include "Artifact/Artifact.h"
 #include "Character/Character.h"
+#include "Exceptions/Err.hpp"
 #include "Exceptions/NotOpenWindowException.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -40,7 +41,7 @@ void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_c
       if ( window.isOpen() ) {
         window.draw( sprite );
       } else {
-        throw NotOpenWindowException( "Tried to render with no window open" );
+        err::raise<NotOpenWindowException>( "Tried to render with no window open" );
       }
     }
   }
@@ -74,7 +75,7 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
         if ( window.isOpen() ) {
           window.draw( sprite_map_obj );
         } else {
-          throw NotOpenWindowException( "Tried to render with no window open" );
+          err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
       } else if ( auto obstacle_ptr = std::dynamic_pointer_cast<OverworldObstacle>( map_obj ) ) {
         double screen_x =
@@ -87,7 +88,7 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
         if ( window.isOpen() ) {
           window.draw( sprite );
         } else {
-          throw NotOpenWindowException( "Tried to render with no window open" );
+          err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
       } else if ( auto artifact_ptr = std::dynamic_pointer_cast<Artifact>( map_obj ) ) {
         double screen_x =
@@ -100,7 +101,7 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
         if ( window.isOpen() ) {
           window.draw( sprite );
         } else {
-          throw NotOpenWindowException( "Tried to render with no window open" );
+          err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
       }
     }
