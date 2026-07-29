@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "Algorithms/MinimaxAI.h"
-#include "Game/KeyHandler.h"
+#include "Game/KeyboardHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
 #include "Miscellaneous/ProjectLib.h"

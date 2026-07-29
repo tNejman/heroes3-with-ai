@@ -6,15 +6,16 @@
 #include <string>
 #include <utility>
 
+#include "Battle/TileObject.hpp"
 #include "Miscellaneous/ProjectLib.h"
 #include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"
 
 Unit::Unit( const std::shared_ptr<const UnitData> unit_data, const int unit_type )
-    : unit_data_( std::move( unit_data ) ), unit_type_( unit_type ) {};
+    : TileObject( false ), unit_data_( std::move( unit_data ) ), unit_type_( unit_type ) {};
 
 Unit::Unit( const std::shared_ptr<const UnitData> unit_data, const std::weak_ptr<Faction> faction, const int unit_type )
-    : unit_data_( std::move( unit_data ) ), faction_( faction ), unit_type_( unit_type ) {};
+    : TileObject( false ), unit_data_( std::move( unit_data ) ), faction_( faction ), unit_type_( unit_type ) {};
 
 const std::string& Unit::getName() const {
   return unit_data_->name_;

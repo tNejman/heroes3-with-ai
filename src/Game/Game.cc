@@ -26,7 +26,7 @@
 #include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidMapMoveException.hpp"
 #include "Exceptions/UnknownStateException.hpp"
-#include "Game/KeyHandler.h"
+#include "Game/KeyboardHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
 #include "LoadAndSaveTools/MapLoader.h"

@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "Battle/TileObject.h"
+#include "Battle/TileObject.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/UnitsLib.h"
 #include "Unit/Unit.h"
@@ -46,5 +46,4 @@ class UnitStack : public TileObject {
   [[nodiscard]] uint32_t getHealthPool() const;
   [[nodiscard]] bool getIfAlive() const;
   [[nodiscard]] std::shared_ptr<UnitStack> copy() const;
-  void die();
 };

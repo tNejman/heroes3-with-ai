@@ -150,7 +150,6 @@ bool Battle::killUnit( std::shared_ptr<UnitStack> unit_stack_to_kill ) {
       getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
       round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ),
                           round_queue_.end() );
-      unit->die();
       unit.reset();
     }
   } );

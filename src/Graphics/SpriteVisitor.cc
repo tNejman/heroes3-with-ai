@@ -24,6 +24,7 @@
 #include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidSecondarySkillException.hpp"
 #include "Exceptions/InvalidTextureException.hpp"
+#include "Exceptions/UnknownStateException.hpp"
 #include "Graphics/Visitor.h"
 #include "Magic/Spell.h"
 #include "Miscellaneous/CharacterLib.h"
@@ -93,7 +94,18 @@ sf::Texture& SpriteVisitor::visit( const Unit& e ) {
 }
 
 sf::Texture& SpriteVisitor::visit( const Resource& e ) {
-  std::string path = "Sprites/resources/" + e.getName() + ".png";
+  std::string resource_name;
+  switch ( e.getType() ) {
+    case ResourceType::TIMBER: resource_name = "Timber"; break;
+    case ResourceType::MERCURY: resource_name = "Mercury"; break;
+    case ResourceType::STONE: resource_name = "Stone"; break;
+    case ResourceType::SULFUR: resource_name = "Sulfur"; break;
+    case ResourceType::CRYSTAL: resource_name = "Crystal"; break;
+    case ResourceType::GEMSTONE: resource_name = "Gemstone"; break;
+    case ResourceType::MONEY: resource_name = "Money"; break;
+  }
+
+  std::string path = "Sprites/resources/" + resource_name + ".png";
   return findTexture( path );
 }
 

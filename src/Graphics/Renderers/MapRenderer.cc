@@ -4,17 +4,11 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <cstddef>
-#include <cstdint>
-#include <memory>
 
-#include "Artifact/Artifact.h"
-#include "Character/Character.h"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/NotOpenWindowException.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "WorldMap/OverworldObstacle.h"
 
 void MapRenderer::render( sf::RenderWindow& window, const CoordPair center_coords ) {
   renderGrid( window, center_coords );

@@ -41,8 +41,8 @@ class Player {
   bool loseCastle( std::shared_ptr<Castle> castle );
   std::array<std::shared_ptr<Resource>, AMOUNT_OF_RESOURCES> getResourcesInPointers();
   std::array<Resource, AMOUNT_OF_RESOURCES> getResourcesInValues();
-  Resource getResource( availableResource Resource );
-  Resource setResource( availableResource Resource, int amount );
-  std::shared_ptr<Move> MakeMove( std::vector<Move> PossibleStates );
+  Resource getResource( ResourceType resource );
+  Resource setResource( ResourceType resource, int amount );
+  std::shared_ptr<Move> makeMove( std::vector<Move> possible_states );
   // virtual sf::Texture& accept(Visitor& v) const override {return v.visit(*this); }
 };

@@ -5,26 +5,21 @@
 // #include <SFML/Graphics.hpp>
 
 #include <SFML/Graphics/Texture.hpp>
-#include <cstdint>
-#include <string>
 
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
 
-
-enum class availableResource { TIMBER, MERCURY, STONE, SULFER, CRYSTAL, GEMSTONE, MONEY };
+enum class ResourceType { TIMBER, MERCURY, STONE, SULFUR, CRYSTAL, GEMSTONE, MONEY };
 
 class Resource : public Printable {
  private:
-  availableResource resource_;
-  uint32_t resourceAmount_;
+  ResourceType type_;
+  int amount_;
 
  public:
-  Resource( availableResource resource, uint32_t resource_amount )
-      : resource_( resource ), resourceAmount_( resource_amount ) {};
-  virtual sf::Texture& accept( Visitor& v ) const override {
-    return v.visit( *this );
-  }
-  const std::string& getName() const noexcept;
-  uint32_t getAmount() const noexcept;
+  Resource() = delete;
+  Resource( ResourceType type, int amount );
+  sf::Texture& accept( Visitor& v ) const override;
+  [[nodiscard]] ResourceType getType() const noexcept;
+  [[nodiscard]] int getAmount() const noexcept;
 };

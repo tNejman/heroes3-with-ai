@@ -60,6 +60,16 @@ struct UnitData {
   std::string path_to_texture_;
 };
 
+const std::map<int, const std::shared_ptr<const UnitData>> WAR_MACHINES_PRESET = {
+    { 0, std::make_shared<const UnitData>( "ballista", 1U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 100U,
+                                           "/path/folder/tex1" ) },
+    { 1, std::make_shared<const UnitData>( "ammo cart", 1U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 100U,
+                                           "/path/folder/tex2" ) },
+    { 2, std::make_shared<const UnitData>( "first aid tent", 1U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 100U,
+                                           "/path/folder/tex3" ) },
+    { 3, std::make_shared<const UnitData>( "catapult", 1U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 100U,
+                                           "/path/folder/tex4" ) } };
+
 // @Warning @deprecated
 const std::map<ForgeUnitType, const std::shared_ptr<const UnitData>> UNITS_PRESET_FORGE = {
     // not actual stats, just placeholders

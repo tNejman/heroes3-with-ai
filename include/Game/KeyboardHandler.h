@@ -25,6 +25,8 @@ class KeyHandler {
   [[nodiscard]] bool isDoublePress( const std::vector<sf::Keyboard::Key>& keys ) const;
   [[nodiscard]] bool isSinglePress( const std::vector<sf::Keyboard::Key>& keys ) const;
   // void convertKeyPressesToMoves();
+  void removeEmptyFramesFromFront();
+  [[nodiscard]] int getFrameCountLookup() const noexcept;
 
  public:
   KeyHandler() = delete;

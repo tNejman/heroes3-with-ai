@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "Battle/TileObject.h"
+#include "Battle/TileObject.hpp"
 #include "Miscellaneous/Coords.h"
 
 class TileObject;

@@ -11,11 +11,10 @@
 #include <memory>
 #include <string>
 
-#include "Battle/TileObject.h"
+#include "Battle/TileObject.hpp"
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/UnitsLib.h"
-
 
 class Faction;
 

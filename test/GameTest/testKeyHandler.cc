@@ -44,7 +44,7 @@ TEST( KeyHandlerTest, mockInput ) {
   // frame 6 (buffer 5/5)
   key_handler->monitorKeyPresses();
   auto move_direction_frame6 = key_handler->getMove();
-  // ASSERT_EQ( CharacterMoveDirection::UP, move_direction_frame6 );
+  ASSERT_EQ( CharacterMoveDirection::UP, move_direction_frame6 );
 }
 
 // TEST( KeyHandlerTest, mockInput ) {

@@ -4,13 +4,15 @@
 #include <memory>
 #include <utility>
 
+#include "Battle/TileObject.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"  // IWYU pragma: keep
 #include "Unit/Unit.h"
 
 UnitStack::UnitStack( std::shared_ptr<const Unit> unit, uint32_t size )
-    : coords_in_battle_( 0, 0 ),
+    : TileObject( false ),
+      coords_in_battle_( 0, 0 ),
       unit_( std::move( unit ) ),
       morale_( 0 ),
       luck_( 0 ),
@@ -87,9 +89,4 @@ std::shared_ptr<UnitStack> UnitStack::copy() const {
   copy->luck_ = this->luck_;
   copy->current_health_ = this->current_health_;
   return copy;
-}
-
-void UnitStack::die() {
-  unit_.reset();
-  this->~UnitStack();
 }

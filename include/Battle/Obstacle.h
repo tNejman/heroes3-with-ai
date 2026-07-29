@@ -10,7 +10,7 @@
 #include <string_view>
 #include <utility>
 
-#include "Battle/TileObject.h"
+#include "Battle/TileObject.hpp"
 #include "Graphics/Printable.h"
 
 class Visitor;
