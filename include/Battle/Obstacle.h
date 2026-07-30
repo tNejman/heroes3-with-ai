@@ -7,7 +7,6 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "Battle/TileObject.hpp"

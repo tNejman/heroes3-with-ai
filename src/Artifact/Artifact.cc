@@ -3,68 +3,33 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <algorithm>
 #include <cassert>
-#include <cstddef>
 #include <memory>
-#include <string>
-#include <utility>
 
-#include "Exceptions/InvalidArtifactTypeException.hpp"
-#include "MapObject/MapObject.h"
-#include "Miscellaneous/ArtifactLib.h"
-#include "Miscellaneous/ProjectLib.h"
+#include "Artifact/ArtifactLib.h"
+#include "Graphics/Visitor.h"
 
-Artifact::Artifact( std::shared_ptr<const ArtifactData> data )
-    : MapObject( { 0U, 0U } ), artifact_data_( std::move( data ) ) {
+Artifact::Artifact( const ArtifactData& data ) : data_( data ) {
 }
 
-std::unique_ptr<Artifact> Artifact::create( const ArtifactType type ) {
-  auto it = std::ranges::find_if(
-      ARTIFACTS_PRESET, [type]( const std::shared_ptr<const ArtifactData>& data ) { return data->type_ == type; } );
-
-  assert( it != ARTIFACTS_PRESET.end() && "Artifact::create -> Artifact type not found: " );
-  return std::make_unique<Artifact>( *it );
+[[nodiscard]] sf::Texture& Artifact::accept( Visitor& vis ) const {
+  return vis.visit( *this );
 }
 
-sf::Texture& Artifact::accept( Visitor& v ) const {
-  return v.visit( *this );
+[[nodiscard]] Artifact Artifact::create( const ArtifactType type ) noexcept {
+  const auto* it =
+      std::ranges::find_if( artifact_lib::ARTIFACTS_PRESET, [type]( const auto& data ) { return type == data.type_; } );
+  assert( it != artifact_lib::ARTIFACTS_PRESET.end() );
+  return *it;
 }
 
-ArtifactType Artifact::getType() const {
-  return this->artifact_data_->type_;
+[[nodiscard]] const ArtifactData& Artifact::getData() const noexcept {
+  return data_.get();
 }
 
-EquipmentSlots Artifact::getSlot() const {
-  return this->artifact_data_->slot_;
+[[nodiscard]] Artifact Artifact::copy() const noexcept {
+  return create( data_.get().type_ );
 }
 
-const std::string& Artifact::getName() const {
-  return this->artifact_data_->name_;
-}
-
-int Artifact::getAttack() const {
-  return this->artifact_data_->attack_;
-}
-
-int Artifact::getDefense() const {
-  return this->artifact_data_->defense_;
-}
-
-int Artifact::getPower() const {
-  return this->artifact_data_->power_;
-}
-
-int Artifact::getKnowledge() const {
-  return this->artifact_data_->knowledge_;
-}
-
-int Artifact::getSpeed() const {
-  return this->artifact_data_->speed_;
-}
-
-size_t Artifact::getCost() const {
-  return this->artifact_data_->cost_;
-}
-
-std::unique_ptr<Artifact> Artifact::copy() const {
-  return std::make_unique<Artifact>( this->artifact_data_ );
+bool Artifact::operator==( const Artifact& other ) const noexcept {
+  return this == &other || data_.get() == other.getData();
 }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Artifact/Artifact.h"
+#include "Artifact/ArtifactLib.h"
 #include "Exceptions/EmptySlotException.hpp"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/FullBackpackException.hpp"
@@ -19,28 +20,11 @@
 #include "Exceptions/_NotImplementedException.hpp"
 #include "Magic/SpellBook.h"
 #include "MapObject/MapObject.h"
-#include "Miscellaneous/ArtifactLib.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
 #include "Unit/WarMachine.h"
 
-void Character::initializeEquipment() {
-  equipment_.emplace( EquipmentSlots::HELMET, nullptr );
-  equipment_.emplace( EquipmentSlots::CAPE, nullptr );
-  equipment_.emplace( EquipmentSlots::NECKLACE, nullptr );
-  equipment_.emplace( EquipmentSlots::WEAPON, nullptr );
-  equipment_.emplace( EquipmentSlots::SHIELD, nullptr );
-  equipment_.emplace( EquipmentSlots::TORSO, nullptr );
-  equipment_.emplace( EquipmentSlots::RING_1, nullptr );
-  equipment_.emplace( EquipmentSlots::RING_2, nullptr );
-  equipment_.emplace( EquipmentSlots::FEET, nullptr );
-  equipment_.emplace( EquipmentSlots::MISC_1, nullptr );
-  equipment_.emplace( EquipmentSlots::MISC_2, nullptr );
-  equipment_.emplace( EquipmentSlots::MISC_3, nullptr );
-  equipment_.emplace( EquipmentSlots::MISC_4, nullptr );
-  equipment_.emplace( EquipmentSlots::MISC_5, nullptr );
-};
 void Character::initializeWarMachines() {
   war_machines_.emplace( "ballista", nullptr );
   war_machines_.emplace( "ammo_cart", nullptr );
@@ -50,10 +34,10 @@ void Character::initializeWarMachines() {
 
 std::optional<EquipmentSlots> Character::checkSlotIfEmpty( EquipmentSlots slot ) const {
   if ( slot == EquipmentSlots::RING ) {
-    if ( equipment_.find( EquipmentSlots::RING_1 )->second == nullptr ) {
+    if ( !equipment_.find( EquipmentSlots::RING_1 )->second ) {
       return EquipmentSlots::RING_1;
     }
-    if ( equipment_.find( EquipmentSlots::RING_2 )->second == nullptr ) {
+    if ( !equipment_.find( EquipmentSlots::RING_2 )->second ) {
       return EquipmentSlots::RING_2;
     }
     return std::nullopt;
@@ -63,14 +47,14 @@ std::optional<EquipmentSlots> Character::checkSlotIfEmpty( EquipmentSlots slot )
     static constexpr int MISC_LAST_SLOT_ID = static_cast<int>( EquipmentSlots::MISC_5 );
     for ( int i = MISC_FIRST_SLOT_ID; i <= MISC_LAST_SLOT_ID; ++i ) {
       auto actual_slot = static_cast<EquipmentSlots>( i );
-      if ( equipment_.find( actual_slot )->second == nullptr ) {
+      if ( !equipment_.find( actual_slot )->second ) {
         return actual_slot;
       }
     }
     return std::nullopt;
   }
 
-  if ( equipment_.find( slot )->second == nullptr ) {
+  if ( !equipment_.find( slot )->second ) {
     return slot;
   }
   return std::nullopt;
@@ -93,7 +77,6 @@ Character::Character( std::string name, CoordPair coords, uint32_t attack, uint3
       movement_points_( 0 ),
       morale_( morale ),
       luck_( luck ) {
-  initializeEquipment();
   initializeWarMachines();
 };
 
@@ -256,11 +239,11 @@ bool Character::getIfBackpackFull() const {
   return backpack_.size() == 64;
 }
 
-void Character::pickUpArtifact( std::unique_ptr<const Artifact> artifact ) {
+void Character::pickUpArtifact( Artifact artifact ) {
   if ( this->getIfBackpackFull() ) {
     err::raise<FullBackpackException>( "Backpack full. Cannot pick up." );
   }
-  backpack_.push_back( std::move( artifact ) );
+  backpack_.push_back( artifact );
 }
 
 void Character::equipArtifact( ArtifactType type, EquipmentSlots slot ) {
@@ -271,33 +254,33 @@ void Character::equipArtifact( ArtifactType type, EquipmentSlots slot ) {
   }
   slot_specific = slot_if_empty.value();
 
-  std::unique_ptr<const Artifact> artifact_temp = nullptr;
-  for ( auto itr = backpack_.begin(); itr != backpack_.end(); ++itr ) {
-    if ( ( *itr )->getType() != type ) {
+  std::optional<Artifact> artifact_temp = std::nullopt;
+  for ( auto it = backpack_.begin(); it != backpack_.end(); ++it ) {
+    if ( it->getData().type_ != type ) {
       continue;
     }
-    if ( ( *itr )->getSlot() != slot ) {
+    if ( it->getData().slot_ != slot ) {
       err::raise<InvalidSlotException>( "This artifact cannot be equipped into that slot" );
     }
-    artifact_temp = std::move( *itr );
-    backpack_.erase( itr );
+    artifact_temp = it->copy();
+    backpack_.erase( it );
     break;
   }
-  if ( artifact_temp == nullptr ) {
+  if ( !artifact_temp ) {
     err::raise<InvalidArtifactTypeException>( "No such artifact found in backpack" );
   }
-  equipment_[slot_specific] = std::move( artifact_temp );
+  equipment_[slot_specific] = artifact_temp;
 }
 
 void Character::unequipArtifact( EquipmentSlots slot ) {
-  if ( equipment_[slot] == nullptr ) {
-    err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
-  }
   if ( this->getIfBackpackFull() ) {
     err::raise<FullBackpackException>( "Backpack full. Cannot unequip." );
   }
-  backpack_.push_back( std::move( equipment_[slot] ) );
-  equipment_[slot].reset( nullptr );
+  if ( !equipment_[slot] ) {
+    err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
+  }
+  backpack_.push_back( *equipment_[slot] );
+  equipment_[slot] = std::nullopt;
 }
 
 void Character::recruitWarMachine( std::unique_ptr<const Ballista> war_machine ) {
@@ -343,7 +326,7 @@ std::unique_ptr<SpellBook> Character::unequipSpellBook() {
   return spell_book;
 }
 
-const std::vector<std::unique_ptr<const Artifact>>& Character::getBackpack() {
+const std::vector<Artifact>& Character::getBackpack() {
   return this->backpack_;
 }
 std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>& Character::getParty() {
@@ -389,10 +372,10 @@ std::shared_ptr<Character> Character::copy() {
   }
 
   for ( const auto& [slot, artifact] : this->equipment_ ) {
-    if ( artifact != nullptr ) {
+    if ( !artifact ) {
       copy->equipment_[slot] = artifact->copy();
     } else {
-      copy->equipment_[slot] = nullptr;
+      copy->equipment_[slot] = std::nullopt;
     }
   }
 
@@ -411,7 +394,7 @@ std::shared_ptr<Character> Character::copy() {
   }
 
   for ( const auto& artifact : this->backpack_ ) {
-    copy->backpack_.push_back( artifact->copy() );
+    copy->backpack_.push_back( artifact.copy() );
   }
 
   for ( uint32_t i = 0; i < MAX_PARTY_SIZE; ++i ) {

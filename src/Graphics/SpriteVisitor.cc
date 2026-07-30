@@ -25,6 +25,7 @@
 #include "Exceptions/InvalidSecondarySkillException.hpp"
 #include "Exceptions/InvalidTextureException.hpp"
 #include "Exceptions/UnknownStateException.hpp"
+#include "Exceptions/_NotImplementedException.hpp"
 #include "Graphics/Visitor.h"
 #include "Magic/Spell.h"
 #include "Miscellaneous/CharacterLib.h"
@@ -39,9 +40,10 @@
 //
 //====================================
 
-sf::Texture& SpriteVisitor::visit( const Artifact& e ) {
-  std::string path = "Sprites/artifacts/" + e.getName() + ".png";
-  return findTexture( path );
+sf::Texture& SpriteVisitor::visit( const Artifact& e [[maybe_unused]] ) {
+  // std::string path = "Sprites/artifacts/" + e.getName() + ".png";
+  // return findTexture( path );
+  err::raise<NotImplementedException>( "" );  // TODO
 }
 
 sf::Texture& SpriteVisitor::visit( const Obstacle& e ) {

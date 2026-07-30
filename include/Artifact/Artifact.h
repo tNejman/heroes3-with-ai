@@ -11,37 +11,26 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <cstddef>
-#include <memory>
-#include <string>
+#include <functional>
 
-#include "MapObject/MapObject.h"
-#include "Miscellaneous/ArtifactLib.h"
-#include "Miscellaneous/Equippable.h"
-#include "Miscellaneous/ProjectLib.h"
+#include "Artifact/ArtifactLib.h"
 
 class Visitor;
 
 // public Printable
-class Artifact : public Equippable, public MapObject {
+class Artifact {
  private:
-  std::shared_ptr<const ArtifactData> artifact_data_;
+  std::reference_wrapper<const ArtifactData> data_;
+
+  Artifact( const ArtifactData& data );
 
  public:
   Artifact() = delete;
-  Artifact( std::shared_ptr<const ArtifactData> data );
-  [[nodiscard]] static std::unique_ptr<Artifact> create( const ArtifactType type );
+  [[nodiscard]] sf::Texture& accept( Visitor& vis ) const;
 
-  [[nodiscard]] sf::Texture& accept( Visitor& vis ) const override;
-  [[nodiscard]] ArtifactType getType() const;
-  [[nodiscard]] EquipmentSlots getSlot() const;
-  [[nodiscard]] const std::string& getName() const;
-  [[nodiscard]] int getAttack() const;
-  [[nodiscard]] int getDefense() const;
-  [[nodiscard]] int getPower() const;
-  [[nodiscard]] int getKnowledge() const;
-  [[nodiscard]] int getSpeed() const;
-  [[nodiscard]] size_t getCost() const;
+  [[nodiscard]] static Artifact create( const ArtifactType type ) noexcept;
+  [[nodiscard]] const ArtifactData& getData() const noexcept;
+  [[nodiscard]] Artifact copy() const noexcept;
 
-  [[nodiscard]] std::unique_ptr<Artifact> copy() const;
+  bool operator==( const Artifact& other ) const noexcept;
 };

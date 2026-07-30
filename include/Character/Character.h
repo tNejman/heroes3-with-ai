@@ -23,10 +23,10 @@
 #include <vector>
 
 #include "Artifact/Artifact.h"
+#include "Artifact/ArtifactLib.h"
 #include "Character/SecondarySkill.h"
 #include "Magic/SpellBook.h"
 #include "MapObject/MapObject.h"
-#include "Miscellaneous/ArtifactLib.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
@@ -61,10 +61,10 @@ class Character : public MapObject {
   int luck_;
 
   std::array<std::unique_ptr<SecondarySkill>, SECONDARY_SKILLS_SLOTS_COUNT> secondary_skills_;
-  std::map<EquipmentSlots, std::unique_ptr<const Artifact>> equipment_;
+  std::map<EquipmentSlots, std::optional<Artifact>> equipment_;
   std::map<std::string, std::unique_ptr<const WarMachine>> war_machines_;
   std::unique_ptr<SpellBook> spell_book_ = nullptr;
-  std::vector<std::unique_ptr<const Artifact>> backpack_;
+  std::vector<Artifact> backpack_;
   std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE> party_ = { nullptr, nullptr, nullptr, nullptr,
                                                                     nullptr, nullptr, nullptr };
 
@@ -139,7 +139,7 @@ class Character : public MapObject {
 
   [[nodiscard]] bool getIfBackpackFull() const;
 
-  void pickUpArtifact( std::unique_ptr<const Artifact> artifact );
+  void pickUpArtifact( Artifact artifact );
   void equipArtifact( ArtifactType type, EquipmentSlots slot );
   void unequipArtifact( EquipmentSlots slot );
 
@@ -152,7 +152,7 @@ class Character : public MapObject {
   void equipSpellBook( std::unique_ptr<SpellBook> spell_book );
   std::unique_ptr<SpellBook> unequipSpellBook();
 
-  const std::vector<std::unique_ptr<const Artifact>>& getBackpack();
+  const std::vector<Artifact>& getBackpack();
   std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>& getParty();
   uint32_t getPartySize();
 
