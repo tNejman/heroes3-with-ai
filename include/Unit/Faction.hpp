@@ -11,8 +11,12 @@
 #include <string>
 #include <utility>
 
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Unit.h"
+#include "Unit/UnitsLib.h"
+
+enum class FactionAttitude { EVIL, NEUTRAL, GOOD };
+
+enum class FactionType : int { FORGE, CONFLUX, CASTLE };
 
 /**
  * @Warning

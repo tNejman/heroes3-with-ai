@@ -7,10 +7,9 @@
 #include <cstdint>
 #include <memory>
 
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"
 #include "Unit/Unit.h"
-
+#include "Unit/UnitsLib.h"
 
 class RangedUnit : public Unit {
  private:

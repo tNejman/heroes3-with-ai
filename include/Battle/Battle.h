@@ -45,11 +45,11 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
   // std::vector<std::shared_ptr<UnitStack>> attacking_army_;
   // std::vector<std::shared_ptr<UnitStack>> defending_army_;
   // std::vector<std::shared_ptr<UnitStack>> units_in_battle_;
-  std::vector<std::shared_ptr<UnitStack>> round_queue_;
+  std::vector<UnitStack*> round_queue_;
 
   void setAttackingArmy();
   void setDefendingArmy();
-  [[nodiscard]] uint32_t setUnitInQueue( const std::shared_ptr<UnitStack>& unit );
+  [[nodiscard]] uint32_t setUnitInQueue( UnitStack* unit );
   void createObstacles();
   void nextRound();
   std::shared_ptr<UnitStack> unit_in_action_;

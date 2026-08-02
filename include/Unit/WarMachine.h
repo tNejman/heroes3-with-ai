@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "Miscellaneous/Equippable.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Unit.h"
-
+#include "Unit/UnitsLib.h"
 
 class WarMachine : public Unit, public Equippable {
  public:

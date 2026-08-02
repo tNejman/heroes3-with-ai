@@ -1,10 +1,12 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 
-#include "Miscellaneous/ProjectLib.h"
+#include "Miscellaneous/DisableCopyMoveStructHelper.hpp"
 
-enum class ArtifactType : int {
+
+enum class ArtifactType : uint8_t {
   // Helmets
   CROWN_OF_THE_SUPREME_MAGI,
   HELM_OF_THE_ALABASTER_UNICORN,
@@ -49,11 +51,24 @@ enum class ArtifactType : int {
   // Misc
 };
 
-struct DisableCopyMove {  // NOLINT(cppcoreguidelines-special-member-functions)
-  DisableCopyMove() = default;
-  DisableCopyMove( const DisableCopyMove& ) = delete;
-  DisableCopyMove( DisableCopyMove&& ) = delete;
-  bool operator==( const DisableCopyMove& ) const noexcept = default;
+enum class EquipmentSlots : uint8_t {
+  HELMET = 0,
+  CAPE = 1,
+  NECKLACE = 2,
+  WEAPON = 3,
+  SHIELD = 4,
+  TORSO = 5,
+  RING = 6,
+  RING_1 = 7,
+  RING_2 = 8,
+  FEET = 9,
+  MISC = 10,
+  MISC_1 = 10,
+  MISC_2 = 11,
+  MISC_3 = 12,
+  MISC_4 = 13,
+  MISC_5 = 14,
+  COUNT = 15  ///
 };
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-const-or-ref-data-members,misc-non-private-member-variables-in-classes)

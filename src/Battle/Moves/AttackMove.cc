@@ -30,9 +30,9 @@ std::string AttackMove::getPath() const {
 
 std::string AttackMove::getInfo( std::shared_ptr<Battle> battle ) const {
   std::string info = "Attacker: ";
-  info += battle->getUnitFromCoords( attacker_ )->getUnit()->getName();
+  info += battle->getUnitFromCoords( attacker_ )->getData().name_;
   info += ", defender: ";
-  info += battle->getUnitFromCoords( defender_ )->getUnit()->getName();
+  info += battle->getUnitFromCoords( defender_ )->getData().name_;
 
   auto x = attacker_.x_;
   auto y = attacker_.y_;

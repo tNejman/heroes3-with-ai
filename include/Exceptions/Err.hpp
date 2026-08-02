@@ -20,4 +20,9 @@ template <class E>
   throw E{ std::string{ scope( loc.function_name() ) } + " -> " + std::string{ text } };
 }
 
+template <class E>
+[[noreturn]] void raise( std::source_location loc = std::source_location::current() ) {
+  throw E{ std::string{ scope( loc.function_name() ) } };
+}
+
 }  // namespace err

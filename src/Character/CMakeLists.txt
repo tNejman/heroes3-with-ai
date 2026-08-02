@@ -1,5 +1,8 @@
 add_library(Character SHARED
     Character.cc
+    CharacterArmy.cc
+    CharacterInventory.cc
+    CharacterStats.cc
     SecondarySkill.cc
 )
 

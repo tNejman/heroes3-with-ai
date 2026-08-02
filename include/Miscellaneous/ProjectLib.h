@@ -94,31 +94,8 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 ====== CHARACTER ======
 */
 
-constexpr inline int SECONDARY_SKILLS_SLOTS_COUNT = 8;
-constexpr inline int EQUIPMENT_SLOTS_COUNT = 14;
-constexpr inline int MAX_BACKPACK_SIZE = 64;
-constexpr inline int MAX_PARTY_SIZE = 7;
 
 enum class CharacterType { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
-
-enum class EquipmentSlots {
-  HELMET = 0,
-  CAPE = 1,
-  NECKLACE = 2,
-  WEAPON = 3,
-  SHIELD = 4,
-  TORSO = 5,
-  RING = 6,
-  RING_1 = 7,
-  RING_2 = 8,
-  FEET = 9,
-  MISC = 10,
-  MISC_1 = 10,
-  MISC_2 = 11,
-  MISC_3 = 12,
-  MISC_4 = 13,
-  MISC_5 = 14
-};
 
 constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0

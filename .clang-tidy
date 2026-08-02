@@ -9,7 +9,6 @@ Checks: >
 
   -modernize-use-trailing-return-type,
   -readability-avoid-const-params-in-decls,
-  -performance-enum-size,
   -readability-identifier-length,
   -cppcoreguidelines-pro-bounds-constant-array-index,
 

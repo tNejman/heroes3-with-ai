@@ -91,8 +91,9 @@ sf::Texture& SpriteVisitor::visit( const Spell& e ) {
 // }
 
 sf::Texture& SpriteVisitor::visit( const Unit& e ) {
-  std::string path = "Sprites/units/" + e.getName() + ".png";
-  return findTexture( path );
+  // std::string path = "Sprites/units/" + e.getName() + ".png";
+  // return findTexture( path );
+  err::raise<NotImplementedException>();
 }
 
 sf::Texture& SpriteVisitor::visit( const Resource& e ) {

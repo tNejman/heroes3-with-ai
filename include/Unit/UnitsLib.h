@@ -10,11 +10,10 @@
 #include <memory>
 #include <string>
 
-enum class FactionAttitude { EVIL, NEUTRAL, GOOD };
+#include "Miscellaneous/DisableCopyMoveStructHelper.hpp"
 
-enum class FactionType : int { FORGE, CONFLUX, CASTLE };
 
-enum class ForgeUnitType : int {
+enum class ForgeUnitType : uint8_t {
   GRUNT = 0,
   CYBER_DEAD = 1,
   PYRO = 2,
@@ -24,7 +23,7 @@ enum class ForgeUnitType : int {
   JUGGERNAUT = 6
 };
 
-enum class ConfluxUnitType : int {
+enum class ConfluxUnitType : uint8_t {
   PIXIE = 0,
   AIR_ELEMENTAL = 1,
   WATER_ELEMENTAL = 2,
@@ -34,7 +33,7 @@ enum class ConfluxUnitType : int {
   FIREBIRD = 6
 };
 
-enum class CastleUnitType : int {
+enum class CastleUnitType : uint8_t {
   PIKEMAN = 0,
   ARCHER = 1,
   GRIFFIN = 2,
@@ -46,18 +45,20 @@ enum class CastleUnitType : int {
 
 struct UnitData {
   std::string name_;
-  uint32_t level_;
-  uint32_t attack_;
-  uint32_t defense_;
-  uint32_t min_damage_;
-  uint32_t max_damage_;
-  uint32_t health_;
-  uint32_t speed_;
-  uint32_t counter_attack_;
-  uint32_t growth_;
-  uint32_t cost_;
-  uint32_t fight_value_;
-  std::string path_to_texture_;
+  int level_;
+  int attack_;
+  int defense_;
+  int min_damage_;
+  int max_damage_;
+  int health_;
+  int speed_;
+  int counter_attack_;
+  int growth_;
+  int cost_;
+  int fight_value_;
+  std::string path_to_texture_;  // TODO remove
+
+  DisableCopyMove _no_copy_move{};
 };
 
 const std::map<int, const std::shared_ptr<const UnitData>> WAR_MACHINES_PRESET = {

@@ -10,66 +10,78 @@
 #include <cstdlib>
 #include <iterator>
 #include <memory>
-#include <stdexcept>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "Battle/BattleField.h"
 #include "Battle/Tile.h"
 #include "Character/Character.h"
+#include "Character/CharacterArmy.h"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Exceptions/_NotImplementedException.hpp"
+#include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "Unit/Unit.h"
 
 void Battle::setAttackingArmy() {
-  auto& party = attacker_->getParty();
-  for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
+  auto& party = attacker_->army().getParty();
+  for ( size_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
+    if ( !party[i] ) {
       continue;
     }
-    CoordPair coords_in_battle{ 0U, 0U };
-    if ( i < 3 ) {
-      coords_in_battle = CoordPair{ 0, i * 2 };
-    } else if ( i == 3 ) {
-      coords_in_battle = CoordPair{ 0, 5 };
-    } else if ( i > 3 ) {
-      coords_in_battle = CoordPair{ 0, ( ( i - 4 ) * 2 ) + 6 };
-    }
-    party.at( static_cast<size_t>( i ) )->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( static_cast<size_t>( i ) ) );
+    CoordPair coords_in_battle = [i, i_coord = static_cast<int>( i )]() -> CoordPair {
+      if ( i < 3 ) {
+        return { 0, i_coord * 2 };
+      }
+      if ( i == 3 ) {
+        return { 0, 5 };
+      }
+      if ( i > 3 ) {
+        return { 0, ( ( i_coord - 4 ) * 2 ) + 6 };
+      }
+      std::unreachable();
+    }();
+
+    party[i]->setCoordsInBattle( coords_in_battle );
+    battlefield_->getTileByProxy( coords_in_battle )
+        ->setObject( &*party[i] );  // TODO rework battlefield from shared_ptr to *
   }
 }
 
 void Battle::setDefendingArmy() {
-  auto& party = defender_->getParty();
-  for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
+  auto& party = defender_->army().getParty();
+  for ( size_t i = 0; i < MAX_PARTY_SIZE; i++ ) {
+    if ( !party[i] ) {
       continue;
     }
-    CoordPair coords_in_battle{ 0U, 0U };
-    if ( i < 3 ) {
-      coords_in_battle = CoordPair( 14U, i * 2 );
-    } else if ( i == 3 ) {
-      coords_in_battle = CoordPair( 14u, 5u );
-    } else if ( i > 3 ) {
-      coords_in_battle = CoordPair( 14u, ( ( i - 4 ) * 2 ) + 6 );
-    }
-    party.at( static_cast<size_t>( i ) )->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( static_cast<size_t>( i ) ) );
+    CoordPair coords_in_battle = [i, i_coord = static_cast<int>( i )]() -> CoordPair {
+      if ( i < 3 ) {
+        return { 14U, i_coord * 2 };
+      }
+      if ( i == 3 ) {
+        return { 14u, 5u };
+      }
+      if ( i > 3 ) {
+        return { 14u, ( ( i_coord - 4 ) * 2 ) + 6 };
+      }
+      std::unreachable();
+    }();
+
+    party[i]->setCoordsInBattle( coords_in_battle );
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( &*party[i] );  // TODO same as in previous
   }
 }
 
-uint32_t Battle::setUnitInQueue( const std::shared_ptr<UnitStack>& unit ) {
-  uint32_t speed = unit->getSpeed();
+uint32_t Battle::setUnitInQueue( UnitStack* unit ) {
+  int speed = unit->getData().speed_;
   if ( round_queue_.size() == 0 ) {
     round_queue_.push_back( unit );
     return 0;
   }
   for ( auto it = round_queue_.begin(); it != round_queue_.end(); ++it ) {
-    if ( ( *it )->getSpeed() < speed ) {
+    if ( ( *it )->getData().speed_ < speed ) {
       round_queue_.insert( it, unit );
       return (uint32_t)std::distance( round_queue_.begin(), it );
     }
@@ -144,15 +156,15 @@ bool Battle::killUnit( std::shared_ptr<UnitStack> unit_stack_to_kill ) {
 
   std::shared_ptr<Character> character = ( attacker ) ? attacker_ : defender_;
 
-  for_each( character->getParty().begin(), character->getParty().end(), [&]( std::shared_ptr<UnitStack>& unit ) {
-    if ( unit != nullptr && unit->getCoordsInBattle() == coords ) {
-      // Remove the unit from the round_queue_
-      getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
-      round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ),
-                          round_queue_.end() );
-      unit.reset();
-    }
-  } );
+  std::for_each( character->army().getParty().begin(), character->army().getParty().end(),
+                 [&]( std::optional<UnitStack>& unit ) {
+                   if ( unit && unit->getCoordsInBattle() == coords ) {
+                     // Remove the unit from the round_queue_
+                     getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
+                     round_queue_.erase( std::ranges::remove( round_queue_, unit_stack_to_kill ), round_queue_.end() );
+                     unit.reset();
+                   }
+                 } );
   if ( getAttackingArmy().size() == 0 ) {
     setBattleState( BattleState::WIN_DEFENDER );
     return true;
@@ -288,7 +300,7 @@ std::vector<std::shared_ptr<UnitStack>> Battle::getDefendingArmy() const {
   return defending_army;
 }
 
-std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattle() const {
+std::vector<UnitStack*> Battle::getUnitsInBattle() const {
   std::vector<std::shared_ptr<UnitStack>> units_in_battle;
   for ( auto& unit_stack : getAttackingArmy() ) {
     units_in_battle.push_back( unit_stack );
