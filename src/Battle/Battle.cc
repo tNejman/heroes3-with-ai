@@ -25,7 +25,7 @@
 #include "Unit/Unit.h"
 
 void Battle::setAttackingArmy() {
-  auto& party = attacker_->getParty();
+  auto& party = attacker_->army().getParty();
   for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
     if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
       continue;
@@ -44,7 +44,7 @@ void Battle::setAttackingArmy() {
 }
 
 void Battle::setDefendingArmy() {
-  auto& party = defender_->getParty();
+  auto& party = defender_->army().getParty();
   for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
     if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
       continue;
@@ -144,15 +144,16 @@ bool Battle::killUnit( std::shared_ptr<UnitStack> unit_stack_to_kill ) {
 
   std::shared_ptr<Character> character = ( attacker ) ? attacker_ : defender_;
 
-  for_each( character->getParty().begin(), character->getParty().end(), [&]( std::shared_ptr<UnitStack>& unit ) {
-    if ( unit != nullptr && unit->getCoordsInBattle() == coords ) {
-      // Remove the unit from the round_queue_
-      getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
-      round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ),
-                          round_queue_.end() );
-      unit.reset();
-    }
-  } );
+  for_each( character->army().getParty().begin(), character->army().getParty().end(),
+            [&]( std::shared_ptr<UnitStack>& unit ) {
+              if ( unit != nullptr && unit->getCoordsInBattle() == coords ) {
+                // Remove the unit from the round_queue_
+                getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
+                round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ),
+                                    round_queue_.end() );
+                unit.reset();
+              }
+            } );
   if ( getAttackingArmy().size() == 0 ) {
     setBattleState( BattleState::WIN_DEFENDER );
     return true;
@@ -203,8 +204,8 @@ bool Battle::attack( std::shared_ptr<UnitStack> attacker, std::shared_ptr<UnitSt
       luck_multiplier = 0.5;
     }
   }
-  int attack_defense = int( attacker_unit->getAttack() + attacker_->getAttack() ) - int( defender_unit->getDefense() )
-                       - int( defender_->getDefense() );
+  int attack_defense = int( attacker_unit->getAttack() ) + attacker_->stats().getPrimarySkills().attack_
+                       - int( defender_unit->getDefense() ) - int( defender_->stats().getPrimarySkills().defense_ );
   uint32_t positive_attack = uint32_t( std::max( 0, attack_defense ) );
   positive_attack = std::min( 60u, positive_attack );
   uint32_t positive_defense = uint32_t( std::max( 0, -attack_defense ) );
@@ -270,7 +271,7 @@ void Battle::nextUnit() {
 
 std::vector<std::shared_ptr<UnitStack>> Battle::getAttackingArmy() const {
   std::vector<std::shared_ptr<UnitStack>> attacking_army;
-  for ( auto& unit_stack : attacker_->getParty() ) {
+  for ( auto& unit_stack : attacker_->army().getParty() ) {
     if ( unit_stack != nullptr ) {
       attacking_army.push_back( unit_stack );
     }
@@ -280,7 +281,7 @@ std::vector<std::shared_ptr<UnitStack>> Battle::getAttackingArmy() const {
 
 std::vector<std::shared_ptr<UnitStack>> Battle::getDefendingArmy() const {
   std::vector<std::shared_ptr<UnitStack>> defending_army;
-  for ( auto& unit_stack : defender_->getParty() ) {
+  for ( auto& unit_stack : defender_->army().getParty() ) {
     if ( unit_stack != nullptr ) {
       defending_army.push_back( unit_stack );
     }
@@ -337,8 +338,8 @@ bool Battle::isSameArmy( const std::shared_ptr<UnitStack> unit1, const std::shar
 }
 
 bool Battle::isAIMove() const {
-  return ( isSameArmy( unit_in_action_, attacker_->getParty()[0] ) && !attacker_->getIfUser() )
-         || ( isSameArmy( unit_in_action_, defender_->getParty()[0] ) && !defender_->getIfUser() );
+  return ( isSameArmy( unit_in_action_, attacker_->army().getParty()[0] ) && !attacker_->getIfUser() )
+         || ( isSameArmy( unit_in_action_, defender_->army().getParty()[0] ) && !defender_->getIfUser() );
 }
 
 void Battle::forceUnplaceUnitStacks() {

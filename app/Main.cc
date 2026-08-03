@@ -16,15 +16,17 @@
 #include <vector>
 
 #include "Character/Character.h"
+#include "Character/CharacterBuilder.h"
+#include "Character/CharacterStats.h"
 #include "Game/Game.h"
 // #include "LoadAndSaveTools/CharacterSaver.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "Unit/UnitStack.h"
+#include "Unit/UnitsLib.h"
 #include "WorldMap/OverworldObstacle.h"
 
 int main() {
@@ -47,26 +49,44 @@ int main() {
 
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
-      std::make_shared<Character>( "fire_hero_down_right", CoordPair( 0u, 0u ), 10, 10, 10, 10, 50, 2, -3 ) );
+      CharacterBuilder{}
+          .setName( "fire_her_down_right" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
+              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .buildSharedPtr() );
 
-  characters[0]->recruitUnitStack( unit_stack_1 );
-  characters[0]->recruitUnitStack( unit_stack_3 );
-  characters[0]->recruitUnitStack( unit_stack_4 );
+  characters[0]->army().recruitUnitStack( unit_stack_1 );
+  characters[0]->army().recruitUnitStack( unit_stack_3 );
+  characters[0]->army().recruitUnitStack( unit_stack_4 );
 
   std::vector<std::shared_ptr<Character>> characters_2;
-  characters_2.push_back( std::make_shared<Character>( "black_hero_white_horse_down_right", CoordPair( 0u, 0u ), 10, 10,
-                                                       10, 10, 50, 2, -3 ) );
-  characters_2.push_back( std::make_shared<Character>( "black_hero_white_horse_down_right", CoordPair( 0u, 0u ), 12, 15,
-                                                       8, 2, 43, 5, -2 ) );
+  characters_2.push_back(
+      CharacterBuilder{}
+          .setName( "black_hero_white_horse_down_right" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
+              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .buildSharedPtr() );
+  characters_2.push_back(
+      CharacterBuilder{}
+          .setName( "black_hero_white_horse_down_right" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
+              CharacterStats::Misc{ .morale_ = 5, .luck_ = -2 } } )
+          .buildSharedPtr() );
 
   characters_2[0]->setIfUser( false );
-  characters_2[0]->recruitUnitStack( unit_stack_2 );
-  characters_2[0]->recruitUnitStack( unit_stack_5 );
+  characters_2[0]->army().recruitUnitStack( unit_stack_2 );
+  characters_2[0]->army().recruitUnitStack( unit_stack_5 );
   characters_2[0]->setCoords( CoordPair( 10u, 10u ) );
 
   characters_2[1]->setIfUser( false );
-  characters_2[1]->recruitUnitStack( unit_stack_6 );
-  characters_2[1]->recruitUnitStack( unit_stack_7 );
+  characters_2[1]->army().recruitUnitStack( unit_stack_6 );
+  characters_2[1]->army().recruitUnitStack( unit_stack_7 );
   characters_2[1]->setCoords( CoordPair( 12u, 12u ) );
 
   std::vector<std::shared_ptr<Player>> players;

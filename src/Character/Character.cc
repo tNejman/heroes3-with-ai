@@ -1,84 +1,22 @@
 #include "Character/Character.h"
 
 #include <SFML/Graphics/Texture.hpp>
-#include <array>
-#include <cstdint>
-#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "Artifact/Artifact.h"
-#include "Artifact/ArtifactLib.h"
+#include "Character/CharacterStats.h"
 #include "Exceptions/EmptySlotException.hpp"
 #include "Exceptions/Err.hpp"
-#include "Exceptions/FullBackpackException.hpp"
-#include "Exceptions/InvalidArtifactTypeException.hpp"
-#include "Exceptions/InvalidSlotException.hpp"
 #include "Exceptions/NotEmptySlotException.hpp"
-#include "Exceptions/_NotImplementedException.hpp"
 #include "Magic/SpellBook.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "Unit/UnitStack.h"
-#include "Unit/WarMachine.h"
 
-void Character::initializeWarMachines() {
-  war_machines_.emplace( "ballista", nullptr );
-  war_machines_.emplace( "ammo_cart", nullptr );
-  war_machines_.emplace( "first_aid_tent", nullptr );
-  war_machines_.emplace( "catapult", nullptr );
-}
-
-std::optional<EquipmentSlots> Character::checkSlotIfEmpty( EquipmentSlots slot ) const {
-  if ( slot == EquipmentSlots::RING ) {
-    if ( !equipment_.find( EquipmentSlots::RING_1 )->second ) {
-      return EquipmentSlots::RING_1;
-    }
-    if ( !equipment_.find( EquipmentSlots::RING_2 )->second ) {
-      return EquipmentSlots::RING_2;
-    }
-    return std::nullopt;
-  }
-  if ( slot == EquipmentSlots::MISC ) {
-    static constexpr int MISC_FIRST_SLOT_ID = static_cast<int>( EquipmentSlots::MISC_1 );
-    static constexpr int MISC_LAST_SLOT_ID = static_cast<int>( EquipmentSlots::MISC_5 );
-    for ( int i = MISC_FIRST_SLOT_ID; i <= MISC_LAST_SLOT_ID; ++i ) {
-      auto actual_slot = static_cast<EquipmentSlots>( i );
-      if ( !equipment_.find( actual_slot )->second ) {
-        return actual_slot;
-      }
-    }
-    return std::nullopt;
-  }
-
-  if ( !equipment_.find( slot )->second ) {
-    return slot;
-  }
-  return std::nullopt;
-}
-
-Character::Character( std::string name, CoordPair coords, uint32_t attack, uint32_t defense, uint32_t power,
-                      uint32_t knowledge, uint32_t max_mana, int morale, int luck )
-    : MapObject( { 0, 0 } ),
-      name_( std::move( name ) ),
-      alive_( true ),
-      coords_( coords ),
-      attack_( attack ),
-      defense_( defense ),
-      power_( power ),
-      knowledge_( knowledge ),
-      level_( 1 ),
-      experience_( 0 ),
-      max_mana_( max_mana ),
-      current_mana_( max_mana ),
-      movement_points_( 0 ),
-      morale_( morale ),
-      luck_( luck ) {
-  initializeWarMachines();
-};
+Character::Character( std::string name, CoordPair coords, CharacterStats stats )
+    : MapObject( coords ), name_( std::move( name ) ), is_user_character_( true ), stats_( std::move( stats ) ) {};
 
 sf::Texture& Character::accept( Visitor& v ) const {
   return v.visit( *this );
@@ -108,301 +46,208 @@ void Character::setIfUser( bool is_user ) {
   is_user_character_ = is_user;
 }
 
-uint32_t Character::getAttack() const {
-  return this->attack_;
+[[nodiscard]] const CharacterStats& Character::stats() const noexcept {
+  return stats_;
 }
 
-void Character::setAttack( const uint32_t new_attack ) {
-  this->attack_ = new_attack;
+[[nodiscard]] CharacterStats& Character::stats() noexcept {
+  return stats_;
 }
 
-void Character::modifyAttack( const uint32_t attack_diff ) {
-  this->attack_ += attack_diff;
+[[nodiscard]] const CharacterInventory& Character::inventory() const noexcept {
+  return inventory_;
 }
 
-uint32_t Character::getDefense() const {
-  return this->defense_;
+[[nodiscard]] CharacterInventory& Character::inventory() noexcept {
+  return inventory_;
 }
 
-void Character::setDefense( const uint32_t new_defense ) {
-  this->defense_ = new_defense;
+[[nodiscard]] const CharacterArmy& Character::army() const noexcept {
+  return army_;
 }
 
-void Character::modifyDefense( const uint32_t defense_diff ) {
-  this->defense_ += defense_diff;
+[[nodiscard]] CharacterArmy& Character::army() noexcept {
+  return army_;
 }
 
-uint32_t Character::getPower() const {
-  return this->power_;
-}
+// uint32_t Character::getEffectiveSpeed() {
+//   err::raise<NotImplementedException>( "" );
+//   return 0;  // TODO
+// }
 
-void Character::setPower( const uint32_t new_power ) {
-  this->power_ = new_power;
-}
+// bool Character::getIfBackpackFull() const {
+//   return backpack_.size() == 64;
+// }
 
-void Character::modifyPower( const uint32_t power_diff ) {
-  this->power_ += power_diff;
-}
+// void Character::pickUpArtifact( Artifact artifact ) {
+//   if ( this->getIfBackpackFull() ) {
+//     err::raise<FullBackpackException>( "Backpack full. Cannot pick up." );
+//   }
+//   backpack_.push_back( artifact );
+// }
 
-uint32_t Character::getKnowledge() const {
-  return this->knowledge_;
-}
+// void Character::equipArtifact( ArtifactType type, EquipmentSlots slot ) {
+//   std::optional<EquipmentSlots> slot_if_empty = this->checkSlotIfEmpty( slot );
+//   EquipmentSlots slot_specific;
+//   if ( !slot_if_empty.has_value() ) {
+//     err::raise<NotEmptySlotException>( "Cannot equip into a full slot" );
+//   }
+//   slot_specific = slot_if_empty.value();
 
-void Character::setKnowledge( const uint32_t new_knowledge ) {
-  this->knowledge_ = new_knowledge;
-}
+//   std::optional<Artifact> artifact_temp = std::nullopt;
+//   for ( auto it = backpack_.begin(); it != backpack_.end(); ++it ) {
+//     if ( it->getData().type_ != type ) {
+//       continue;
+//     }
+//     if ( it->getData().slot_ != slot ) {
+//       err::raise<InvalidSlotException>( "This artifact cannot be equipped into that slot" );
+//     }
+//     artifact_temp = it->copy();
+//     backpack_.erase( it );
+//     break;
+//   }
+//   if ( !artifact_temp ) {
+//     err::raise<InvalidArtifactTypeException>( "No such artifact found in backpack" );
+//   }
+//   equipment_[slot_specific] = artifact_temp;
+// }
 
-void Character::modifyKnowledge( const uint32_t knowledge_diff ) {
-  this->knowledge_ += knowledge_diff;
-}
+// void Character::unequipArtifact( EquipmentSlots slot ) {
+//   if ( this->getIfBackpackFull() ) {
+//     err::raise<FullBackpackException>( "Backpack full. Cannot unequip." );
+//   }
+//   if ( !equipment_[slot] ) {
+//     err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
+//   }
+//   backpack_.push_back( *equipment_[slot] );
+//   equipment_[slot] = std::nullopt;
+// }
 
-uint32_t Character::getMovementPoints() const {
-  return movement_points_;
-}
+// void Character::recruitWarMachine( std::unique_ptr<const Ballista> war_machine ) {
+//   if ( war_machines_["ballista"] != nullptr ) {
+//     err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+//   }
+//   war_machines_["ballista"] = std::move( war_machine );
+// }
+// void Character::recruitWarMachine( std::unique_ptr<const AmmoCart> war_machine ) {
+//   if ( war_machines_["ammo_cart"] != nullptr ) {
+//     err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+//   }
+//   war_machines_["ammo_cart"] = std::move( war_machine );
+// }
+// void Character::recruitWarMachine( std::unique_ptr<const FirstAidTent> war_machine ) {
+//   if ( war_machines_["first_aid_tent"] != nullptr ) {
+//     err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+//   }
+//   war_machines_["first_aid_tent"] = std::move( war_machine );
+// }
+// void Character::recruitWarMachine( std::unique_ptr<const Catapult> war_machine ) {
+//   if ( war_machines_["catapult"] != nullptr ) {
+//     err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
+//   }
+//   war_machines_["catapult"] = std::move( war_machine );
+// }
+// void Character::unequipWarMachine( const std::string& slot_name ) {
+//   if ( war_machines_[slot_name] == nullptr ) {
+//     err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
+//   }
+//   // TODO empty slot, drop machine
+// }
 
-void Character::setMovementPoints( const uint32_t new_movement ) {
-  this->movement_points_ = new_movement;
-}
-
-void Character::modifyMovementPoints( const uint32_t movement_diff ) {
-  this->movement_points_ += movement_diff;
-}
-
-uint32_t Character::getLevel() const {
-  return this->level_;
-}
-
-uint32_t Character::getExperience() const {
-  return this->experience_;
-}
-
-void Character::gainExperience( const uint32_t experience ) {
-  uint32_t old_level = this->level_;
-
-  this->experience_ += experience;
-
-  if ( this->experience_ >= static_cast<uint32_t>( EXPERIENCE_THRESHHOLDS.at( old_level + 1 ) ) ) {
-    ++level_;
-  }
-}
-
-uint32_t Character::getMaxMana() const {
-  return this->max_mana_;
-}
-void Character::setMaxMana( const uint32_t new_max_mana ) {
-  this->max_mana_ = new_max_mana;
-}
-void Character::modifyMaxMana( const uint32_t max_mana_diff ) {
-  this->max_mana_ += max_mana_diff;
-}
-
-uint32_t Character::getCurrentMana() const {
-  return this->current_mana_;
-}
-void Character::setCurrentMana( const uint32_t new_current_mana ) {
-  this->current_mana_ = new_current_mana;
-}
-void Character::modifyCurrentMana( const uint32_t current_mana_diff ) {
-  this->current_mana_ += current_mana_diff;
-}
-
-int Character::getMorale() const {
-  return this->morale_;
-}
-void Character::setMorale( const int new_morale ) {
-  this->morale_ = new_morale;
-}
-void Character::modifyMorale( const int morale_diff ) {
-  this->morale_ += morale_diff;
-}
-
-int Character::getLuck() const {
-  return this->luck_;
-}
-void Character::setLuck( const int new_luck ) {
-  this->luck_ = new_luck;
-}
-void Character::modifyLuck( const int luck_diff ) {
-  this->luck_ += luck_diff;
-}
-
-uint32_t Character::getEffectiveSpeed() {
-  err::raise<NotImplementedException>( "" );
-  return 0;  // TODO
-}
-
-bool Character::getIfAlive() const {
-  return this->alive_;
-}
-
-bool Character::getIfBackpackFull() const {
-  return backpack_.size() == 64;
-}
-
-void Character::pickUpArtifact( Artifact artifact ) {
-  if ( this->getIfBackpackFull() ) {
-    err::raise<FullBackpackException>( "Backpack full. Cannot pick up." );
-  }
-  backpack_.push_back( artifact );
-}
-
-void Character::equipArtifact( ArtifactType type, EquipmentSlots slot ) {
-  std::optional<EquipmentSlots> slot_if_empty = this->checkSlotIfEmpty( slot );
-  EquipmentSlots slot_specific;
-  if ( !slot_if_empty.has_value() ) {
-    err::raise<NotEmptySlotException>( "Cannot equip into a full slot" );
-  }
-  slot_specific = slot_if_empty.value();
-
-  std::optional<Artifact> artifact_temp = std::nullopt;
-  for ( auto it = backpack_.begin(); it != backpack_.end(); ++it ) {
-    if ( it->getData().type_ != type ) {
-      continue;
-    }
-    if ( it->getData().slot_ != slot ) {
-      err::raise<InvalidSlotException>( "This artifact cannot be equipped into that slot" );
-    }
-    artifact_temp = it->copy();
-    backpack_.erase( it );
-    break;
-  }
-  if ( !artifact_temp ) {
-    err::raise<InvalidArtifactTypeException>( "No such artifact found in backpack" );
-  }
-  equipment_[slot_specific] = artifact_temp;
-}
-
-void Character::unequipArtifact( EquipmentSlots slot ) {
-  if ( this->getIfBackpackFull() ) {
-    err::raise<FullBackpackException>( "Backpack full. Cannot unequip." );
-  }
-  if ( !equipment_[slot] ) {
-    err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
-  }
-  backpack_.push_back( *equipment_[slot] );
-  equipment_[slot] = std::nullopt;
-}
-
-void Character::recruitWarMachine( std::unique_ptr<const Ballista> war_machine ) {
-  if ( war_machines_["ballista"] != nullptr ) {
-    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
-  }
-  war_machines_["ballista"] = std::move( war_machine );
-}
-void Character::recruitWarMachine( std::unique_ptr<const AmmoCart> war_machine ) {
-  if ( war_machines_["ammo_cart"] != nullptr ) {
-    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
-  }
-  war_machines_["ammo_cart"] = std::move( war_machine );
-}
-void Character::recruitWarMachine( std::unique_ptr<const FirstAidTent> war_machine ) {
-  if ( war_machines_["first_aid_tent"] != nullptr ) {
-    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
-  }
-  war_machines_["first_aid_tent"] = std::move( war_machine );
-}
-void Character::recruitWarMachine( std::unique_ptr<const Catapult> war_machine ) {
-  if ( war_machines_["catapult"] != nullptr ) {
-    err::raise<NotEmptySlotException>( "This slot is not empty. Cannot recruit." );
-  }
-  war_machines_["catapult"] = std::move( war_machine );
-}
-void Character::unequipWarMachine( const std::string& slot_name ) {
-  if ( war_machines_[slot_name] == nullptr ) {
-    err::raise<EmptySlotException>( "This slot is empty. Cannot unequip." );
-  }
-  // TODO empty slot, drop machine
-}
-
-void Character::equipSpellBook( std::unique_ptr<SpellBook> spell_book ) {
-  if ( this->spell_book_ == nullptr ) {
+void Character::equipSpellBook( SpellBook spell_book ) {
+  if ( !this->spell_book_ ) {
     err::raise<NotEmptySlotException>( "This slot is not empty. Cannot equip." );
   }
   this->spell_book_ = std::move( spell_book );
 }
-std::unique_ptr<SpellBook> Character::unequipSpellBook() {
-  std::unique_ptr<SpellBook> spell_book = std::move( this->spell_book_ );
-  this->spell_book_.reset( nullptr );
-  return spell_book;
+SpellBook Character::unequipSpellBook() {
+  if ( !spell_book_ ) {
+    err::raise<EmptySlotException>();
+  }
+  auto spell_book = std::move( this->spell_book_ );
+  this->spell_book_ = std::nullopt;
+  return std::move( *spell_book );
 }
 
-const std::vector<Artifact>& Character::getBackpack() {
-  return this->backpack_;
-}
-std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>& Character::getParty() {
-  return this->party_;
-}
-uint32_t Character::getPartySize() {
-  uint32_t party_count = 0;
-  for ( const auto& mp : this->party_ ) {
-    if ( mp != nullptr ) {
-      ++party_count;
-    }
-  }
-  return party_count;
-}
+// const std::vector<Artifact>& Character::getBackpack() {
+//   return this->backpack_;
+// }
+// std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>& Character::getParty() {
+//   return this->party_;
+// }
+// uint32_t Character::getPartySize() {
+//   uint32_t party_count = 0;
+//   for ( const auto& mp : this->party_ ) {
+//     if ( mp != nullptr ) {
+//       ++party_count;
+//     }
+//   }
+//   return party_count;
+// }
 
-void Character::recruitUnitStack( std::shared_ptr<UnitStack> unit_stack ) {
-  if ( getPartySize() == MAX_PARTY_SIZE ) {
-    err::raise<NotEmptySlotException>( "No empty slot in Party to recuit a new unit" );
-  }
-  for ( auto& mp : this->party_ ) {
-    if ( mp == nullptr ) {
-      mp = unit_stack;
-      return;
-    }
-  }
-}
+// void Character::recruitUnitStack( std::shared_ptr<UnitStack> unit_stack ) {
+//   if ( getPartySize() == MAX_PARTY_SIZE ) {
+//     err::raise<NotEmptySlotException>( "No empty slot in Party to recuit a new unit" );
+//   }
+//   for ( auto& mp : this->party_ ) {
+//     if ( mp == nullptr ) {
+//       mp = unit_stack;
+//       return;
+//     }
+//   }
+// }
 std::shared_ptr<Character> Character::copy() {
-  std::shared_ptr<Character> copy =
-      std::make_shared<Character>( this->name_, this->coords_, this->attack_, this->defense_, this->power_,
-                                   this->knowledge_, this->max_mana_, this->morale_, this->luck_ );
-  copy->alive_ = this->alive_;
-  copy->level_ = this->level_;
-  copy->experience_ = this->experience_;
-  copy->current_mana_ = this->current_mana_;
-  copy->movement_points_ = this->movement_points_;
-
-  for ( uint32_t i = 0; i < SECONDARY_SKILLS_SLOTS_COUNT; ++i ) {
-    if ( this->secondary_skills_[i] != nullptr ) {
-      copy->secondary_skills_[i] = secondary_skills_[i]->copy();
-    } else {
-      copy->secondary_skills_[i] = nullptr;
-    }
-  }
-
-  for ( const auto& [slot, artifact] : this->equipment_ ) {
-    if ( !artifact ) {
-      copy->equipment_[slot] = artifact->copy();
-    } else {
-      copy->equipment_[slot] = std::nullopt;
-    }
-  }
-
-  for ( const auto& [slot, war_machine] : this->war_machines_ ) {
-    if ( war_machine != nullptr ) {
-      copy->war_machines_[slot] = war_machine->copy();
-    } else {
-      copy->war_machines_[slot] = nullptr;
-    }
-  }
-
-  if ( this->spell_book_ != nullptr ) {
-    copy->spell_book_ = this->spell_book_->copy();
-  } else {
-    copy->spell_book_ = nullptr;
-  }
-
-  for ( const auto& artifact : this->backpack_ ) {
-    copy->backpack_.push_back( artifact.copy() );
-  }
-
-  for ( uint32_t i = 0; i < MAX_PARTY_SIZE; ++i ) {
-    if ( this->party_.at( i ) != nullptr ) {
-      copy->party_.at( i ) = this->party_.at( i )->copy();
-    } else {
-      copy->party_.at( i ) = nullptr;
-    }
-  }
-  return copy;
+  return nullptr;  // TODO fix
 }
+//   std::shared_ptr<Character> copy =
+//       std::make_shared<Character>( this->name_, this->coords_, this->attack_, this->defense_, this->power_,
+//                                    this->knowledge_, this->max_mana_, this->morale_, this->luck_ );
+//   copy->alive_ = this->alive_;
+//   copy->level_ = this->level_;
+//   copy->experience_ = this->experience_;
+//   copy->current_mana_ = this->current_mana_;
+//   copy->movement_points_ = this->movement_points_;
+
+//   for ( uint32_t i = 0; i < SECONDARY_SKILLS_SLOTS_COUNT; ++i ) {
+//     if ( this->secondary_skills_[i] != nullptr ) {
+//       copy->secondary_skills_[i] = secondary_skills_[i]->copy();
+//     } else {
+//       copy->secondary_skills_[i] = nullptr;
+//     }
+//   }
+
+//   for ( const auto& [slot, artifact] : this->equipment_ ) {
+//     if ( !artifact ) {
+//       copy->equipment_[slot] = artifact->copy();
+//     } else {
+//       copy->equipment_[slot] = std::nullopt;
+//     }
+//   }
+
+//   for ( const auto& [slot, war_machine] : this->war_machines_ ) {
+//     if ( war_machine != nullptr ) {
+//       copy->war_machines_[slot] = war_machine->copy();
+//     } else {
+//       copy->war_machines_[slot] = nullptr;
+//     }
+//   }
+
+//   if ( this->spell_book_ != nullptr ) {
+//     copy->spell_book_ = this->spell_book_->copy();
+//   } else {
+//     copy->spell_book_ = nullptr;
+//   }
+
+//   for ( const auto& artifact : this->backpack_ ) {
+//     copy->backpack_.push_back( artifact.copy() );
+//   }
+
+//   for ( uint32_t i = 0; i < MAX_PARTY_SIZE; ++i ) {
+//     if ( this->party_.at( i ) != nullptr ) {
+//       copy->party_.at( i ) = this->party_.at( i )->copy();
+//     } else {
+//       copy->party_.at( i ) = nullptr;
+//     }
+//   }
+//   return copy;
+// }

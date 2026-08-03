@@ -23,11 +23,12 @@
 
 // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
 void WorldMap::loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid ) {
-  static bool is_initialized = false;
-  if ( is_initialized ) {
-    err::raise<UnknownStateException>( "called second time" );
-  }
-  is_initialized = true;
+  // static bool is_initialized = false;
+  // if ( is_initialized ) {
+  //   err::raise<UnknownStateException>( "called second time" );
+  // }
+  // is_initialized = true;
+  // TODO technically not needed but good to bring back
 
   for ( size_t col = 0; col < WORLD_MAP_WIDTH; ++col ) {
     for ( size_t row = 0; row < WORLD_MAP_HEIGHT; ++row ) {

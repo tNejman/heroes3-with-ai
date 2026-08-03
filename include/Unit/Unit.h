@@ -14,7 +14,7 @@
 #include "Battle/TileObject.hpp"
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
-#include "Miscellaneous/UnitsLib.h"
+#include "Unit/UnitsLib.h"
 
 class Faction;
 

@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "Miscellaneous/ProjectLib.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"
 #include "Unit/Unit.h"
+#include "Unit/UnitsLib.h"
 
 TEST( UnitTest, findUnitData ) {
   std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();

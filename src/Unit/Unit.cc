@@ -8,8 +8,9 @@
 
 #include "Battle/TileObject.hpp"
 #include "Miscellaneous/ProjectLib.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"
+#include "Unit/UnitsLib.h"
+
 
 Unit::Unit( const std::shared_ptr<const UnitData> unit_data, const int unit_type )
     : TileObject( false ), unit_data_( std::move( unit_data ) ), unit_type_( unit_type ) {};

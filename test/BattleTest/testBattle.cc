@@ -6,10 +6,12 @@
 #include "Battle/Battle.h"
 #include "Battle/Tile.h"
 #include "Character/Character.h"
+#include "Character/CharacterBuilder.h"
+#include "Character/CharacterStats.h"
 #include "Miscellaneous/Coords.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"
 #include "Unit/Unit.h"
+#include "Unit/UnitsLib.h"
 
 // Easy factory constructor
 // const std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
@@ -28,13 +30,17 @@ TEST( BattleTest, checkattacking ) {
   std::shared_ptr<UnitStack> pikeman_army = std::make_shared<UnitStack>( pikeman, (uint32_t)30 );
   std::shared_ptr<UnitStack> angel_army = std::make_shared<UnitStack>( angel, (uint32_t)1 );
 
-  std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character2 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
 
-  character1->recruitUnitStack( pikeman_army );
-  character2->recruitUnitStack( angel_army );
+  character1->army().recruitUnitStack( pikeman_army );
+  character2->army().recruitUnitStack( angel_army );
   std::shared_ptr<GridTile> tile = nullptr;
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
   battle->attack( pikeman_army, angel_army );
@@ -54,18 +60,42 @@ TEST( BattleTest, checkingattacking ) {
   std::shared_ptr<UnitStack> angel_army_v = std::make_shared<UnitStack>( angel, (uint32_t)1 );
 
   std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 10, 10, 10, 10, 50, 2, -3 );
+      CharacterBuilder{}
+          .setName( "John" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
+              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .buildSharedPtr();
   std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 2, -3 );
+      CharacterBuilder{}
+          .setName( "Silverhand" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 },
+              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .buildSharedPtr();
   std::shared_ptr<Character> character3 =
-      std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 2, -3 );
+      CharacterBuilder{}
+          .setName( "V" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 100, .defense_ = 100, .power_ = 10, .knowledge_ = 10 },
+              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .buildSharedPtr();
   std::shared_ptr<Character> character4 =
-      std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 2, -3 );
+      CharacterBuilder{}
+          .setName( "Panam" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 },
+              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .buildSharedPtr();
 
-  character1->recruitUnitStack( pikeman_army_john );
-  character2->recruitUnitStack( angel_army_silverhand );
-  character3->recruitUnitStack( angel_army_v );
-  character4->recruitUnitStack( pikeman_army_panam );
+  character1->army().recruitUnitStack( pikeman_army_john );
+  character2->army().recruitUnitStack( angel_army_silverhand );
+  character3->army().recruitUnitStack( angel_army_v );
+  character4->army().recruitUnitStack( pikeman_army_panam );
 
   std::shared_ptr<GridTile> tile = nullptr;
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
@@ -90,18 +120,29 @@ TEST( BattleTest, checkingMaxattackBonus ) {
   std::shared_ptr<UnitStack> angel_army_v = std::make_shared<UnitStack>( angel, (uint32_t)1 );
 
   std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 4000, 4000, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character3 =
-      std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character4 =
-      std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+      CharacterBuilder{}
+          .setName( "John" )
+          .setCoords( { 0, 0 } )
+          .setStats( CharacterStats{
+              CharacterStats::PrimarySkills{ .attack_ = 4000, .defense_ = 4000, .power_ = 10, .knowledge_ = 10 } } )
+          .buildSharedPtr();
+  std::shared_ptr<Character> character2 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character3 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 100, .defense_ = 100, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character4 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
 
-  character1->recruitUnitStack( pikeman_army_john );
-  character2->recruitUnitStack( angel_army_silverhand );
-  character3->recruitUnitStack( angel_army_v );
-  character4->recruitUnitStack( pikeman_army_panam );
+  character1->army().recruitUnitStack( pikeman_army_john );
+  character2->army().recruitUnitStack( angel_army_silverhand );
+  character3->army().recruitUnitStack( angel_army_v );
+  character4->army().recruitUnitStack( pikeman_army_panam );
 
   std::shared_ptr<GridTile> tile = nullptr;
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
@@ -123,33 +164,41 @@ TEST( BattleTest, checkingMaxdefenseBonus ) {
   std::shared_ptr<UnitStack> angel_army_silverhand = std::make_shared<UnitStack>( angel, (uint32_t)5 );
   std::shared_ptr<UnitStack> angel_army_v = std::make_shared<UnitStack>( angel, (uint32_t)5 );
 
-  std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 200, 200, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character3 =
-      std::make_shared<Character>( "V", CoordPair( 0u, 0u ), 100, 100, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character4 =
-      std::make_shared<Character>( "Panam", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 200, .defense_ = 200, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character2 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character3 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 100, .defense_ = 100, .power_ = 100, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character4 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
 
-  character1->recruitUnitStack( angel_army_john );
-  character2->recruitUnitStack( angel_army_silverhand );
-  character3->recruitUnitStack( angel_army_v );
-  character4->recruitUnitStack( angel_army_panam );
+  character1->army().recruitUnitStack( angel_army_john );
+  character2->army().recruitUnitStack( angel_army_silverhand );
+  character3->army().recruitUnitStack( angel_army_v );
+  character4->army().recruitUnitStack( angel_army_panam );
 
   std::shared_ptr<GridTile> tile = nullptr;
   std::shared_ptr<Battle> battle = std::make_shared<Battle>( character1, character2, tile );
   std::shared_ptr<Battle> battle_v_panam = std::make_shared<Battle>( character3, character4, tile );
 
-  ASSERT_NE( character1->getParty()[0], nullptr );
-  ASSERT_NE( character3->getParty()[0], nullptr );
+  ASSERT_NE( character1->army().getParty()[0], nullptr );
+  ASSERT_NE( character3->army().getParty()[0], nullptr );
 
   battle->attack( angel_army_silverhand, angel_army_john );
   battle_v_panam->attack( angel_army_panam, angel_army_v );
 
   // when UnitStack is destroyed, its shared_ptr turned into nullptr everywhere globally
-  ASSERT_EQ( character1->getParty()[0], nullptr );
-  ASSERT_EQ( character3->getParty()[0], nullptr );
+  ASSERT_EQ( character1->army().getParty()[0], nullptr );
+  ASSERT_EQ( character3->army().getParty()[0], nullptr );
 }
 
 TEST( BattleTestMoving, checksettingarmies ) {
@@ -164,19 +213,23 @@ TEST( BattleTestMoving, checksettingarmies ) {
   std::shared_ptr<UnitStack> swordsman_army = std::make_shared<UnitStack>( swordsman, (uint32_t)2 );
   std::shared_ptr<UnitStack> swordsman_2_army = std::make_shared<UnitStack>( swordsman, (uint32_t)3 );
   std::shared_ptr<UnitStack> swordsman_3_army = std::make_shared<UnitStack>( swordsman, (uint32_t)4 );
-  std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character2 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
 
-  character1->recruitUnitStack( pikeman_army );
-  character1->recruitUnitStack( pikeman_2_army );
-  character1->recruitUnitStack( pikeman_3_army );
+  character1->army().recruitUnitStack( pikeman_army );
+  character1->army().recruitUnitStack( pikeman_2_army );
+  character1->army().recruitUnitStack( pikeman_3_army );
 
-  character2->recruitUnitStack( angel_army );
-  character2->recruitUnitStack( swordsman_army );
-  character2->recruitUnitStack( swordsman_2_army );
-  character2->recruitUnitStack( swordsman_3_army );
+  character2->army().recruitUnitStack( angel_army );
+  character2->army().recruitUnitStack( swordsman_army );
+  character2->army().recruitUnitStack( swordsman_2_army );
+  character2->army().recruitUnitStack( swordsman_3_army );
   std::shared_ptr<GridTile> tile = nullptr;
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
 
@@ -202,18 +255,22 @@ TEST( BattleTestMoving, checkmovingarmies ) {
   std::shared_ptr<UnitStack> swordsman_army = std::make_shared<UnitStack>( swordsman, 2u );
   std::shared_ptr<UnitStack> swordsman_2_army = std::make_shared<UnitStack>( swordsman, 3u );
   std::shared_ptr<UnitStack> swordsman_3_army = std::make_shared<UnitStack>( swordsman, 4u );
-  std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character2 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
 
-  character1->recruitUnitStack( pikeman_army );
-  character1->recruitUnitStack( pikeman_2_army );
-  character1->recruitUnitStack( pikeman_3_army );
-  character2->recruitUnitStack( angel_army );
-  character2->recruitUnitStack( swordsman_army );
-  character2->recruitUnitStack( swordsman_2_army );
-  character2->recruitUnitStack( swordsman_3_army );
+  character1->army().recruitUnitStack( pikeman_army );
+  character1->army().recruitUnitStack( pikeman_2_army );
+  character1->army().recruitUnitStack( pikeman_3_army );
+  character2->army().recruitUnitStack( angel_army );
+  character2->army().recruitUnitStack( swordsman_army );
+  character2->army().recruitUnitStack( swordsman_2_army );
+  character2->army().recruitUnitStack( swordsman_3_army );
   std::shared_ptr<GridTile> tile = nullptr;
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
   ASSERT_EQ( swordsman_army, battle->getBattlefield()->getTileByProxy( CoordPair( 14u, 2u ) )->getObject() );
@@ -239,18 +296,22 @@ TEST( BattleTestAttack, check_attacking_armies ) {
   std::shared_ptr<UnitStack> swordsman_army = std::make_shared<UnitStack>( swordsman, 2u );
   std::shared_ptr<UnitStack> swordsman_2_army = std::make_shared<UnitStack>( swordsman, 3u );
   std::shared_ptr<UnitStack> swordsman_3_army = std::make_shared<UnitStack>( swordsman, 4u );
-  std::shared_ptr<Character> character1 =
-      std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
-  std::shared_ptr<Character> character2 =
-      std::make_shared<Character>( "Silverhand", CoordPair( 0u, 0u ), 0, 0, 10, 10, 50, 0, 0 );
+  std::shared_ptr<Character> character1 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
+  std::shared_ptr<Character> character2 = CharacterBuilder{}
+                                              .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
+                                              .buildSharedPtr();
 
-  character1->recruitUnitStack( pikeman_army );
-  character1->recruitUnitStack( pikeman_2_army );
-  character1->recruitUnitStack( pikeman_3_army );
-  character2->recruitUnitStack( angel_army );
-  character2->recruitUnitStack( swordsman_army );
-  character2->recruitUnitStack( swordsman_2_army );
-  character2->recruitUnitStack( swordsman_3_army );
+  character1->army().recruitUnitStack( pikeman_army );
+  character1->army().recruitUnitStack( pikeman_2_army );
+  character1->army().recruitUnitStack( pikeman_3_army );
+  character2->army().recruitUnitStack( angel_army );
+  character2->army().recruitUnitStack( swordsman_army );
+  character2->army().recruitUnitStack( swordsman_2_army );
+  character2->army().recruitUnitStack( swordsman_3_army );
   std::shared_ptr<GridTile> tile = nullptr;
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
 

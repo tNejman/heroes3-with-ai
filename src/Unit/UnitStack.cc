@@ -6,9 +6,10 @@
 
 #include "Battle/TileObject.hpp"
 #include "Miscellaneous/Coords.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Faction.hpp"  // IWYU pragma: keep
 #include "Unit/Unit.h"
+#include "Unit/UnitsLib.h"
+
 
 UnitStack::UnitStack( std::shared_ptr<const Unit> unit, uint32_t size )
     : TileObject( false ),

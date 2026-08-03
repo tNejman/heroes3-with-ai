@@ -9,8 +9,9 @@
 
 #include "Battle/TileObject.hpp"
 #include "Miscellaneous/Coords.h"
-#include "Miscellaneous/UnitsLib.h"
 #include "Unit/Unit.h"
+#include "Unit/UnitsLib.h"
+
 
 class UnitStack : public TileObject {
  private:

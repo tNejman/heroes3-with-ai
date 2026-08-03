@@ -49,6 +49,26 @@ enum class ArtifactType : int {
   // Misc
 };
 
+enum class EquipmentSlots {
+  HELMET = 0,
+  CAPE = 1,
+  NECKLACE = 2,
+  WEAPON = 3,
+  SHIELD = 4,
+  TORSO = 5,
+  RING = 6,
+  RING_1 = 7,
+  RING_2 = 8,
+  FEET = 9,
+  MISC = 10,
+  MISC_1 = 10,
+  MISC_2 = 11,
+  MISC_3 = 12,
+  MISC_4 = 13,
+  MISC_5 = 14,
+  COUNT = 15
+};
+
 struct DisableCopyMove {  // NOLINT(cppcoreguidelines-special-member-functions)
   DisableCopyMove() = default;
   DisableCopyMove( const DisableCopyMove& ) = delete;

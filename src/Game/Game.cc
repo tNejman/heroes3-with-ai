@@ -44,7 +44,7 @@ void Game::performGameLoopIterationOverworld() {
   for ( auto& player : players_ ) {
     for ( auto it = player->getCharacters().begin(); it != player->getCharacters().end(); ++it ) {
       bool all_empty = true;
-      for ( auto& unit : ( *it )->getParty() ) {
+      for ( auto& unit : ( *it )->army().getParty() ) {
         if ( unit ) {
           all_empty = false;
         }
