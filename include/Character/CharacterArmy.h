@@ -6,14 +6,12 @@
 */
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
-#include <map>
-#include <memory>
 #include <optional>
-#include <string>
 
-#include "Graphics/Visitor.h"
 #include "Unit/UnitStack.h"
+#include "Unit/UnitsLib.h"
 
 constexpr inline int MAX_PARTY_SIZE = 7;
 
@@ -27,12 +25,13 @@ enum class PartySlot : uint8_t {  // do not change numeration
   SEVEN
 };
 
-using Party = std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>;
+using Party = std::array<std::optional<UnitStack>, MAX_PARTY_SIZE>;
+using WarMachineArr = std::array<std::optional<UnitStack>, static_cast<size_t>( WarMachineType::COUNT )>;
 
 class CharacterArmy {
  private:
   Party party_;
-  std::map<std::string, std::shared_ptr<WarMachine>> war_machines_;
+  WarMachineArr war_machines_;
 
  public:
   CharacterArmy() = default;
@@ -45,9 +44,9 @@ class CharacterArmy {
   [[nodiscard]] int getCurrentPartySize() const noexcept;
   [[nodiscard]] const Party& getParty() const noexcept;
   [[nodiscard]] Party& getParty() noexcept;
-  [[nodiscard]] const std::shared_ptr<UnitStack>& getPartyMember( PartySlot slot ) const noexcept;
-  void recruitUnitStack( std::shared_ptr<UnitStack> stack, PartySlot slot );
-  void recruitUnitStack( std::shared_ptr<UnitStack> stack );
+  [[nodiscard]] const std::optional<UnitStack>& getPartyMember( PartySlot slot ) const noexcept;
+  UnitStack& recruitUnitStack( const UnitStack& stack, PartySlot slot );
+  UnitStack& recruitUnitStack( const UnitStack& stack );
 
   /* ideas @TODO
     - recruit and unrecruit war machines

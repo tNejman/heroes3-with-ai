@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <queue>
 #include <set>
@@ -22,12 +23,12 @@
 
 std::vector<std::shared_ptr<Move>> MoveFactory::createMoveMove( std::shared_ptr<Battle> battle ) {
   std::vector<std::shared_ptr<Move>> valid_moves;
-  if ( !battle->getUnitInAction() ) {
+  if ( battle->getUnitInAction() == nullptr ) {
     return valid_moves;
   }
 
   CoordPair start = battle->getUnitInAction()->getCoordsInBattle();
-  uint32_t max_steps = battle->getUnitInAction()->getSpeed();
+  auto max_steps = static_cast<uint32_t>( battle->getUnitInAction()->getData().speed_ );
 
   std::queue<std::pair<std::shared_ptr<Tile>, uint32_t>> queue;
   std::set<CoordPair> visited;
@@ -64,7 +65,7 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createMoveMove( std::shared_ptr<
       if ( auto it = visited.find( neighbour_coords ); it != visited.end() ) {
         continue;
       }
-      if ( neighbor_tile->getObject() ) {
+      if ( neighbor_tile->getObject() != nullptr ) {
         continue;
       }
 
@@ -83,7 +84,7 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createAttackMove( std::shared_pt
   }
 
   CoordPair start = battle->unit_in_action_->getCoordsInBattle();
-  uint32_t distance = battle->unit_in_action_->getRange();
+  uint32_t distance = ( battle->unit_in_action_->getData().is_range_ ) ? std::numeric_limits<uint32_t>::max() : 1;
 
   std::queue<std::pair<std::shared_ptr<Tile>, uint32_t>> queue;
   std::set<CoordPair> visited;
@@ -95,8 +96,7 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createAttackMove( std::shared_pt
 
   queue.emplace( start_tile, 0U );
   visited.insert( start );
-  std::vector<std::shared_ptr<UnitStack>> target_units = battle->getUnitsInBattle();
-  std::shared_ptr<UnitStack> unit;
+  auto target_units = battle->getUnitsInBattle();
   valid_moves.push_back( std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() ) );
   while ( !queue.empty() ) {
     auto [current_tile, cost] = queue.front();
@@ -105,17 +105,13 @@ std::vector<std::shared_ptr<Move>> MoveFactory::createAttackMove( std::shared_pt
     const CoordPair current_coords = current_tile->getCoords();
     if ( cost > 0U && cost <= distance && current_tile->getObject() != nullptr ) {
       // some magic to get defending unit
-      std::ranges::for_each( target_units,
-                             [&unit, &current_coords, &battle]( const std::shared_ptr<UnitStack>& unit_tmp ) {
-                               if ( current_coords == unit_tmp->getCoordsInBattle()
-                                    && !battle->isSameArmy( battle->getUnitInAction(), unit_tmp ) ) {
-                                 unit = unit_tmp;
-                               }
-                             } );
-      if ( unit ) {
-        valid_moves.push_back(
-            std::make_shared<AttackMove>( battle->unit_in_action_->getCoordsInBattle(), unit->getCoordsInBattle() ) );
-      }
+      std::ranges::for_each( target_units, [&]( const UnitStack& unit_on_battlefield ) {
+        if ( current_coords == unit_on_battlefield.getCoordsInBattle()
+             && !battle->isSameArmy( *battle->getUnitInAction(), unit_on_battlefield ) ) {
+          valid_moves.push_back( std::make_shared<AttackMove>( battle->unit_in_action_->getCoordsInBattle(),
+                                                               unit_on_battlefield.getCoordsInBattle() ) );
+        }
+      } );
     }
 
     if ( cost >= distance ) {

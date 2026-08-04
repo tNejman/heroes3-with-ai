@@ -19,7 +19,7 @@ class SecondarySkill;
 class Resource;
 class WarMachine;
 class Player;
-class Unit;
+class UnitStack;
 class Battle;
 class OverworldObstacle;
 
@@ -33,7 +33,7 @@ class Visitor {  // NOLINT(cppcoreguidelines-special-member-functions)
   virtual sf::Texture& visit( const SecondarySkill& e ) = 0;
   virtual sf::Texture& visit( const Spell& e ) = 0;
   // virtual sf::Texture& visit(const SpellBook& e) = 0;
-  virtual sf::Texture& visit( const Unit& e ) = 0;
+  // virtual sf::Texture& visit( const UnitStack& e ) = 0;
   virtual sf::Texture& visit( const Resource& e ) = 0;
   virtual sf::Texture& visit( const OverworldObstacle& e ) = 0;
   virtual sf::Texture& visit( const Building& e ) = 0;

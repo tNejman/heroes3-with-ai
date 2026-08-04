@@ -223,7 +223,7 @@ Game::Game( std::vector<std::shared_ptr<Player>> players ) : Game( std::move( pl
 
 Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input )
     : players_( std::move( players ) ),
-      factions_( { std::make_shared<FactionForge>(), std::make_shared<FactionConflux>() } ),
+      // factions_( { std::make_shared<FactionForge>(), std::make_shared<FactionConflux>() } ),
       render_window_( std::make_shared<sf::RenderWindow>( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME,
                                                           sf::Style::Titlebar | sf::Style::Close ) ),
       sprite_visitor_( std::make_shared<SpriteVisitor>() ),

@@ -20,7 +20,6 @@
 #include <string>
 
 #include "Artifact/Artifact.h"
-#include "Artifact/ArtifactLib.h"
 #include "Character/CharacterArmy.h"
 #include "Character/CharacterInventory.h"
 #include "Character/CharacterStats.h"

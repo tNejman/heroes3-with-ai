@@ -121,8 +121,8 @@ TEST( CharacterTest, copyCharacter ) {
 
   character_original.inventory().equipArtifact( ArtifactType::THUNDER_HELMET, EquipmentSlots::HELMET );
 
-  auto faction = std::make_shared<FactionCastle>();
-  auto pikeman = faction->getUnit( CastleUnitType::PIKEMAN );
+  // auto faction = std::make_shared<FactionCastle>();
+  // auto pikeman = faction->getUnit( CastleUnitType::PIKEMAN );
   // auto pikemen_stack = std::make_shared<UnitStack>( pikeman, 30 );
 
   // character_original->recruitUnitStack( pikemen_stack );

@@ -1,11 +1,14 @@
 #include "Character/Character.h"
 
 #include <SFML/Graphics/Texture.hpp>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "Artifact/Artifact.h"
+#include "Character/CharacterArmy.h"
+#include "Character/CharacterInventory.h"
 #include "Character/CharacterStats.h"
 #include "Exceptions/EmptySlotException.hpp"
 #include "Exceptions/Err.hpp"

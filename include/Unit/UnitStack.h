@@ -5,6 +5,7 @@
 */
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 
 #include "Battle/TileObject.hpp"
@@ -12,39 +13,50 @@
 #include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
 
+namespace {
+constexpr inline int DEFAULT_UNIT_STACK_MORALE = 0;
+constexpr inline int DEFAULT_UNIT_STACK_LUCK = 0;
+}  // namespace
 
 class UnitStack : public TileObject {
  private:
-  CoordPair coords_in_battle_{ 0, 0 };
-  std::shared_ptr<const Unit> unit_;
-  short morale_;
-  short luck_;
-  uint32_t size_;
-  uint32_t current_health_;
+  // CoordPair coords_in_battle_{ 0, 0 };
+  std::reference_wrapper<const UnitData> data_;
+  int morale_ = DEFAULT_UNIT_STACK_MORALE;
+  int luck_ = DEFAULT_UNIT_STACK_LUCK;
+  int size_;
+  int current_health_;
+  CoordPair coords_in_battle_;
 
-  void checkUnit() const;
+  // void checkUnit() const;
 
  public:
-  UnitStack( std::shared_ptr<const Unit> unit, uint32_t size );
-  ~UnitStack() = default;
-  void setCoordsInBattle( CoordPair new_coords );
-  [[nodiscard]] CoordPair getCoordsInBattle() const;
-  [[nodiscard]] uint32_t getSpeed() const;
-  [[nodiscard]] FactionType getFactionType() const;
-  [[nodiscard]] int getUnitType() const;
-  [[nodiscard]] short getMorale() const;
-  void setMorale( short new_morale ) noexcept;
-  [[nodiscard]] short getLuck() const;
-  void setLick( short new_luck ) noexcept;
-  [[nodiscard]] uint32_t getRange() const;
-  [[nodiscard]] uint32_t getSize() const;
-  void setSize( uint32_t new_size ) noexcept;
-  [[nodiscard]] uint32_t getCurrentHealth() const;
-  void setCurrentHealth( uint32_t new_current_health ) noexcept;
-  [[nodiscard]] double getEffectiveFightValue() const;
-  [[nodiscard]] std::shared_ptr<const Unit> getUnit() const;
-  [[nodiscard]] bool modifyCurrentHealth( int health_diff );
-  [[nodiscard]] uint32_t getHealthPool() const;
-  [[nodiscard]] bool getIfAlive() const;
-  [[nodiscard]] std::shared_ptr<UnitStack> copy() const;
+  UnitStack( const UnitData& data, int size );
+  [[nodiscard]] const UnitData& getData() const noexcept;
+
+  [[nodiscard]] int getMorale() const noexcept;
+  void setMorale( int new_morale ) noexcept;
+  [[nodiscard]] int getLuck() const noexcept;
+  void setLuck( int new_luck ) noexcept;
+  [[nodiscard]] int getSize() const noexcept;
+
+  [[nodiscard]] int getHealthPool() const noexcept;
+  void modifyCurrentHealth( int health_diff ) noexcept;
+
+  [[nodiscard]] bool isAlive() const noexcept;
+
+  void setCoordsInBattle( CoordPair new_coords ) noexcept;
+  [[nodiscard]] CoordPair getCoordsInBattle() const noexcept;
+
+  [[nodiscard]] UnitStack* asUnit() noexcept override;
+  // [[nodiscard]] uint32_t getSpeed() const;
+  // [[nodiscard]] FactionType getFactionType() const;
+  // [[nodiscard]] int getUnitType() const;
+  // [[nodiscard]] uint32_t getRange() const;
+  // [[nodiscard]] uint32_t getCurrentHealth() const;
+  // void setCurrentHealth( uint32_t new_current_health ) noexcept;
+  // [[nodiscard]] double getEffectiveFightValue() const;
+  // [[nodiscard]] std::shared_ptr<const Unit> getUnit() const;
+  // [[nodiscard]] bool getIfAlive() const;
+  // [[nodiscard]] std::shared_ptr<UnitStack> copy() const;
 };

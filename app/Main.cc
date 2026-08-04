@@ -30,22 +30,15 @@
 #include "WorldMap/OverworldObstacle.h"
 
 int main() {
-  auto castle = std::make_shared<FactionCastle>();
-  auto pikeman = castle->getUnit( CastleUnitType::PIKEMAN );
-  auto swordsman = castle->getUnit( CastleUnitType::SWORDSMAN );
-  auto angel = castle->getUnit( CastleUnitType::ANGEL );
-  auto archer = castle->getUnit( CastleUnitType::ARCHER );
-  auto monk = castle->getUnit( CastleUnitType::MONK );
+  UnitStack unit_stack_1{ getCastleUnit( CastleUnitType::PIKEMAN ), 10 };
+  UnitStack unit_stack_3{ getCastleUnit( CastleUnitType::PIKEMAN ), 15 };
+  UnitStack unit_stack_4{ getCastleUnit( CastleUnitType::ANGEL ), 10 };
 
-  auto unit_stack_1 = std::make_shared<UnitStack>( pikeman, 10 );
-  auto unit_stack_3 = std::make_shared<UnitStack>( pikeman, 15 );
-  auto unit_stack_4 = std::make_shared<UnitStack>( angel, 10 );
+  UnitStack unit_stack_2{ getCastleUnit( CastleUnitType::SWORDSMAN ), 5 };
+  UnitStack unit_stack_5{ getCastleUnit( CastleUnitType::ARCHER ), 10 };
 
-  auto unit_stack_2 = std::make_shared<UnitStack>( swordsman, 5 );
-  auto unit_stack_5 = std::make_shared<UnitStack>( archer, 10 );
-
-  auto unit_stack_6 = std::make_shared<UnitStack>( monk, 5 );
-  auto unit_stack_7 = std::make_shared<UnitStack>( pikeman, 5 );
+  UnitStack unit_stack_6{ getCastleUnit( CastleUnitType::MONK ), 5 };
+  UnitStack unit_stack_7{ getCastleUnit( CastleUnitType::PIKEMAN ), 5 };
 
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(

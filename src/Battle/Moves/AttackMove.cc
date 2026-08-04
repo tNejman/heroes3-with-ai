@@ -5,6 +5,8 @@
 
 #include "Battle/Battle.h"
 #include "Battle/Moves/Move.hpp"
+#include "Exceptions/Err.hpp"
+#include "Exceptions/UnknownStateException.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Unit/UnitStack.h"  // IWYU pragma: keep
 
@@ -13,8 +15,15 @@ AttackMove::AttackMove( CoordPair attacker, CoordPair defender )
 }
 
 void AttackMove::execute( std::shared_ptr<Battle> battle ) {
-  (void)battle->attack( battle->getUnitFromCoords( attacker_ ),
-                        battle->getUnitFromCoords( defender_ ) );  // TODO handle return value
+  auto *maybe_attacker = battle->getUnitFromCoords( attacker_ );
+  auto *maybe_defender = battle->getUnitFromCoords( defender_ );
+  if ( maybe_attacker == nullptr ) {
+    err::raise<UnknownStateException>( "attacker is null" );
+  } else if ( maybe_defender == nullptr ) {
+    err::raise<UnknownStateException>( "defender is null" );
+  }
+
+  battle->attack( *( maybe_attacker->asUnit() ), *( maybe_defender->asUnit() ) );  // TODO handle return value
   if ( battle->getBattleState() != BattleState::WIN_ATTACKER
        && battle->getBattleState() != BattleState::WIN_DEFENDER ) {
     battle->setBattleState( BattleState::MOVING );
@@ -30,9 +39,9 @@ std::string AttackMove::getPath() const {
 
 std::string AttackMove::getInfo( std::shared_ptr<Battle> battle ) const {
   std::string info = "Attacker: ";
-  info += battle->getUnitFromCoords( attacker_ )->getUnit()->getName();
+  info += battle->getUnitFromCoords( attacker_ )->getData().name_;
   info += ", defender: ";
-  info += battle->getUnitFromCoords( defender_ )->getUnit()->getName();
+  info += battle->getUnitFromCoords( defender_ )->getData().name_;
 
   auto x = attacker_.x_;
   auto y = attacker_.y_;

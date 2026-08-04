@@ -7,7 +7,6 @@
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cassert>
-#include <cstdint>
 #include <exception>
 #include <memory>
 #include <stdexcept>
@@ -24,7 +23,6 @@
 #include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidSecondarySkillException.hpp"
 #include "Exceptions/InvalidTextureException.hpp"
-#include "Exceptions/UnknownStateException.hpp"
 #include "Exceptions/_NotImplementedException.hpp"
 #include "Graphics/Visitor.h"
 #include "Magic/Spell.h"
@@ -33,6 +31,7 @@
 #include "Miscellaneous/ProjectLib.h"
 #include "Resource/Resource.h"
 #include "Unit/Unit.h"
+#include "Unit/UnitStack.h"
 #include "WorldMap/Building.h"
 #include "WorldMap/OverworldObstacle.h"
 
@@ -90,10 +89,10 @@ sf::Texture& SpriteVisitor::visit( const Spell& e ) {
 //     return FindTexture(path);
 // }
 
-sf::Texture& SpriteVisitor::visit( const Unit& e ) {
-  std::string path = "Sprites/units/" + e.getName() + ".png";
-  return findTexture( path );
-}
+// sf::Texture& SpriteVisitor::visit( const UnitStack& e ) {
+//   std::string path = "Sprites/units/" + e.getData().name_ + ".png";
+//   return findTexture( path );
+// }
 
 sf::Texture& SpriteVisitor::visit( const Resource& e ) {
   std::string resource_name;
@@ -161,8 +160,8 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
   path += pair_image.second;
   (void)combined_image.copy( image_hex, sf::Vector2u( 0, 0 ), sf::IntRect(), true );
 
-  for ( const auto& unit : units_sorted ) {
-    CoordPair unit_coords = unit->getCoordsInBattle();
+  for ( const UnitStack& unit : units_sorted ) {
+    CoordPair unit_coords = unit.getCoordsInBattle();
     int offset_x = 0;
     int offset_y = 0;
     offset_x = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( unit_coords.x_ * BATTLE_MAP_SPRITE_X_DELTA );
@@ -173,17 +172,18 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
       offset_y += BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
     }
     sf::Image image_tmp;
-    if ( !image_tmp.loadFromFile( "Sprites/units/" + unit->getUnit()->getName() + ".png" ) ) {
-      err::raise<std::runtime_error>( "Failed to load image: Sprites/units/" + unit->getUnit()->getName() + ".png" );
+    if ( !image_tmp.loadFromFile( "Sprites/units/" + unit.getData().name_ + ".png" ) ) {
+      err::raise<std::runtime_error>( "Failed to load image: Sprites/units/" + unit.getData().name_ + ".png" );
     }
-    if ( std::ranges::find( units_defender, unit ) != units_defender.end() ) {
+    if ( std::ranges::find_if( units_defender, [&]( const UnitStack& stack ) { return &stack == &unit; } )
+         != units_defender.end() ) {
       image_tmp.flipHorizontally();
     }
     (void)combined_image.copy(
         image_tmp, sf::Vector2u( static_cast<unsigned int>( offset_x ), static_cast<unsigned int>( offset_y ) ),
         sf::IntRect(), true );
-    path += "unit" + unit->getUnit()->getName() + std::to_string( unit->getCoordsInBattle().x_ )
-            + std::to_string( unit->getCoordsInBattle().y_ );
+    path += "unit" + unit.getData().name_ + std::to_string( unit.getCoordsInBattle().x_ )
+            + std::to_string( unit.getCoordsInBattle().y_ );
   }
 
   sf::Texture combined_texture;

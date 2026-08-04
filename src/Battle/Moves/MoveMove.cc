@@ -12,7 +12,7 @@ MoveMove::MoveMove( CoordPair old_coords, CoordPair new_coords )
 
 void MoveMove::execute( std::shared_ptr<Battle> battle ) {
   if ( battle->getUnitFromCoords( old_coords_ ) != nullptr ) {
-    (void)battle->move( battle->getUnitFromCoords( old_coords_ ), new_coords_ );  // TODO handle return value
+    battle->move( *battle->getUnitFromCoords( old_coords_ ), new_coords_ );  // TODO handle return value
     battle->setBattleState( BattleState::ATTACKING );
   }
 }
@@ -39,7 +39,7 @@ std::string MoveMove::getInfo( std::shared_ptr<Battle> battle ) const {
     return path;
   } else {
     std::string info = "Unit: ";
-    info += battle->getUnitFromCoords( old_coords_ )->getUnit()->getName();
+    info += battle->getUnitFromCoords( old_coords_ )->getData().name_;
 
     auto x = battle->getUnitFromCoords( old_coords_ )->getCoordsInBattle().x_;
     auto y = battle->getUnitFromCoords( old_coords_ )->getCoordsInBattle().y_;

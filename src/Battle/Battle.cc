@@ -8,75 +8,73 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <functional>
 #include <iterator>
 #include <memory>
-#include <stdexcept>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "Battle/BattleField.h"
 #include "Battle/Tile.h"
 #include "Character/Character.h"
+#include "Character/CharacterArmy.h"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Exceptions/_NotImplementedException.hpp"
+#include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/Unit.h"
+#include "Unit/UnitsLib.h"
 
 void Battle::setAttackingArmy() {
   auto& party = attacker_->army().getParty();
-  for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
+  for ( int i = 0; i < MAX_PARTY_SIZE; ++i ) {
+    auto& maybe_unit = party[static_cast<size_t>( i )];
+    if ( !maybe_unit ) {
       continue;
     }
-    CoordPair coords_in_battle{ 0U, 0U };
-    if ( i < 3 ) {
-      coords_in_battle = CoordPair{ 0, i * 2 };
-    } else if ( i == 3 ) {
-      coords_in_battle = CoordPair{ 0, 5 };
-    } else if ( i > 3 ) {
-      coords_in_battle = CoordPair{ 0, ( ( i - 4 ) * 2 ) + 6 };
-    }
-    party.at( static_cast<size_t>( i ) )->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( static_cast<size_t>( i ) ) );
+    auto& stack = *maybe_unit;
+    CoordPair coords_in_battle = ( i < 3 )    ? CoordPair{ 0, i * 2 }
+                                 : ( i == 3 ) ? CoordPair{ 0, 5 }
+                                              : CoordPair{ 0, ( ( i - 4 ) * 2 ) + 6 };
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( stack );
+    stack.setCoordsInBattle( coords_in_battle );
   }
 }
 
 void Battle::setDefendingArmy() {
   auto& party = defender_->army().getParty();
-  for ( int i = 0; i < MAX_PARTY_SIZE; i++ ) {
-    if ( party.at( static_cast<size_t>( i ) ) == nullptr ) {
+  for ( int i = 0; i < MAX_PARTY_SIZE; ++i ) {
+    auto& maybe_unit = party[static_cast<size_t>( i )];
+    if ( !maybe_unit ) {
       continue;
     }
-    CoordPair coords_in_battle{ 0U, 0U };
-    if ( i < 3 ) {
-      coords_in_battle = CoordPair( 14U, i * 2 );
-    } else if ( i == 3 ) {
-      coords_in_battle = CoordPair( 14u, 5u );
-    } else if ( i > 3 ) {
-      coords_in_battle = CoordPair( 14u, ( ( i - 4 ) * 2 ) + 6 );
-    }
-    party.at( static_cast<size_t>( i ) )->setCoordsInBattle( coords_in_battle );
-    battlefield_->getTileByProxy( coords_in_battle )->setObject( party.at( static_cast<size_t>( i ) ) );
+    auto& stack = *maybe_unit;
+    CoordPair coords_in_battle = ( i < 3 )    ? CoordPair( 14, i * 2 )
+                                 : ( i == 3 ) ? CoordPair( 14, 5 )
+                                              : CoordPair( 14, ( ( i - 4 ) * 2 ) + 6 );
+
+    battlefield_->getTileByProxy( coords_in_battle )->setObject( stack );
+    stack.setCoordsInBattle( coords_in_battle );
   }
 }
 
-uint32_t Battle::setUnitInQueue( const std::shared_ptr<UnitStack>& unit ) {
-  uint32_t speed = unit->getSpeed();
-  if ( round_queue_.size() == 0 ) {
-    round_queue_.push_back( unit );
+int Battle::setUnitInQueue( UnitStack& unit ) {
+  int speed = unit.getData().speed_;
+  if ( round_queue_.empty() ) {
+    round_queue_.emplace_back( unit );
     return 0;
   }
   for ( auto it = round_queue_.begin(); it != round_queue_.end(); ++it ) {
-    if ( ( *it )->getSpeed() < speed ) {
+    if ( ( *it ).get().getData().speed_ < speed ) {
       round_queue_.insert( it, unit );
-      return (uint32_t)std::distance( round_queue_.begin(), it );
+      return static_cast<int>( std::distance( round_queue_.begin(), it ) );
     }
   }
-
-  round_queue_.push_back( unit );
-  return uint32_t( round_queue_.size() - 1 );
+  round_queue_.emplace_back( unit );
+  return static_cast<int>( round_queue_.size() - 1 );
 }
 void Battle::createObstacles() {
   // create obstacles on battlefield
@@ -86,14 +84,14 @@ void Battle::createObstacles() {
   //     tile->setObject( std::make_shared<Obstacle>( "Obstacle" ) );
   //   }
   // }
-  err::raise<NotImplementedException>( "Battle::createObstacles" );
+  err::raise<NotImplementedException>();
 }
 
 void Battle::nextRound() {
   // std::vector<std::shared_ptr<UnitStack>> active;
   // active.reserve(units_in_battle_.size());
   for ( auto& unit : getUnitsInBattle() ) {
-    (void)setUnitInQueue( unit );  // TODO handle return value
+    setUnitInQueue( unit );
   }
   ++round_counter_;
   attacker_threw_spell_ = false;
@@ -105,10 +103,10 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
     : state_( BattleState::MOVING ),
       battlefield_( std::make_shared<BattleField>( background ) ),
       attacker_( std::move( attacker ) ),
-      defender_( std::move( defender ) ) {
-  // attacking_army_.reserve( 7 );
-  // defending_army_.reserve( 7 );
-  // units_in_battle_.reserve( 14 );
+      defender_( std::move( defender ) ),
+      attacker_threw_spell_( false ),
+      defender_threw_spell_( false ) {
+  round_queue_.reserve( static_cast<size_t>( MAX_PARTY_SIZE ) * 2 );
   setAttackingArmy();
   setDefendingArmy();
   nextUnit();
@@ -128,37 +126,38 @@ BattleState Battle::getState() const {
   return state_;
 }
 
-bool Battle::setUnit( std::shared_ptr<UnitStack> unit_stack, CoordPair new_coords ) {
+bool Battle::setUnit( UnitStack& unit_stack, CoordPair new_coords ) {
   std::shared_ptr<Tile> new_tile = battlefield_->getTileByProxy( new_coords );
   if ( new_tile == nullptr ) {
     return false;
   }
   new_tile->setObject( unit_stack );
-  unit_stack->setCoordsInBattle( new_coords );
+  unit_stack.setCoordsInBattle( new_coords );
   return true;
 }
 
-bool Battle::killUnit( std::shared_ptr<UnitStack> unit_stack_to_kill ) {
-  CoordPair coords = unit_stack_to_kill->getCoordsInBattle();
+bool Battle::killUnit( UnitStack& unit_stack_to_kill ) {
   bool attacker = isSameArmy( unit_stack_to_kill, getAttackingArmy()[0] );
 
   std::shared_ptr<Character> character = ( attacker ) ? attacker_ : defender_;
 
-  for_each( character->army().getParty().begin(), character->army().getParty().end(),
-            [&]( std::shared_ptr<UnitStack>& unit ) {
-              if ( unit != nullptr && unit->getCoordsInBattle() == coords ) {
-                // Remove the unit from the round_queue_
-                getBattlefield()->getTileByProxy( coords )->setObject( nullptr );
-                round_queue_.erase( std::remove( round_queue_.begin(), round_queue_.end(), unit_stack_to_kill ),
-                                    round_queue_.end() );
-                unit.reset();
-              }
-            } );
-  if ( getAttackingArmy().size() == 0 ) {
+  std::for_each(
+      character->army().getParty().begin(), character->army().getParty().end(), [&]( std::optional<UnitStack>& unit ) {
+        if ( unit && &*unit == &( unit_stack_to_kill ) )  // compare addresses, must kill the exactly same unit
+        {
+          // Remove the unit from the round_queue_
+          getBattlefield()->getTileByProxy( unit_stack_to_kill.getCoordsInBattle() )->resetObject();
+          std::erase_if( round_queue_, [target = std::addressof( unit_stack_to_kill )]( const UnitStack& ref ) {
+            return std::addressof( ref ) == target;
+          } );
+          unit.reset();
+        }
+      } );
+  if ( getAttackingArmy().empty() ) {
     setBattleState( BattleState::WIN_DEFENDER );
     return true;
   }
-  if ( getDefendingArmy().size() == 0 ) {
+  if ( getDefendingArmy().empty() ) {
     setBattleState( BattleState::WIN_ATTACKER );
     return true;
   }
@@ -169,55 +168,56 @@ void Battle::setBattleState( BattleState state ) {
   state_ = state;
 }
 
-bool Battle::move( std::shared_ptr<UnitStack> unit_stack, CoordPair new_coords ) {
+bool Battle::move( UnitStack& unit_stack, CoordPair new_coords ) {
   if ( !battlefield_ ) {
     err::raise<UnknownStateException>( "expected battlefield_ to be initialized but is nullptr" );
   }
-  CoordPair old_coords = unit_stack->getCoordsInBattle();
+  CoordPair old_coords = unit_stack.getCoordsInBattle();
 
-  const std::shared_ptr<UnitStack>& unit_stack_tmp = unit_stack;
+  auto& unit_stack_tmp = unit_stack;
   auto old_tile = battlefield_->getTileByProxy( old_coords );
   auto new_tile = battlefield_->getTileByProxy( new_coords );
 
-  old_tile->setObject( nullptr );
+  old_tile->resetObject();
   new_tile->setObject( unit_stack_tmp );
 
-  unit_stack->setCoordsInBattle( new_coords );
+  unit_stack.setCoordsInBattle( new_coords );
   return true;
 }
 
-bool Battle::attack( std::shared_ptr<UnitStack> attacker, std::shared_ptr<UnitStack> defender ) {
+bool Battle::attack( UnitStack& attacker, UnitStack& defender ) {
   // in this attacker is the unit attacking not matter which champion attacked who
   // assertion checks if attacker and defender are in different armies
   auto attacking_army = getAttackingArmy();
   auto defending_army = getDefendingArmy();
   assert( !isSameArmy( attacker, defender ) );
-  std::shared_ptr<const Unit> attacker_unit = attacker->getUnit();
-  std::shared_ptr<const Unit> defender_unit = defender->getUnit();
-  bool positive_luck = attacker->getLuck() > 0;
-  bool luck = ( std::rand() % 100 ) < abs( attacker->getLuck() ) * 0.05 ? 1 : 0;
+  const auto& attacker_unit = attacker.getData();
+  const auto& defender_unit = defender.getData();
+  bool positive_luck = attacker.getLuck() > 0;
+  bool luck = ( std::rand() % 100 ) < std::abs( attacker.getLuck() ) * 0.05 ? 1 : 0;
   double luck_multiplier = 1.0;
   if ( luck ) {
     if ( positive_luck ) {
-      luck_multiplier = 2;
+      luck_multiplier = 2.0;
     } else {
       luck_multiplier = 0.5;
     }
   }
-  int attack_defense = int( attacker_unit->getAttack() ) + attacker_->stats().getPrimarySkills().attack_
-                       - int( defender_unit->getDefense() ) - int( defender_->stats().getPrimarySkills().defense_ );
-  uint32_t positive_attack = uint32_t( std::max( 0, attack_defense ) );
-  positive_attack = std::min( 60u, positive_attack );
-  uint32_t positive_defense = uint32_t( std::max( 0, -attack_defense ) );
-  positive_defense = std::min( 28u, positive_defense );
-  uint32_t min_damage = attacker_unit->getMinDamage() * attacker->getSize();
-  uint32_t max_damage = attacker_unit->getMaxDamage() * attacker->getSize();
-  uint32_t attacker_dmg = min_damage + ( uint32_t( rand() ) % ( max_damage - min_damage + 1 ) );
+  int attack_defense = attacker_unit.attack_ + attacker_->stats().getPrimarySkills().attack_ - defender_unit.defense_
+                       - defender_->stats().getPrimarySkills().defense_;
+  int positive_attack = std::max( 0, attack_defense );
+  positive_attack = std::min( 60, positive_attack );
+  int positive_defense = std::max( 0, -attack_defense );
+  positive_defense = std::min( 28, positive_defense );
+  int min_damage = attacker_unit.min_damage_ * attacker.getSize();
+  int max_damage = attacker_unit.max_damage_ * attacker.getSize();
+  int attacker_dmg = min_damage + ( rand() % ( max_damage - min_damage + 1 ) );
   // dmg  = base DMG * size * (1+0.05*(attack-defense)) * (1-0.025*(defense-attack)) * luck_multiplier
-  double dmg = double( attacker_dmg ) * ( 1.0 + 0.05 * double( positive_attack ) )
-               * ( 1.0 - 0.025 * double( positive_defense ) ) * luck_multiplier;
+  double dmg = static_cast<double>( attacker_dmg ) * ( 1.0 + ( 0.05 * static_cast<double>( positive_attack ) ) )
+               * ( 1.0 - ( 0.025 * static_cast<double>( positive_defense ) ) ) * luck_multiplier;
   int dmg_rounded = static_cast<int>( dmg );
-  if ( !defender->modifyCurrentHealth( dmg_rounded ) ) {
+  defender.modifyCurrentHealth( dmg_rounded );
+  if ( !defender.isAlive() ) {
     return killUnit( defender );
   }
   return false;
@@ -235,22 +235,13 @@ std::shared_ptr<Character> Battle::getDefender() const {
   return defender_;
 }
 
-size_t Battle::getRoundCounter() const {
+int Battle::getRoundCounter() const {
   return round_counter_;
 }
 
-std::shared_ptr<UnitStack> Battle::getUnitFromCoords( CoordPair coords ) const {
-  const std::vector<std::shared_ptr<UnitStack>> units = getUnitsInBattle();
-  std::shared_ptr<UnitStack> unit = nullptr;
-  if ( battlefield_->getTileByProxy( coords ) == nullptr ) {
-    return nullptr;
-  }
-  std::ranges::for_each( units, [&]( const std::shared_ptr<UnitStack>& unit_tmp ) {
-    if ( coords == unit_tmp->getCoordsInBattle() ) {
-      unit = unit_tmp;
-    }
-  } );
-  return unit;
+UnitStack* Battle::getUnitFromCoords( CoordPair coords ) const {
+  auto* maybe_object = battlefield_->getTileByProxy( coords )->getObject();
+  return ( maybe_object == nullptr ) ? nullptr : maybe_object->asUnit();
 }
 
 bool Battle::hasAttackerThrownSpell() const {
@@ -265,58 +256,66 @@ void Battle::nextUnit() {
   if ( round_queue_.empty() ) {
     nextRound();
   }
-  unit_in_action_ = round_queue_.front();
+  unit_in_action_ = &( round_queue_.front().get() );
   round_queue_.erase( round_queue_.begin() );
 }
 
-std::vector<std::shared_ptr<UnitStack>> Battle::getAttackingArmy() const {
-  std::vector<std::shared_ptr<UnitStack>> attacking_army;
+std::vector<std::reference_wrapper<UnitStack>> Battle::getAttackingArmy() const {
+  std::vector<std::reference_wrapper<UnitStack>> attacking_army;
   for ( auto& unit_stack : attacker_->army().getParty() ) {
-    if ( unit_stack != nullptr ) {
-      attacking_army.push_back( unit_stack );
+    if ( unit_stack ) {
+      attacking_army.emplace_back( *unit_stack );
     }
   }
   return attacking_army;
 }
 
-std::vector<std::shared_ptr<UnitStack>> Battle::getDefendingArmy() const {
-  std::vector<std::shared_ptr<UnitStack>> defending_army;
+std::vector<std::reference_wrapper<UnitStack>> Battle::getDefendingArmy() const {
+  std::vector<std::reference_wrapper<UnitStack>> defending_army;
   for ( auto& unit_stack : defender_->army().getParty() ) {
-    if ( unit_stack != nullptr ) {
-      defending_army.push_back( unit_stack );
+    if ( unit_stack ) {
+      defending_army.emplace_back( *unit_stack );
     }
   }
   return defending_army;
 }
 
-std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattle() const {
-  std::vector<std::shared_ptr<UnitStack>> units_in_battle;
-  for ( auto& unit_stack : getAttackingArmy() ) {
-    units_in_battle.push_back( unit_stack );
-  }
-  for ( auto& unit_stack : getDefendingArmy() ) {
-    units_in_battle.push_back( unit_stack );
-  }
+std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattle() const {
+  std::vector<std::reference_wrapper<UnitStack>> units_in_battle;
+  units_in_battle.reserve( static_cast<size_t>( MAX_PARTY_SIZE ) * 2 );
+  units_in_battle.append_range( getAttackingArmy() );
+  units_in_battle.append_range( getDefendingArmy() );
   return units_in_battle;
 }
 
-std::vector<std::shared_ptr<UnitStack>> Battle::getUnitsInBattleSortedToPrint() const {
+std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattleSortedToPrint() const {
   auto units_in_battle_sorted = getUnitsInBattle();
-  std::ranges::sort( units_in_battle_sorted,
-                     []( const std::shared_ptr<UnitStack>& a, const std::shared_ptr<UnitStack>& b ) {
-                       if ( a->getCoordsInBattle().y_ == b->getCoordsInBattle().y_ ) {
-                         return a->getCoordsInBattle().x_ >= b->getCoordsInBattle().x_;
-                       }
-                       return a->getCoordsInBattle().y_ >= b->getCoordsInBattle().y_;
-                     } );
+  std::ranges::sort( units_in_battle_sorted, []( const UnitStack& a, const UnitStack& b ) {
+    if ( a.getCoordsInBattle().y_ == b.getCoordsInBattle().y_ ) {
+      return a.getCoordsInBattle().x_ >= b.getCoordsInBattle().x_;
+    }
+    return a.getCoordsInBattle().y_ >= b.getCoordsInBattle().y_;
+  } );
   return units_in_battle_sorted;
+  // std::vector<std::reference_wrapper<UnitStack>> units_in_battle_sorted;
+  // units_in_battle_sorted.reserve( static_cast<size_t>( MAX_PARTY_SIZE ) * 2 );
+  // for ( const auto& row : battlefield_->getGrid() ) {
+  //   for ( const auto& tile : row ) {
+  //     if ( tile->getObject() != nullptr ) {
+  //       if ( const auto* object = tile->getObject()->asUnit() ) {
+  //         units_in_battle_sorted.push_back( object->stack_ );
+  //       }
+  //     }
+  //   }
+  // }
+  // return units_in_battle_sorted;
 }
 
-std::vector<std::shared_ptr<UnitStack>> Battle::getRoundQueue() const {
-  return round_queue_;
-}
+// std::vector<UnitStackWC> Battle::getRoundQueue() const {
+//   return round_queue_;
+// }
 
-std::shared_ptr<UnitStack> Battle::getUnitInAction() const {
+UnitStack* Battle::getUnitInAction() const {
   return unit_in_action_;
 }
 
@@ -328,39 +327,46 @@ BattleState Battle::getBattleState() const {
   return state_;
 }
 
-bool Battle::isSameArmy( const std::shared_ptr<UnitStack> unit1, const std::shared_ptr<UnitStack> unit2 ) const {
+bool Battle::isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const {
   const auto attacking_army = getAttackingArmy();
   const auto defending_army = getDefendingArmy();
-  return ( std::ranges::find( attacking_army, unit1 ) != attacking_army.end()
-           && std::ranges::find( attacking_army, unit2 ) != attacking_army.end() )
-         || ( std::ranges::find( defending_army, unit1 ) != defending_army.end()
-              && std::ranges::find( defending_army, unit2 ) != defending_army.end() );
+
+  auto is_unit_in_army = [&]( const std::vector<std::reference_wrapper<UnitStack>>& army, const UnitStack& stack ) {
+    return std::ranges::find_if( army, [&]( const UnitStack& stack_in_army ) { return &stack_in_army == &stack; } )
+           != army.end();
+  };
+
+  return ( is_unit_in_army( attacking_army, unit1 ) && is_unit_in_army( attacking_army, unit2 ) )
+         || ( is_unit_in_army( defending_army, unit1 ) && is_unit_in_army( defending_army, unit2 ) );
 }
 
 bool Battle::isAIMove() const {
-  return ( isSameArmy( unit_in_action_, attacker_->army().getParty()[0] ) && !attacker_->getIfUser() )
-         || ( isSameArmy( unit_in_action_, defender_->army().getParty()[0] ) && !defender_->getIfUser() );
+  if ( unit_in_action_ == nullptr ) {
+    err::raise<UnknownStateException>( "unit in action is null" );
+  }
+  return ( isSameArmy( *unit_in_action_, attacker_->army().getParty()[0].value() ) && !attacker_->getIfUser() )
+         || ( isSameArmy( *unit_in_action_, defender_->army().getParty()[0].value() ) && !defender_->getIfUser() );
 }
 
 void Battle::forceUnplaceUnitStacks() {
   for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( int y = 0; y < MAP_HEIGHT_BF; ++y ) {
       auto tile = battlefield_->getTileByProxy( CoordPair( x, y ) );
-      tile->setObject( nullptr );
+      tile->resetObject();
     }
   }
-  for ( const auto& unit_stack : getAttackingArmy() ) {
-    unit_stack->setCoordsInBattle( BATTLE_MAP_NOT_FOUND_COORDS );
-  }
-  for ( const auto& unit_stack : getDefendingArmy() ) {
-    unit_stack->setCoordsInBattle( BATTLE_MAP_NOT_FOUND_COORDS );
-  }
+  // for ( const auto& unit_stack : getAttackingArmy() ) {
+  //   unit_stack->setCoordsInBattle( BATTLE_MAP_NOT_FOUND_COORDS );
+  // }
+  // for ( const auto& unit_stack : getDefendingArmy() ) {
+  //   unit_stack->setCoordsInBattle( BATTLE_MAP_NOT_FOUND_COORDS );
+  // }
 }
 
-void Battle::forcePlaceUnitStack( std::shared_ptr<UnitStack> unit_stack, CoordPair new_coords ) {
+void Battle::forcePlaceUnitStack( UnitStack& unit_stack, CoordPair new_coords ) {
   auto tile = battlefield_->getTileByProxy( new_coords );
   tile->setObject( unit_stack );
-  unit_stack->setCoordsInBattle( new_coords );
+  unit_stack.setCoordsInBattle( new_coords );
 }
 
 std::shared_ptr<Battle> Battle::copy() {
@@ -378,13 +384,13 @@ std::shared_ptr<Battle> Battle::copy() {
 
   for ( uint32_t i = 0; i < units_in_battle_new.size(); ++i ) {
     // new_coords from old units because old battle holds correct coordinates
-    CoordPair new_coords = units_in_battle_old[i]->getCoordsInBattle();
-    const auto& unit_stack_new = units_in_battle_new[i];
+    CoordPair new_coords = units_in_battle_old[i].get().getCoordsInBattle();
+    UnitStack& unit_stack_new = units_in_battle_new[i];
     copy->forcePlaceUnitStack( unit_stack_new, new_coords );
 
-    const auto& unit_stack_old = units_in_battle_old[i];
-    if ( unit_stack_old == this->unit_in_action_ ) {
-      copy->unit_in_action_ = unit_stack_new;
+    const UnitStack& unit_stack_old = units_in_battle_old[i];
+    if ( &unit_stack_old == this->unit_in_action_ ) {
+      copy->unit_in_action_ = &( unit_stack_new );
     }
   }
   auto& round_queue_old = this->round_queue_;
@@ -392,7 +398,7 @@ std::shared_ptr<Battle> Battle::copy() {
 
   for ( const auto& i : round_queue_old ) {
     for ( uint32_t j = 0; j < units_in_battle_old.size(); ++j ) {
-      if ( i == units_in_battle_old[j] ) {
+      if ( &i == &( units_in_battle_old[j] ) ) {
         round_queue_new.push_back( units_in_battle_new[j] );
       }
     }

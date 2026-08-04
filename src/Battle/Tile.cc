@@ -1,9 +1,11 @@
 #include "Battle/Tile.h"
 
+#include <memory>
+#include <utility>
+
 #include "Miscellaneous/Coords.h"
 
-
-const CoordPair& Tile::getCoords() const {
+CoordPair Tile::getCoords() const {
   return this->coords_;
 }
 
@@ -22,17 +24,25 @@ const CoordPair& Tile::getCoords() const {
 //   return tmp;
 // }
 
-void Tile::setObject( std::shared_ptr<TileObject> new_tile_object ) {
-  tile_object_ = new_tile_object;
+void Tile::setObject( TileObject& new_tile_object ) {
+  tile_object_ = &new_tile_object;
 }
 
-std::shared_ptr<TileObject> Tile::getObject() {
+TileObject* Tile::getObject() {
   return tile_object_;
 }
 
 Tile Tile::copy() {
-  return Tile( tile_object_, coords_ );
+  if ( tile_object_ == nullptr ) {
+    return Tile{ nullptr, coords_ };
+  }
+  return { tile_object_, coords_ };
 }
+
+void Tile::resetObject() noexcept {
+  tile_object_ = nullptr;
+}
+
 // void Tile::resetNeighbours() {
 //   for (auto& n : neighbours_) {
 //     n.reset();

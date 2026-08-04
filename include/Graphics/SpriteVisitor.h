@@ -37,7 +37,7 @@ class SpriteVisitor : public Visitor {
   sf::Texture& visit( const SecondarySkill& e ) override;
   sf::Texture& visit( const Spell& e ) override;
   // sf::Texture& visit(const SpellBook& e) override;
-  sf::Texture& visit( const Unit& e ) override;
+  // sf::Texture& visit( const UnitStack& e ) override;
   sf::Texture& visit( const Resource& e ) override;
   sf::Texture& visit( const OverworldObstacle& e ) override;
   sf::Texture& visit( const Building& e ) override;
