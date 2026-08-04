@@ -16,18 +16,18 @@
 class Tile;
 class GridTile;
 
-using Grid = std::array<std::array<std::shared_ptr<Tile>, MAP_HEIGHT_BF>, MAP_WIDTH_BF>;
+using BattleGrid = std::array<std::array<std::shared_ptr<Tile>, MAP_HEIGHT_BF>, MAP_WIDTH_BF>;
 
 class BattleField {
  private:
-  Grid battle_grid_;
+  BattleGrid battle_grid_;
   // battle_grid[width][height]
   std::shared_ptr<GridTile> background_;
 
  public:
   BattleField( std::shared_ptr<GridTile> background );
 
-  [[nodiscard]] const Grid& getGrid() const noexcept;
+  [[nodiscard]] const BattleGrid& getGrid() const noexcept;
 
   std::vector<std::shared_ptr<Tile>> getTileNeighbours( const CoordPair coords );
   std::vector<std::shared_ptr<Tile>> getTileNeighbours( const std::shared_ptr<Tile>& tile );

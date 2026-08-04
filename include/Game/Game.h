@@ -9,13 +9,10 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window.hpp>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "Algorithms/MinimaxAI.h"
-#include "Game/KeyboardHandler.h"
-#include "Graphics/Renderers/MapRenderer.h"
-#include "Graphics/SpriteVisitor.h"
+#include "Game/Command.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
@@ -30,20 +27,12 @@ class Game {
 
   // players_[0] should be the main player
   std::vector<std::shared_ptr<Player>> players_;
-//   std::vector<std::shared_ptr<Faction>> factions_;
   std::shared_ptr<Battle> battle_;
 
-  std::shared_ptr<sf::RenderWindow> render_window_;
-  std::shared_ptr<SpriteVisitor> sprite_visitor_;
-  std::shared_ptr<MapRenderer> map_renderer_;
-  std::shared_ptr<KeyHandler> key_handler_;
   std::shared_ptr<MinimaxAI> minimax_;
 
   // std::optional<sf::Event> event_ = std::nullopt;
-  int mouse_x_ = 0;
-  int mouse_y_ = 0;
-  bool waiting_for_print_ = true;
-  int frames_since_start_ = 0;
+
   //   int is_player_turn_counter_ = 0;
 
   void performGameLoopIterationOverworld();
@@ -53,24 +42,21 @@ class Game {
   void performBattleUserMove();
 
   void placeCharactersOnWorldMap();
-  // NOLINTNEXTLINE(readability-identifier-length)
-  [[nodiscard]] bool pointInHexagon( int px, int py, double hex_x, double hex_y ) const;
-  std::optional<CoordPair> getCoordsFromClick();
   void startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
                     std::shared_ptr<GridTile> background );
 
  public:
   Game( std::vector<std::shared_ptr<Player>> players );
-  Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input );
+  Game( std::vector<std::shared_ptr<Player>> players, bool is_buffered );
   // TODO add to constructor functionality which initializes preset players
+
+  [[nodiscard]] std::vector<Command> legalCommands() const noexcept;
+  void applyCommand( const Command& command );
+  [[nodiscard]] bool isLegalCommand( const Command& command ) const noexcept;
 
   void mapLoadObstacles(
       std::vector<std::shared_ptr<OverworldObstacle>>& obstacles );  // TODO expose map rather than proxy methods
   [[nodiscard]] GameState getState() const;
-  void setMouseCoords( int x, int y );  // NOLINT(readability-identifier-length)
-  void performGameLoopIteration();
   [[nodiscard]] std::shared_ptr<Character> getMainCharacter() const;
-  [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow();
   void debugStartBattle();
-  [[nodiscard]] int getFrameCountSinceStart() const noexcept;
 };

@@ -12,7 +12,6 @@
 #include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -23,19 +22,14 @@
 #include "Battle/Moves/MoveFactory.h"
 #include "Character/Character.h"
 #include "Exceptions/CoordinateOutOfBoundsException.hpp"
-#include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidMapMoveException.hpp"
-#include "Exceptions/UnknownStateException.hpp"
-#include "Game/KeyboardHandler.h"
-#include "Graphics/Renderers/MapRenderer.h"
-#include "Graphics/SpriteVisitor.h"
+#include "Game/Command.h"
 #include "LoadAndSaveTools/MapLoader.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
-#include "WorldMap/OverworldObstacle.h"
 
 void Game::performGameLoopIterationOverworld() {
   key_handler_->monitorKeyPresses();
@@ -237,6 +231,15 @@ Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input
   map_renderer_ = std::make_shared<MapRenderer>( sprite_visitor_, world_map_ );
 }
 
+/* === COMMAND === */
+[[nodiscard]] std::vector<Command> Game::legalCommands() const noexcept {
+  
+}
+void Game::applyCommand( const Command& command );
+[[nodiscard]] bool Game::isLegalCommand( const Command& command ) const noexcept;
+
+/* === END COMMMAND === */
+
 void Game::mapLoadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) {
   world_map_->loadObstacles( obstacles );
 }
@@ -245,26 +248,8 @@ GameState Game::getState() const {
   return game_state_;
 }
 
-void Game::setMouseCoords( int x, int y ) {
-  mouse_x_ = x;
-  mouse_y_ = y;
-}
-
-void Game::performGameLoopIteration() {
-  switch ( game_state_ ) {
-    case GameState::OVERWORLD: performGameLoopIterationOverworld(); break;
-    case GameState::BATTLE: performGameLoopIterationBattle(); break;
-    default: err::raise<UnknownStateException>( "tried to perform action regarding forbidden game state" );
-  }
-  ++frames_since_start_;
-}
-
 std::shared_ptr<Character> Game::getMainCharacter() const {
   return players_[0]->getCharacters()[0];
-}
-
-std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
-  return this->render_window_;
 }
 
 void Game::debugStartBattle() {
@@ -272,8 +257,4 @@ void Game::debugStartBattle() {
                                       world_map_->getTile( { 0, 0 } ) );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
-}
-
-[[nodiscard]] int Game::getFrameCountSinceStart() const noexcept {
-  return frames_since_start_;
 }

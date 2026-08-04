@@ -25,21 +25,23 @@
 class Character;
 class Building;
 
+template <typename GridTileT>
+using Grid = std::array<std::array<GridTileT, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>;
+
 class WorldMap {
  private:
-  std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>
-      grid_;  // underlying map structure
+  Grid<std::shared_ptr<GridTile>> grid_;  // underlying map structure
   std::vector<std::shared_ptr<Character>> characters_;
   std::vector<std::shared_ptr<Building>> buildings_;
 
-  void loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid );
-  [[nodiscard]] bool getIfCoordsInBounds( CoordPair coords ) const;
-  [[nodiscard]] bool getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) const;
+  void loadGrid( Grid<int>& new_grid );
+  [[nodiscard]] static bool getIfCoordsInBounds( CoordPair coords ) noexcept;
+  [[nodiscard]] static bool getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) noexcept;
   //  uint32_t calculateTravelCost(const std::string& character_name, const CoordPair destination_coords);
 
  public:
   WorldMap() = delete;
-  WorldMap( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid );
+  WorldMap( Grid<int>& new_grid );
   void loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacels );
   // std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> getGridTransposed();
 
@@ -47,7 +49,7 @@ class WorldMap {
   void moveMapObject( CoordPair old_coords, CoordPair new_coords );
   void moveMapObject( CoordPair old_coords, ShiftPair shift );
 
-  [[nodiscard]] std::shared_ptr<GridTile> getTile( const CoordPair coords );
+  [[nodiscard]] std::shared_ptr<GridTile> getTile( CoordPair coords );
 
   //  sf::Texture& accept(Visitor& v) const { return v.visit(*this); }
   //  std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& getGrid() const;

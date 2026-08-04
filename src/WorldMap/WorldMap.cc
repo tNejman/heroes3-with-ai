@@ -41,11 +41,11 @@ void WorldMap::loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP
 }
 // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
-bool WorldMap::getIfCoordsInBounds( CoordPair coords ) const {
-  return ( coords.x_ < WORLD_MAP_WIDTH && coords.y_ < WORLD_MAP_HEIGHT );
+[[nodiscard]] static bool WorldMap::getIfCoordsInBounds( CoordPair coords ) noexcept {
+  return coords.x_ >= 0 && coords.x_ < WORLD_MAP_WIDTH && coords.y_ >= 0 && coords.y_ < WORLD_MAP_HEIGHT;
 }
 
-bool WorldMap::getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) const {
+[[nodiscard]] static bool WorldMap::getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) noexcept {
   CoordPair new_coords = coords + shift;
   return getIfCoordsInBounds( new_coords );
 }
