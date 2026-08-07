@@ -19,7 +19,7 @@ void MapRenderer::render( sf::RenderWindow& window, const CoordPair center_coord
   renderObjects( window, center_coords );
 }
 
-void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_coords ) {
+void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_coords ) const {
   int center_x = center_coords.x_;
   int center_y = center_coords.y_;
 
@@ -45,7 +45,7 @@ void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_c
   }
 }
 
-void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair center_coords ) {
+void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair center_coords ) const {
   // This method iterates through the grid again to terrain overlapping sprites
   int center_x = center_coords.x_;
   int center_y = center_coords.y_;

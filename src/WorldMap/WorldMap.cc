@@ -129,6 +129,14 @@ std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
   return grid_[coords.xAsId()][coords.yAsId()];
 }
 
+std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) const {
+  if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
+    err::raise<CoordinateOutOfBoundsException>(
+        std::format( "Coordinates out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
+  }
+  return grid_[coords.xAsId()][coords.yAsId()];
+}
+
 // std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> WorldMap::getGridTransposed() {
 //     std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> grid_transposed;
 // }

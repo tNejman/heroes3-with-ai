@@ -1,5 +1,7 @@
 add_library(Graphics SHARED
     SpriteVisitor.cc
+    
+    Renderers/GameRenderer.cc
     Renderers/MapRenderer.cc
 )
 

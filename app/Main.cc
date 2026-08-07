@@ -3,15 +3,14 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <chrono>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowEnums.hpp>
 #include <cmath>
 #include <cstdint>
 #include <exception>
 #include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
-#include <thread>
 #include <utility>
 #include <vector>
 
@@ -20,7 +19,7 @@
 #include "Character/CharacterStats.h"
 #include "Game/Game.h"
 // #include "LoadAndSaveTools/CharacterSaver.h"
-#include "MapObject/MapObject.h"
+#include "Graphics/Renderers/GameRenderer.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
@@ -121,7 +120,9 @@ int main() {
   // CharacterSaver character_saver3 = CharacterSaver( "CharacterSave2.txt", characters_2[1] );
   // character_saver3.save();
 
-  std::shared_ptr<sf::RenderWindow> window = game->getRenderWindow();
+  std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>(
+      sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close );
+  window->setFramerateLimit( 30 );
   window->setSize( sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) );
   while ( window->isOpen() ) {
     if ( window->getSize() != sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
@@ -142,6 +143,7 @@ int main() {
     }
     window->clear( sf::Color( 4 ) );
     game->performGameLoopIteration();
+    GameRenderer{ *game }.render( *window, game->getMainCharacter()->getCoords() );
     // if ( game->getFrameCountSinceStart() == 4 ) {
     //   std::chrono::milliseconds timespan{ 5'000 };
     //   std::this_thread::sleep_for( timespan );

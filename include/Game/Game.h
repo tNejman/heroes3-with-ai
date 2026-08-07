@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Algorithms/MinimaxAI.h"
+#include "Game/GameStateStack.h"
 #include "Game/KeyboardHandler.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
@@ -33,9 +34,6 @@ class Game {
   //   std::vector<std::shared_ptr<Faction>> factions_;
   std::shared_ptr<Battle> battle_;
 
-  std::shared_ptr<sf::RenderWindow> render_window_;
-  std::shared_ptr<SpriteVisitor> sprite_visitor_;
-  std::shared_ptr<MapRenderer> map_renderer_;
   std::shared_ptr<KeyHandler> key_handler_;
   std::shared_ptr<MinimaxAI> minimax_;
 
@@ -52,8 +50,9 @@ class Game {
   void performBattleAiMove();
   void performBattleUserMove();
 
+  void removeCharactersWithNoUnits();
+
   void placeCharactersOnWorldMap();
-  // NOLINTNEXTLINE(readability-identifier-length)
   [[nodiscard]] bool pointInHexagon( int px, int py, double hex_x, double hex_y ) const;
   std::optional<CoordPair> getCoordsFromClick();
   void startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
@@ -70,7 +69,9 @@ class Game {
   void setMouseCoords( int x, int y );  // NOLINT(readability-identifier-length)
   void performGameLoopIteration();
   [[nodiscard]] std::shared_ptr<Character> getMainCharacter() const;
-  [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow();
   void debugStartBattle();
   [[nodiscard]] int getFrameCountSinceStart() const noexcept;
+
+  [[nodiscard]] const WorldMap& getMap() const noexcept;
+  [[nodiscard]] const Battle& getBattle() const noexcept;
 };

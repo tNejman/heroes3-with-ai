@@ -47,7 +47,8 @@ class WorldMap {
   void moveMapObject( CoordPair old_coords, CoordPair new_coords );
   void moveMapObject( CoordPair old_coords, ShiftPair shift );
 
-  [[nodiscard]] std::shared_ptr<GridTile> getTile( const CoordPair coords );
+  [[nodiscard]] std::shared_ptr<GridTile> getTile( CoordPair coords ) const;
+  [[nodiscard]] std::shared_ptr<GridTile> getTile( CoordPair coords );
 
   //  sf::Texture& accept(Visitor& v) const { return v.visit(*this); }
   //  std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& getGrid() const;
