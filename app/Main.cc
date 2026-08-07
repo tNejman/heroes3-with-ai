@@ -19,6 +19,9 @@
 #include "Character/CharacterStats.h"
 #include "Game/Game.h"
 // #include "LoadAndSaveTools/CharacterSaver.h"
+#include "Game/KeyboardHandler.h"
+#include "Game/MouseHandler.h"
+#include "Game/UserCommand.h"
 #include "Graphics/Renderers/GameRenderer.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -105,7 +108,7 @@ int main() {
 
   std::shared_ptr<Game> game = nullptr;
   try {
-    game = std::make_shared<Game>( players, false );
+    game = std::make_shared<Game>( players );
   } catch ( const std::exception& e ) {
     std::cout << e.what() << '\n';
     return -1;
@@ -129,20 +132,34 @@ int main() {
       window->setSize( { WINDOW_WIDTH, WINDOW_HEIGHT } );
     }
     // sf::Time start_time = clock.getElapsedTime();
+
+    UserCommand maybe_command = None{};
+
     while ( std::optional event = window->pollEvent() ) {
       if ( event->is<sf::Event::Closed>() ) {
         window->close();
         return 0;
       }
-      if ( event->is<sf::Event::MouseButtonPressed>()
-           && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left ) {
-        int mouse_x = event->getIf<sf::Event::MouseButtonPressed>()->position.x;
-        int mouse_y = event->getIf<sf::Event::MouseButtonPressed>()->position.y;
-        game->setMouseCoords( mouse_x, mouse_y );
+      std::optional<CoordPair> maybe_hex_coords = [&] -> std::optional<CoordPair> {
+        if ( event->is<sf::Event::MouseButtonPressed>()
+             && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left ) {
+          int mouse_x = event->getIf<sf::Event::MouseButtonPressed>()->position.x;
+          int mouse_y = event->getIf<sf::Event::MouseButtonPressed>()->position.y;
+          return MouseHandler{}.getHexagonCoordsFromClick( mouse_x, mouse_y );
+        }
+        return std::nullopt;
+      }();
+      if ( maybe_hex_coords.has_value() ) {
+        maybe_command = MoveStack{ maybe_hex_coords.value() };
+      } else {
+        KeyHandler key_handler{ false };
+        key_handler.monitorKeyPresses();
+        CharacterMoveDirection move_direction = key_handler.getMove();
+        maybe_command = MoveCharacter{ move_direction };
       }
     }
     window->clear( sf::Color( 4 ) );
-    game->performGameLoopIteration();
+    game->performGameLoopIteration( maybe_command );
     GameRenderer{ *game }.render( *window, game->getMainCharacter()->getCoords() );
     // if ( game->getFrameCountSinceStart() == 4 ) {
     //   std::chrono::milliseconds timespan{ 5'000 };

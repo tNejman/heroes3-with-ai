@@ -1,6 +1,7 @@
 add_library(Game SHARED
-    KeyHandler.cc
     Game.cc
+    KeyHandler.cc
+    MouseHandler.cc
 )
 
 target_include_directories(Game PRIVATE
