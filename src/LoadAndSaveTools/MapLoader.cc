@@ -27,10 +27,10 @@ void MapLoader::moveWordToContainer( const int word ) {
   }
 }
 
-std::shared_ptr<WorldMap> MapLoader::getObjectFromContainer() {
+WorldMap MapLoader::getObjectFromContainer() {
   // for explanation look in header
   assert( y_counter_ == 4'294'967'295 );
   assert( x_counter_ == 0 );
-  return std::make_shared<WorldMap>( container_ );
+  return WorldMap{ container_ };
   ;
 }

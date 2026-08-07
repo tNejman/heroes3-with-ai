@@ -29,8 +29,8 @@ class MapLoader : public ILoader<WorldMap, std::array<std::array<int, WORLD_MAP_
   uint32_t y_counter_ = WORLD_MAP_HEIGHT - 1;
 
   void resetCounters() override;
-  void moveWordToContainer( const int word ) override;
-  std::shared_ptr<WorldMap> getObjectFromContainer() override;
+  void moveWordToContainer( int word ) override;
+  WorldMap getObjectFromContainer() override;
 
  public:
 };

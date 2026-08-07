@@ -12,7 +12,6 @@
 #include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -50,7 +49,7 @@ void Game::performGameLoopIterationOverworld() {
         }
       }
       if ( all_empty ) {
-        world_map_->setMapObject( ( *it )->getCoords(), nullptr );
+        world_map_.setMapObject( ( *it )->getCoords(), nullptr );
         player->getCharacters().erase( it );
         break;
       }
@@ -59,7 +58,7 @@ void Game::performGameLoopIterationOverworld() {
   CoordPair center_coords = getMainCharacter()->getCoords();
   if ( move_direction != CharacterMoveDirection::NONE ) {
     try {
-      world_map_->moveMapObject( getMainCharacter()->getCoords(), WORLD_MAP_DIRECTIONS.at( (size_t)move_direction ) );
+      world_map_.moveMapObject( getMainCharacter()->getCoords(), WORLD_MAP_DIRECTIONS.at( (size_t)move_direction ) );
       center_coords = getMainCharacter()->getCoords();
       getMainCharacter()->setOrientation( move_direction );
       // std::cout << "DEBUG: Game moves character to: x=" << center_coords.x_ << " y=" << center_coords.y_ <<
@@ -75,10 +74,10 @@ void Game::performGameLoopIterationOverworld() {
         CoordPair new_coords =
             player_coords
             + WORLD_MAP_DIRECTIONS.at( (size_t)move_direction );  // exception caught earlier, this is safe
-        auto new_tile_obj = world_map_->getTile( new_coords )->getMapObject();
+        auto new_tile_obj = world_map_.getTile( new_coords )->getMapObject();
         if ( new_tile_obj != nullptr ) {
           if ( auto character_ptr = std::dynamic_pointer_cast<Character>( new_tile_obj ) ) {
-            startBattle( players_[0]->getCharacters()[0], character_ptr, world_map_->getTile( new_coords ) );
+            startBattle( players_[0]->getCharacters()[0], character_ptr, world_map_.getTile( new_coords ) );
           }
         }
         std::cout << e.what() << '\n';
@@ -158,7 +157,7 @@ void Game::placeCharactersOnWorldMap() {
   for ( const auto& player_ptr : players_ ) {
     for ( const auto& character_ptr : player_ptr->getCharacters() ) {
       CoordPair character_coords = character_ptr->getCoords();
-      world_map_->setMapObject( character_coords, character_ptr );
+      world_map_.setMapObject( character_coords, character_ptr );
     }
   }
 }
@@ -202,13 +201,12 @@ std::optional<CoordPair> Game::getCoordsFromClick() {
   }
   if ( found_coords == BATTLE_MAP_NOT_FOUND_COORDS ) {
     return std::nullopt;
-  } else {
-    mouse_x_ = -1;
-    mouse_y_ = -1;
-    // std::cout << "DEBUG: Game::handleMouseClick() found coords: x=" << found_coords.x_ << " y=" << found_coords.y_ <<
-    // std::endl;
-    return found_coords;
   }
+  mouse_x_ = -1;
+  mouse_y_ = -1;
+  // std::cout << "DEBUG: Game::handleMouseClick() found coords: x=" << found_coords.x_ << " y=" << found_coords.y_ <<
+  // std::endl;
+  return found_coords;
 }
 
 void Game::startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
@@ -222,7 +220,8 @@ Game::Game( std::vector<std::shared_ptr<Player>> players ) : Game( std::move( pl
 }
 
 Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input )
-    : players_( std::move( players ) ),
+    : world_map_( MapLoader{}.load( WORLD_MAP_INPUT_PATH ) ),
+      players_( std::move( players ) ),
       // factions_( { std::make_shared<FactionForge>(), std::make_shared<FactionConflux>() } ),
       render_window_( std::make_shared<sf::RenderWindow>( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME,
                                                           sf::Style::Titlebar | sf::Style::Close ) ),
@@ -230,15 +229,23 @@ Game::Game( std::vector<std::shared_ptr<Player>> players, bool if_buffered_input
       key_handler_( std::make_shared<KeyHandler>( if_buffered_input ) ),
       minimax_( std::make_shared<MinimaxAI>() ) {
   render_window_->setFramerateLimit( 30 );
-  std::unique_ptr<MapLoader> map_loader = std::make_unique<MapLoader>();
-  world_map_ = map_loader->load( WORLD_MAP_INPUT_PATH );
-  assert( world_map_ != nullptr );
+  // std::unique_ptr<MapLoader> map_loader = std::make_unique<MapLoader>();
+  // world_map_ = map_loader->load( WORLD_MAP_INPUT_PATH );
+  // assert( world_map_ != nullptr );
   this->placeCharactersOnWorldMap();
   map_renderer_ = std::make_shared<MapRenderer>( sprite_visitor_, world_map_ );
 }
 
+/* === COMMAND === */
+// [[nodiscard]] std::vector<UserCommand> Game::legalCommands() const noexcept {
+// }
+// void Game::applyCommand( const UserCommand& command );
+// [[nodiscard]] bool Game::isLegalCommand( const UserCommand& command ) const noexcept;
+
+/* === END COMMMAND === */
+
 void Game::mapLoadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) {
-  world_map_->loadObstacles( obstacles );
+  world_map_.loadObstacles( obstacles );
 }
 
 GameState Game::getState() const {
@@ -263,13 +270,13 @@ std::shared_ptr<Character> Game::getMainCharacter() const {
   return players_[0]->getCharacters()[0];
 }
 
-std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
-  return this->render_window_;
+[[nodiscard]] std::shared_ptr<sf::RenderWindow> Game::getRenderWindow() {
+  return render_window_;
 }
 
 void Game::debugStartBattle() {
   battle_ = std::make_shared<Battle>( players_[0]->getCharacters()[0], players_[1]->getCharacters()[0],
-                                      world_map_->getTile( { 0, 0 } ) );
+                                      world_map_.getTile( { 0, 0 } ) );
   game_state_ = GameState::BATTLE;
   waiting_for_print_ = true;
 }

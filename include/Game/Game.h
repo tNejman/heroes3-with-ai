@@ -26,11 +26,11 @@
 class Game {
  private:
   GameState game_state_ = GameState::OVERWORLD;
-  std::shared_ptr<WorldMap> world_map_;
+  WorldMap world_map_;
 
   // players_[0] should be the main player
   std::vector<std::shared_ptr<Player>> players_;
-//   std::vector<std::shared_ptr<Faction>> factions_;
+  //   std::vector<std::shared_ptr<Faction>> factions_;
   std::shared_ptr<Battle> battle_;
 
   std::shared_ptr<sf::RenderWindow> render_window_;

@@ -4,19 +4,20 @@
 #include <memory>
 
 #include "Graphics/Renderers/IRenderer.hpp"
+#include "Graphics/SpriteVisitor.h"
 #include "Miscellaneous/Coords.h"
 #include "WorldMap/WorldMap.h"
 
 class MapRenderer : public IRenderer<WorldMap> {
  private:
-  void renderGrid( sf::RenderWindow& window, const CoordPair center_coords );
-  void renderObjects( sf::RenderWindow& window, const CoordPair center_coords );
+  void renderGrid( sf::RenderWindow& window, CoordPair center_coords );
+  void renderObjects( sf::RenderWindow& window, CoordPair center_coords );
 
  public:
   //     IRenderer(const SpriteVisitor& sprite_visitor, const T& object) :
   // sprite_visitor_(sprite_visitor), object_(object) {};
-  MapRenderer( std::shared_ptr<SpriteVisitor> sprite_visitor, std::shared_ptr<WorldMap> object )
+  MapRenderer( const std::shared_ptr<SpriteVisitor>& sprite_visitor, WorldMap& object )
       : IRenderer( sprite_visitor, object ) {};
   ~MapRenderer() override = default;
-  void render( sf::RenderWindow& window, const CoordPair center_coords ) override;
+  void render( sf::RenderWindow& window, CoordPair center_coords ) override;
 };

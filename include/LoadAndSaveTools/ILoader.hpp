@@ -15,8 +15,8 @@ class ILoader {
   TypeContainer container_;
 
   virtual void resetCounters() = 0;
-  virtual void moveWordToContainer( const int word ) = 0;
-  virtual std::shared_ptr<TypeLoaded> getObjectFromContainer() = 0;
+  virtual void moveWordToContainer( int word ) = 0;
+  virtual TypeLoaded getObjectFromContainer() = 0;
 
   [[nodiscard]] bool isNumber( const std::string& s ) const {
     return !s.empty()
@@ -33,7 +33,7 @@ class ILoader {
   }
   virtual ~ILoader() = default;
 
-  std::shared_ptr<TypeLoaded> load( const std::string& path ) {
+  TypeLoaded load( const std::string& path ) {
     resetCounters();
     std::ifstream file( path );
     if ( !file.is_open() ) {
@@ -48,7 +48,8 @@ class ILoader {
       while ( ss >> word ) {
         // while ( word = ss.str() ) {
         if ( !isNumber( word ) ) {
-          throw InvalidInputFileException( "ILoader::load -> Invalid character in input file is not a number: " + word );
+          throw InvalidInputFileException( "ILoader::load -> Invalid character in input file is not a number: "
+                                           + word );
         }
         const int word_int = std::stoi( word );
         moveWordToContainer( word_int );

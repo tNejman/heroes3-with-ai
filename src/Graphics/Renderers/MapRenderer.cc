@@ -4,11 +4,15 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <memory>
 
+#include "Artifact/Artifact.h"
+#include "Character/Character.h"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/NotOpenWindowException.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
+#include "WorldMap/OverworldObstacle.h"
 
 void MapRenderer::render( sf::RenderWindow& window, const CoordPair center_coords ) {
   renderGrid( window, center_coords );
@@ -21,7 +25,7 @@ void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_c
 
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      const auto tile = object_->getTile( CoordPair( x, y ) );
+      const auto tile = object_.get().getTile( CoordPair( x, y ) );
       const auto map_obj = tile->getMapObject();
       const auto terrain = tile->getTerrain();
 
@@ -48,7 +52,7 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
 
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      const auto tile = object_->getTile( CoordPair( x, y ) );
+      const auto tile = object_.get().getTile( CoordPair( x, y ) );
       const auto map_obj = tile->getMapObject();
       if ( map_obj == nullptr ) {
         continue;
