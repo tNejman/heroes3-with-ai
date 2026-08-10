@@ -10,6 +10,11 @@
 #include "Exceptions/Err.hpp"
 #include "Miscellaneous/Coords.h"
 
+[[nodiscard]] int CharacterBuilder::generateId() noexcept {
+  static int base_id = 0;
+  return ++base_id;
+}
+
 CharacterBuilder&& CharacterBuilder::setName( std::string name ) && noexcept {
   name_ = std::move( name );
   return std::move( *this );
@@ -27,6 +32,8 @@ CharacterBuilder&& CharacterBuilder::setStats( CharacterStats stats ) && noexcep
 
 Character CharacterBuilder::build() && noexcept {
   // TODO maybe change default
+  int id = generateId();
+
   if ( !name_ ) {
     name_ = "John";
   }
@@ -36,11 +43,13 @@ Character CharacterBuilder::build() && noexcept {
   if ( !stats_ ) {
     stats_ = CharacterStats{};
   }
-  return Character{ std::move( *name_ ), *coords_, std::move( *stats_ ) };
+  return Character{ id, std::move( *name_ ), *coords_, std::move( *stats_ ) };
 }
 
 std::shared_ptr<Character> CharacterBuilder::buildSharedPtr() && noexcept {
   // TODO maybe change default
+  int id = generateId();
+
   if ( !name_ ) {
     name_ = "John";
   }
@@ -50,5 +59,5 @@ std::shared_ptr<Character> CharacterBuilder::buildSharedPtr() && noexcept {
   if ( !stats_ ) {
     stats_ = CharacterStats{};
   }
-  return std::make_shared<Character>( std::move( *name_ ), *coords_, std::move( *stats_ ) );
+  return std::make_shared<Character>( id, std::move( *name_ ), *coords_, std::move( *stats_ ) );
 }

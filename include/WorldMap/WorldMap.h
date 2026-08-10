@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "Character/Character.h"
+#include "Game/IGameState.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -44,8 +45,8 @@ class WorldMap {
   // std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> getGridTransposed();
 
   void setMapObject( CoordPair coords, std::shared_ptr<MapObject> object );
-  void moveMapObject( CoordPair old_coords, CoordPair new_coords );
-  void moveMapObject( CoordPair old_coords, ShiftPair shift );
+  StateTransition moveMapObject( CoordPair old_coords, CoordPair new_coords );
+  StateTransition moveMapObject( CoordPair old_coords, ShiftPair shift );
 
   [[nodiscard]] std::shared_ptr<GridTile> getTile( CoordPair coords ) const;
   [[nodiscard]] std::shared_ptr<GridTile> getTile( CoordPair coords );

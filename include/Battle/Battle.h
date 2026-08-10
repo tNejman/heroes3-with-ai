@@ -15,6 +15,7 @@
 
 #include "Battle/BattleField.h"
 #include "Battle/TileObject.hpp"
+#include "Game/UserCommand.h"
 #include "Graphics/Printable.h"
 #include "Miscellaneous/Coords.h"
 #include "Unit/UnitStack.h"
@@ -60,6 +61,10 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
 
   bool is_minimax_ = false;
 
+  [[nodiscard]] bool isMoveLegal( const BattleCommand& ) const noexcept;
+  [[nodiscard]] bool isAttackLegal( const BattleCommand& ) const noexcept;
+  [[nodiscard]] bool isWaitLegal( const BattleCommand& ) const noexcept;
+
  public:
   friend MoveFactory;
   Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
@@ -76,11 +81,17 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
   void setBattleState( BattleState state );
   bool move( UnitStack& unit_stack, CoordPair new_coords );
   bool attack( UnitStack& attacker, UnitStack& defender );
-  [[nodiscard]] std::shared_ptr<BattleField> getBattlefield();
+
+  [[nodiscard]] bool isUnitBlocked( const UnitStack& ) const noexcept;
+  [[nodiscard]] bool isLegalCommand( const BattleCommand& ) const noexcept;
+
+  [[nodiscard]] std::shared_ptr<BattleField> getBattlefield() const noexcept;
+  [[nodiscard]] std::shared_ptr<BattleField> getBattlefield() noexcept;
   [[nodiscard]] std::shared_ptr<Character> getAttacker() const;
   [[nodiscard]] std::shared_ptr<Character> getDefender() const;
   [[nodiscard]] int getRoundCounter() const;
-  [[nodiscard]] UnitStack* getUnitFromCoords( CoordPair coords ) const;
+  [[nodiscard]] const UnitStack* getUnitFromCoords( CoordPair coords ) const noexcept;
+  [[nodiscard]] UnitStack* getUnitFromCoords( CoordPair coords ) noexcept;
   [[nodiscard]] bool hasAttackerThrownSpell() const;
   [[nodiscard]] bool hasDefenderThrownSpell() const;
   void nextUnit();
@@ -89,7 +100,8 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
   [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getUnitsInBattle() const;
   [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getUnitsInBattleSortedToPrint() const;
   // [[nodiscard]] const std::vector<std::reference_wrapper<UnitStack>> getRoundQueue() const;
-  [[nodiscard]] UnitStack* getUnitInAction() const;
+  [[nodiscard]] const UnitStack* getUnitInAction() const noexcept;
+  [[nodiscard]] UnitStack* getUnitInAction() noexcept;
   [[nodiscard]] std::vector<std::shared_ptr<Move>> getPossibleMoves() const;
   [[nodiscard]] BattleState getBattleState() const;
   [[nodiscard]] bool isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const;

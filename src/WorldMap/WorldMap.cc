@@ -15,6 +15,7 @@
 #include "Exceptions/InvalidMapMoveException.hpp"
 #include "Exceptions/TileNotFoundException.hpp"
 #include "Exceptions/UnknownStateException.hpp"
+#include "Game/IGameState.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -73,11 +74,9 @@ void WorldMap::setMapObject( CoordPair coords, std::shared_ptr<MapObject> object
   tile->setMapObject( std::move( object ) );
 }
 
-void WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
+StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
   if ( old_coords == new_coords ) {
-    // std::cout << "DEBUG: moveMapObj old==new; xo=" << old_coords.x_ << " yo=" << old_coords.y_
-    //  << " xn=" << new_coords.x_ << " yn=" << new_coords.y_ << std::endl;
-    return;
+    return NoTransition{};
   }
   if ( !getIfCoordsInBounds( old_coords ) ) {
     err::raise<CoordinateOutOfBoundsException>(
@@ -96,43 +95,44 @@ void WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
     err::raise<InvalidMapMoveException>( std::format(
         "Tried moving object from an empty tile. Source coords: x={}, y={}", old_coords.x_, old_coords.y_ ) );
   }
-  if ( map_obj_dest ) {
+
+  if ( !map_obj_dest ) {
+    new_tile->setMapObject( map_obj_src );
+    old_tile->deleteObject();
+    map_obj_src->setCoords( new_coords );
+    return NoTransition{};
+  }
+
+  bool is_dest_character = map_obj_dest->asCharacter() != nullptr;
+  if ( !is_dest_character ) {
     err::raise<InvalidMapMoveException>( std::format(
         "Tried moving object onto an occupied tile. Destination coords: x={}, y={}", new_coords.x_, new_coords.y_ ) );
   }
-  new_tile->setMapObject( map_obj_src );
-  old_tile->deleteObject();
-  map_obj_src->setCoords( new_coords );
-
-  // DEBUG SECTION
-  // int diff_x = new_coords.x_ - old_coords.x_;
-  // int diff_y = new_coords.y_ - old_coords.y_;
-  // if (std::abs(diff_x) + std::abs(diff_y) == 2) {
-  //     std::cout << "DEBUG: Diagonal ";
-  // } else {
-  //     std::cout << "DEBUG: Cardinal ";
-  // }
-  // std::cout << "move. New coords: x=" << new_coords.x_ << " y=" << new_coords.y_ << std::endl;
+  double distance = new_coords.distanceFrom( old_coords );
+  if ( distance > 1.5 ) {
+    err::raise<InvalidMapMoveException>( "Tried engaging in battle from more than 1 tile away" );
+  }
+  return RequestBattle{ .attacker_id_ = map_obj_src->asCharacter()->getId(),
+                        .defender_id_ = map_obj_dest->asCharacter()->getId(),
+                        .at_ = new_coords };
 }
 
-void WorldMap::moveMapObject( CoordPair old_coords, ShiftPair shift ) {
-  CoordPair new_coords = old_coords;
-  new_coords += shift;
-  this->moveMapObject( old_coords, new_coords );
+StateTransition WorldMap::moveMapObject( CoordPair old_coords, ShiftPair shift ) {
+  return this->moveMapObject( old_coords, old_coords + shift );
 }
 
 std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
+  // TODO change to const cast from const method equivalent
   if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
-    err::raise<CoordinateOutOfBoundsException>(
-        std::format( "Coordinates out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
+    err::raise<CoordinateOutOfBoundsException>( coords );
   }
   return grid_[coords.xAsId()][coords.yAsId()];
 }
 
 std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) const {
+  // TODO move replace safety check with method, call
   if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
-    err::raise<CoordinateOutOfBoundsException>(
-        std::format( "Coordinates out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
+    err::raise<CoordinateOutOfBoundsException>( coords );
   }
   return grid_[coords.xAsId()][coords.yAsId()];
 }

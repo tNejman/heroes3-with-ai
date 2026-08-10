@@ -23,7 +23,7 @@ void AttackMove::execute( std::shared_ptr<Battle> battle ) {
     err::raise<UnknownStateException>( "defender is null" );
   }
 
-  battle->attack( *( maybe_attacker->asUnit() ), *( maybe_defender->asUnit() ) );  // TODO handle return value
+  battle->attack( *( maybe_attacker->asUnit() ), *( maybe_defender->asUnit() ) );
   if ( battle->getBattleState() != BattleState::WIN_ATTACKER
        && battle->getBattleState() != BattleState::WIN_DEFENDER ) {
     battle->setBattleState( BattleState::MOVING );

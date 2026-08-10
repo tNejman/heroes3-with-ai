@@ -10,3 +10,7 @@ CoordPair MapObject::getCoords() const {
 void MapObject::setCoords( CoordPair new_coords ) {
   coords_ = new_coords;
 }
+
+Character* MapObject::asCharacter() noexcept {
+  return nullptr;
+}

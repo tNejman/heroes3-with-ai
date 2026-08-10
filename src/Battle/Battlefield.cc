@@ -15,7 +15,13 @@
 #include "Miscellaneous/ProjectLib.h"
 
 BattleField::BattleField( std::shared_ptr<GridTile> background )
-    : battle_grid_(), background_( std::move( background ) ) {};
+    : battle_grid_(), background_( std::move( background ) ) {
+  for ( size_t i = 0; i < battle_grid_.size(); ++i ) {
+    for ( size_t j = 0; j < battle_grid_[0].size(); ++j ) {
+      battle_grid_[i][j] = std::make_shared<Tile>( CoordPair{ static_cast<int>( i ), static_cast<int>( j ) } );
+    }
+  }
+};
 
 std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPair coords ) {
   const int x = coords.x_;

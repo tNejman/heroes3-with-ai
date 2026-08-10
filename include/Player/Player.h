@@ -31,7 +31,8 @@ class Player {
 
   Color color_;
 
-  std::vector<std::shared_ptr<Character>>& getCharacters();
+  std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
+  const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;
 
   // below are not implemented
   bool addCharacter( std::shared_ptr<Character> character );

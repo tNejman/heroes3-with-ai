@@ -7,7 +7,8 @@
 
 /* === WORLD MAP === */
 struct MoveCharacter {
-  CharacterMoveDirection direction;
+  CoordPair source_;
+  CoordPair destination_;
 };
 
 struct EndTurn {};
@@ -20,19 +21,20 @@ using TownCommand = std::variant<std::monostate>;
 
 /* === BATTLE === */
 
-struct MoveStack {
+// struct MoveStack {
+//   CoordPair destination;
+// };
+// struct AttackStack {
+//   CoordPair destination;
+// };
+// struct Wait {};
+// struct Defend {};
+
+// using BattleCommand = std::variant<MoveStack, AttackStack, Wait, Defend>;
+
+struct BattleCommand {
   CoordPair destination;
 };
-struct AttackStack {
-  CoordPair destination;
-};
-struct Wait {
-  int stack_id;
-};
-struct Defend {
-  int stack_id;
-};
-using BattleCommand = std::variant<MoveStack, AttackStack, Wait, Defend>;
 
 /* === GENERAL WRAPPER === */
 

@@ -36,8 +36,10 @@ class Character : public MapObject {
   CharacterMoveDirection orientation_ = CharacterMoveDirection::RIGHT;
   const CharacterType character_type_ = CharacterType::FIRE_HERO;
 
-  std::string name_;
-  bool is_user_character_;
+  const int id_;
+
+  const std::string name_;
+  bool is_user_character_;  // TODO change to const
 
   CharacterStats stats_;
   CharacterInventory inventory_;
@@ -51,11 +53,15 @@ class Character : public MapObject {
   Character() = delete;
   Character( const Character& ) = delete;
   Character( Character&& ) = delete;
-  Character( std::string name, CoordPair coords, CharacterStats stats );
+  Character( int id, std::string name, CoordPair coords, CharacterStats stats );
   ~Character() override = default;
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
   sf::Texture& accept( Visitor& v ) const override;
+
+  [[nodiscard]] int getId() const noexcept;
+
+  [[nodiscard]] Character* asCharacter() noexcept override;
 
   [[nodiscard]] CharacterMoveDirection getOrientation() const;
   void setOrientation( CharacterMoveDirection new_orientation );

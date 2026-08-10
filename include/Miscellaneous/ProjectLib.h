@@ -32,7 +32,7 @@ constexpr std::array<ShiftPair, 8> WORLD_MAP_DIRECTIONS = { { ShiftPair{ -1, 1 }
                                                               ShiftPair{ 0, -1 },      // DL
                                                               ShiftPair{ 1, -1 } } };  // L
 
-enum class CharacterMoveDirection { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, NONE };
+enum class CharacterMoveDirection : uint8_t { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, NONE };
 
 /*
 ====== BATTLE ======
@@ -93,7 +93,6 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 /*
 ====== CHARACTER ======
 */
-
 
 enum class CharacterType { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
 
@@ -182,8 +181,6 @@ const std::string WINDOW_NAME = "Heroes3App";
 */
 
 constexpr std::size_t AMOUNT_OF_RESOURCES = 7;
-
-enum class GameState { OVERWORLD, BATTLE, MENU };
 
 constexpr inline int FACTION_FORGE_ID_MARKER = 0;
 constexpr inline int FACTION_CONFLUX_ID_MARKER = 1;

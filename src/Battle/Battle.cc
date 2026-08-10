@@ -1,5 +1,6 @@
 #include "Battle/Battle.h"
 
+#include <X11/X.h>
 #include <sys/types.h>
 
 #include <SFML/Graphics/Texture.hpp>
@@ -22,6 +23,7 @@
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Exceptions/_NotImplementedException.hpp"
+#include "Game/UserCommand.h"
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
@@ -98,6 +100,42 @@ void Battle::nextRound() {
   defender_threw_spell_ = false;
 }
 
+[[nodiscard]] bool Battle::isMoveLegal( const BattleCommand& command ) const noexcept {
+  // TODO account for obstacles
+  const auto is_free_destination = battlefield_->getTileByProxy( command.destination )->getObject() == nullptr;
+  const auto is_distance_in_speed_range =
+      command.destination.distanceFrom( unit_in_action_->getCoordsInBattle() ) <= unit_in_action_->getData().speed_;
+  return is_free_destination && is_distance_in_speed_range;
+  // err::raise<NotImplementedException>();
+}
+[[nodiscard]] bool Battle::isAttackLegal( const BattleCommand& bc ) const noexcept {
+  /**
+   * @TODO
+   * check ammo
+   * check big units distance
+   * check dead unit/obstacle
+   */
+  assert( unit_in_action_ != nullptr && "Battle::isAttackLegal -> battle.unit_in_action is nullptr" );
+  if ( state_ != BattleState::ATTACKING ) {
+    return false;
+  }
+  const auto* const target = getUnitFromCoords( bc.destination );
+  if ( target == nullptr || isSameArmy( *unit_in_action_, *target ) ) {
+    return false;
+  }
+  const bool is_ranged_unit = unit_in_action_->getData().is_range_;
+  const bool next_to_defender = unit_in_action_->getCoordsInBattle().distanceFrom( bc.destination ) < 2;
+  const bool is_unit_blocked = isUnitBlocked( *unit_in_action_ );
+
+  return next_to_defender || ( is_ranged_unit && !is_unit_blocked );
+}
+[[nodiscard]] bool Battle::isWaitLegal( const BattleCommand& ) const noexcept {
+  // TODO actually write logic
+  return true;
+}
+
+/* === @PUBLIC === */
+
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
                 std::shared_ptr<GridTile> background )
     : state_( BattleState::MOVING ),
@@ -110,6 +148,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
   setAttackingArmy();
   setDefendingArmy();
   nextUnit();
+  assert( attacker_.get() != defender_.get() );
 };
 
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
@@ -223,7 +262,38 @@ bool Battle::attack( UnitStack& attacker, UnitStack& defender ) {
   return false;
 }
 
-std::shared_ptr<BattleField> Battle::getBattlefield() {
+[[nodiscard]] bool Battle::isUnitBlocked( const UnitStack& stack ) const noexcept {
+  const auto neighbours = battlefield_->getTileNeighbours( stack.getCoordsInBattle() );
+  // find one with unit on it
+  const auto it = std::ranges::find_if( neighbours, [&]( const std::shared_ptr<Tile>& tile ) {
+    if ( !tile ) {
+      return false;
+    }
+    auto* const object = tile->getObject();
+    if ( !object ) {
+      return false;
+    }
+    return object->asUnit() != nullptr && !isSameArmy( *object->asUnit(), stack );
+  } );
+  return it != neighbours.end();
+}
+
+[[nodiscard]] bool Battle::isLegalCommand( const BattleCommand& command ) const noexcept {
+  if ( command.destination == unit_in_action_->getCoordsInBattle() ) {
+    return isWaitLegal( command );
+  }
+  switch ( state_ ) {
+    case BattleState::ATTACKING: return isAttackLegal( command );
+    case BattleState::MOVING: return isMoveLegal( command );
+    default: assert( false && "Battle::isLegalCommand -> reached unknown state" );
+  }
+}
+
+std::shared_ptr<BattleField> Battle::getBattlefield() const noexcept {
+  return battlefield_;
+}
+
+std::shared_ptr<BattleField> Battle::getBattlefield() noexcept {
   return battlefield_;
 }
 
@@ -239,7 +309,11 @@ int Battle::getRoundCounter() const {
   return round_counter_;
 }
 
-UnitStack* Battle::getUnitFromCoords( CoordPair coords ) const {
+const UnitStack* Battle::getUnitFromCoords( CoordPair coords ) const noexcept {
+  auto* maybe_object = battlefield_->getTileByProxy( coords )->getObject();
+  return ( maybe_object == nullptr ) ? nullptr : maybe_object->asUnit();
+}
+UnitStack* Battle::getUnitFromCoords( CoordPair coords ) noexcept {
   auto* maybe_object = battlefield_->getTileByProxy( coords )->getObject();
   return ( maybe_object == nullptr ) ? nullptr : maybe_object->asUnit();
 }
@@ -315,7 +389,11 @@ std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattleSortedToP
 //   return round_queue_;
 // }
 
-UnitStack* Battle::getUnitInAction() const {
+const UnitStack* Battle::getUnitInAction() const noexcept {
+  return unit_in_action_;
+}
+
+UnitStack* Battle::getUnitInAction() noexcept {
   return unit_in_action_;
 }
 

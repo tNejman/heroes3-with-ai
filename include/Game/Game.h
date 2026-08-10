@@ -12,9 +12,10 @@
 #include <vector>
 
 #include "Algorithms/MinimaxAI.h"
-#include "Game/KeyboardHandler.h"
+#include "Game/GameContext.h"
+#include "Game/GameStateStack.h"
+#include "Game/IGameState.h"
 #include "Game/UserCommand.h"
-#include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/GridTile.h"
@@ -23,32 +24,24 @@
 
 class Game {
  private:
-  GameState game_state_ = GameState::OVERWORLD;
-  WorldMap world_map_;
-
-  // players_[0] should be the main player
-  std::vector<std::shared_ptr<Player>> players_;
-  //   std::vector<std::shared_ptr<Faction>> factions_;
-  std::shared_ptr<Battle> battle_;
+  GameStateStack state_stack_;
+  GameContext context_;
 
   std::shared_ptr<MinimaxAI> minimax_;
 
-  // std::optional<sf::Event> event_ = std::nullopt;
   bool waiting_for_print_ = true;
   int frames_since_start_ = 0;
-  //   int is_player_turn_counter_ = 0;
 
   void performGameLoopIterationOverworld( const UserCommand& command );
   void performGameLoopIterationBattle( const UserCommand& command );
 
-  void performBattleAiMove();
-  void performBattleUserMove( const UserCommand& command );
+//   void performBattleAiMove();
+//   void performBattleUserMove( const UserCommand& command );
 
   void removeCharactersWithNoUnits();
 
   void placeCharactersOnWorldMap();
-  void startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-                    std::shared_ptr<GridTile> background );
+  void startBattle( const RequestBattle& request, std::shared_ptr<GridTile> background );
 
  public:
   Game( std::vector<std::shared_ptr<Player>> players );
@@ -56,12 +49,10 @@ class Game {
 
   void mapLoadObstacles(
       std::vector<std::shared_ptr<OverworldObstacle>>& obstacles );  // TODO expose map rather than proxy methods
-  [[nodiscard]] GameState getState() const;
   void performGameLoopIteration( const UserCommand& command );
   [[nodiscard]] std::shared_ptr<Character> getMainCharacter() const;
-  void debugStartBattle();
+
   [[nodiscard]] int getFrameCountSinceStart() const noexcept;
 
-  [[nodiscard]] const WorldMap& getMap() const noexcept;
-  [[nodiscard]] const Battle& getBattle() const noexcept;
+  [[nodiscard]] const IGameState& getState() const noexcept;
 };

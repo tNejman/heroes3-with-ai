@@ -5,12 +5,15 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
+#include <chrono>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -31,6 +34,12 @@
 #include "Unit/UnitsLib.h"
 #include "WorldMap/OverworldObstacle.h"
 
+namespace {
+ShiftPair getShiftFromDirection( CharacterMoveDirection direction ) {
+  return WORLD_MAP_DIRECTIONS[static_cast<size_t>( direction )];
+}
+}  // namespace
+
 int main() {
   UnitStack unit_stack_1{ getCastleUnit( CastleUnitType::PIKEMAN ), 10 };
   UnitStack unit_stack_3{ getCastleUnit( CastleUnitType::PIKEMAN ), 15 };
@@ -45,7 +54,7 @@ int main() {
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
       CharacterBuilder{}
-          .setName( "fire_her_down_right" )
+          .setName( "fire_hero_down_right" )
           .setCoords( { 0, 0 } )
           .setStats( CharacterStats{
               CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
@@ -106,13 +115,7 @@ int main() {
     }
   }
 
-  std::shared_ptr<Game> game = nullptr;
-  try {
-    game = std::make_shared<Game>( players );
-  } catch ( const std::exception& e ) {
-    std::cout << e.what() << '\n';
-    return -1;
-  }
+  std::shared_ptr<Game> game = std::make_shared<Game>( players );
   game->mapLoadObstacles( obstacles );
 
   // std::ofstream out( "CharacterSave2.txt" );
@@ -150,16 +153,21 @@ int main() {
         return std::nullopt;
       }();
       if ( maybe_hex_coords.has_value() ) {
-        maybe_command = MoveStack{ maybe_hex_coords.value() };
+        maybe_command = BattleCommand{ maybe_hex_coords.value() };
       } else {
         KeyHandler key_handler{ false };
         key_handler.monitorKeyPresses();
         CharacterMoveDirection move_direction = key_handler.getMove();
-        maybe_command = MoveCharacter{ move_direction };
+        if ( move_direction != CharacterMoveDirection::NONE ) {
+          CoordPair source = game->getMainCharacter()->getCoords();
+          CoordPair destination = game->getMainCharacter()->getCoords() + getShiftFromDirection( move_direction );
+          maybe_command = MoveCharacter{ .source_ = source, .destination_ = destination };
+        }
       }
     }
     window->clear( sf::Color( 4 ) );
     game->performGameLoopIteration( maybe_command );
+    // std::this_thread::sleep_for( std::chrono::milliseconds{ 500 } );
     GameRenderer{ *game }.render( *window, game->getMainCharacter()->getCoords() );
     // if ( game->getFrameCountSinceStart() == 4 ) {
     //   std::chrono::milliseconds timespan{ 5'000 };

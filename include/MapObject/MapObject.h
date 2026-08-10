@@ -9,6 +9,8 @@
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 
+class Character;
+
 class MapObject : public Printable {
  protected:
   CoordPair coords_;
@@ -19,4 +21,5 @@ class MapObject : public Printable {
   sf::Texture& accept( Visitor& v ) const override = 0;
   [[nodiscard]] CoordPair getCoords() const;
   void setCoords( CoordPair new_coords );
+  [[nodiscard]] virtual Character* asCharacter() noexcept;
 };

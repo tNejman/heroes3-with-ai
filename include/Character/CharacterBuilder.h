@@ -13,10 +13,12 @@ class CharacterBuilder {
   std::optional<CoordPair> coords_;
   std::optional<CharacterStats> stats_;
 
+  [[nodiscard]] static int generateId() noexcept;
+
  public:
-  CharacterBuilder&& setName( std::string name ) && noexcept;
-  CharacterBuilder&& setCoords( CoordPair coords ) && noexcept;
-  CharacterBuilder&& setStats( CharacterStats stats ) && noexcept;
-  Character build() && noexcept;
-  std::shared_ptr<Character> buildSharedPtr() && noexcept;
+  [[nodiscard]] CharacterBuilder&& setName( std::string name ) && noexcept;
+  [[nodiscard]] CharacterBuilder&& setCoords( CoordPair coords ) && noexcept;
+  [[nodiscard]] CharacterBuilder&& setStats( CharacterStats stats ) && noexcept;
+  [[nodiscard]] Character build() && noexcept;
+  [[nodiscard]] std::shared_ptr<Character> buildSharedPtr() && noexcept;
 };

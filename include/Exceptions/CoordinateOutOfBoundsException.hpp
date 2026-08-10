@@ -14,9 +14,7 @@ class CoordinateOutOfBoundsException : public std::exception {
  public:
   CoordinateOutOfBoundsException( std::string msg ) : message_( std::move( msg ) ) {
   }
-  CoordinateOutOfBoundsException( CoordPair coords ) : message_( std::format( "x={}, y={}", coords.x_, coords.y_ ) ) {
-  }
-  CoordinateOutOfBoundsException( CoordPair coords, std::string msg )
+  CoordinateOutOfBoundsException( std::string msg, CoordPair coords )
       : message_( std::format( "{}, x={}, y={}", msg, coords.x_, coords.y_ ) ) {
   }
 

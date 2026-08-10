@@ -18,11 +18,23 @@
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 
-Character::Character( std::string name, CoordPair coords, CharacterStats stats )
-    : MapObject( coords ), name_( std::move( name ) ), is_user_character_( true ), stats_( std::move( stats ) ) {};
+Character::Character( int id, std::string name, CoordPair coords, CharacterStats stats )
+    : MapObject( coords ),
+      id_( id ),
+      name_( std::move( name ) ),
+      is_user_character_( true ),
+      stats_( std::move( stats ) ) {};
 
 sf::Texture& Character::accept( Visitor& v ) const {
   return v.visit( *this );
+}
+
+[[nodiscard]] int Character::getId() const noexcept {
+  return id_;
+}
+
+[[nodiscard]] Character* Character::asCharacter() noexcept {
+  return this;
 }
 
 CharacterMoveDirection Character::getOrientation() const {

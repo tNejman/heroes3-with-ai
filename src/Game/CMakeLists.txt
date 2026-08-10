@@ -1,5 +1,9 @@
 add_library(Game SHARED
     Game.cc
+    GameContext.cc
+    GameStateBattle.cc
+    GameStateOverworld.cc
+    GameStateStack.cc
     KeyHandler.cc
     MouseHandler.cc
 )
