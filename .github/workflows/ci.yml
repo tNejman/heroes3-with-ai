@@ -29,6 +29,12 @@ jobs:
             lld \
             ninja-build
 
+      - name: Install libstdc++ 15
+        run: |
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y libstdc++-15-dev
+
       - name: Configure CMake
         run: cmake --preset=clang-ninja-lld
 
