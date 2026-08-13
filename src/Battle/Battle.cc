@@ -136,8 +136,7 @@ void Battle::nextRound() {
 
 /* === @PUBLIC === */
 
-Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-                std::shared_ptr<GridTile> background )
+Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background )
     : state_( BattleState::MOVING ),
       battlefield_( std::make_shared<BattleField>( background ) ),
       attacker_( std::move( attacker ) ),
@@ -151,9 +150,9 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
   assert( attacker_.get() != defender_.get() );
 };
 
-Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-                std::shared_ptr<GridTile> background, bool is_minimax )
-    : Battle( std::move( attacker ), std::move( defender ), std::move( background ) ) {
+Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background,
+                bool is_minimax )
+    : Battle( std::move( attacker ), std::move( defender ), background ) {
   is_minimax_ = is_minimax;
 }
 

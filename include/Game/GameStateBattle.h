@@ -9,6 +9,7 @@
 #include "Game/IGameState.h"
 #include "Game/UserCommand.h"
 #include "Graphics/IRVisitor.h"
+#include "Miscellaneous/ProjectLib.h"
 
 class GameStateBattle : public IGameState {
  private:
@@ -20,8 +21,7 @@ class GameStateBattle : public IGameState {
   // StateTransition handleDefend( const Defend & ) noexcept;
 
  public:
-  GameStateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-                   std::shared_ptr<GridTile> background );
+  GameStateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
 
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept override;
   [[nodiscard]] StateTransition applyCommand( const UserCommand &, GameContext & ) noexcept override;

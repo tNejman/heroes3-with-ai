@@ -85,7 +85,15 @@ constexpr CoordPair BATTLE_MAP_NOT_FOUND_COORDS{ 69'420, 69'420 };
 ====== TERRAIN ======
 */
 
-enum class Terrain { GRASS = 0, DIRT = 1, MOSTLY_GRASS = 2, ROCKS = 3, ROCKS_CRUSHED = 4, SAND = 5 };
+enum class Terrain : uint8_t {
+  GRASS = 0,
+  DIRT = 1,
+  MOSTLY_GRASS = 2,
+  ROCKS = 3,
+  ROCKS_CRUSHED = 4,
+  SAND = 5,
+  COUNT = 6
+};
 
 const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain::GRASS, 1.0 },
                                                                        { Terrain::DIRT, 1.2 } };

@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -11,6 +10,7 @@
 #include "Character/CharacterStats.h"
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
 #include "Unit/Faction.hpp"
 #include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
@@ -40,8 +40,7 @@ TEST( BattleTest, checkattacking ) {
 
   auto& pikeman_ref = character1->army().recruitUnitStack( pikeman_army );
   auto& angel_ref = character2->army().recruitUnitStack( angel_army );
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
+  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
   battle->attack( pikeman_ref, angel_ref );
   ASSERT_EQ( angel_ref.getSize(), 1 );
   battle->attack( angel_ref, pikeman_ref );
@@ -86,9 +85,8 @@ TEST( BattleTest, checkingattacking ) {
   auto& pikeman_panam_ref =
       character4->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
 
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
-  std::unique_ptr<Battle> battle_v_panam = std::make_unique<Battle>( character3, character4, tile );
+  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
+  std::unique_ptr<Battle> battle_v_panam = std::make_unique<Battle>( character3, character4, Terrain::GRASS );
 
   battle->attack( pikeman_john_ref, angel_silverhand_ref );
   ASSERT_EQ( angel_silverhand_ref.getSize(), 1 );
@@ -125,9 +123,8 @@ TEST( BattleTest, checkingMaxattackBonus ) {
   auto& pikeman_panam_ref =
       character4->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
 
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
-  std::unique_ptr<Battle> battle_v_panam = std::make_unique<Battle>( character3, character4, tile );
+  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
+  std::unique_ptr<Battle> battle_v_panam = std::make_unique<Battle>( character3, character4, Terrain::GRASS );
 
   battle->attack( angel_silverhand_ref, pikeman_john_ref );
   ASSERT_TRUE( pikeman_john_ref.getSize() < 30 );
@@ -159,9 +156,8 @@ TEST( BattleTest, checkingMaxdefenseBonus ) {
   auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 5 } );
   auto& angel_panam_ref = character4->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 5 } );
 
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::shared_ptr<Battle> battle = std::make_shared<Battle>( character1, character2, tile );
-  std::shared_ptr<Battle> battle_v_panam = std::make_shared<Battle>( character3, character4, tile );
+  std::shared_ptr<Battle> battle = std::make_shared<Battle>( character1, character2, Terrain::GRASS );
+  std::shared_ptr<Battle> battle_v_panam = std::make_shared<Battle>( character3, character4, Terrain::GRASS );
 
   ASSERT_NE( character1->army().getParty()[0], std::nullopt );
   ASSERT_NE( character3->army().getParty()[0], std::nullopt );
@@ -197,8 +193,7 @@ TEST( BattleTestMoving, checksettingarmies ) {
       character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 3 } );
   auto& swordsman_3_army =
       character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 4 } );
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
+  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
 
   ASSERT_EQ( &pikeman_army, battle->getBattlefield()->getTileByProxy( { 0, 0 } )->getObject() );
   ASSERT_EQ( &pikeman_2_army, battle->getBattlefield()->getTileByProxy( { 0, 2 } )->getObject() );
@@ -234,8 +229,7 @@ TEST( BattleTestMoving, checkmovingarmies ) {
   auto& swordsman_3_army =
       character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 4 } );
 
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
+  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
   ASSERT_EQ( &swordsman_army, battle->getBattlefield()->getTileByProxy( CoordPair( 14u, 2u ) )->getObject() );
   ASSERT_EQ( &swordsman_2_army, battle->getBattlefield()->getTileByProxy( CoordPair( 14u, 4u ) )->getObject() );
   ASSERT_EQ( &swordsman_3_army, battle->getBattlefield()->getTileByProxy( CoordPair( 14u, 5u ) )->getObject() );
@@ -271,8 +265,7 @@ TEST( BattleTestAttack, check_attacking_armies ) {
   auto& swordsman_3_army =
       character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 4 } );
 
-  std::shared_ptr<GridTile> tile = nullptr;
-  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, tile );
+  std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
 
   battle->move( pikeman_army, CoordPair( 7u, 5u ) );
   battle->move( swordsman_army, CoordPair( 7u, 6u ) );

@@ -18,6 +18,7 @@
 #include "Game/UserCommand.h"
 #include "Graphics/IRVisitor.h"
 #include "LoadAndSaveTools/MapLoader.h"
+#include "Miscellaneous/DiscardReturn.hpp"
 #include "Miscellaneous/Overload.hpp"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/OverworldObstacle.h"
@@ -63,11 +64,15 @@ void GameStateOverworld::applyGameCommand( const GameCommand& command, GameConte
   if ( !isCommandForThisState<WorldMapGameCommand>( command ) ) {
     return;
   }
-  std::visit( Overload{ [&]( const MoveMapObject& mmo ) { map_.moveMapObject( mmo.from_, mmo.to_ ); },
-                        [&]( const EraseTile& et ) { map_.getTile( et.desitnation_ )->deleteObject(); },
+  // game command is to apply the state transition not recieve it
+  std::visit( Overload{ [&]( const MoveMapObject& mmo ) {
+                         DISCARD_RETURN()
+                         map_.moveMapObject( mmo.from_, mmo.to_ );
+                       },
+                        [&]( const EraseTile& et ) { map_.resetMapObject( et.desitnation_ ); },
                         [&]( const PlaceCharacter& pc ) {
                           auto character = context.findCharacterById( pc.character_id_ );
-                          map_.getTile( pc.destination_ )->setMapObject( character );
+                          map_.setMapObject( pc.destination_, std::move( character ) );
                         } },
               std::get<WorldMapGameCommand>( command ) );
 }
@@ -78,9 +83,4 @@ void GameStateOverworld::accept( IRVisitor& v ) const noexcept {
 
 [[nodiscard]] const WorldMap& GameStateOverworld::viewMap() const noexcept {
   return map_;
-}
-
-void GameStateOverworld::loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacles )  // TODO remove
-{
-  map_.loadObstacles( obstacles );
 }

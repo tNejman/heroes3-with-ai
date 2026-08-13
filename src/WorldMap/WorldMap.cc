@@ -3,265 +3,106 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
-#include <exception>
-#include <format>
-#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "Exceptions/CoordinateOutOfBoundsException.hpp"  // IWYU pragma: keep
 #include "Exceptions/Err.hpp"
 #include "Exceptions/InvalidMapMoveException.hpp"
-#include "Exceptions/TileNotFoundException.hpp"
-#include "Exceptions/UnknownStateException.hpp"
 #include "Game/IGameState.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/Formatter.hpp"  // IWYU pragma: keep
 #include "Miscellaneous/ProjectLib.h"
-#include "WorldMap/GridTile.h"
 #include "WorldMap/OverworldObstacle.h"
 
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
-void WorldMap::loadGrid( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid ) {
-  // static bool is_initialized = false;
-  // if ( is_initialized ) {
-  //   err::raise<UnknownStateException>( "called second time" );
-  // }
-  // is_initialized = true;
-  // TODO technically not needed but good to bring back
-
+void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
+  // SINGLE_CALL_GUARD();
   for ( size_t col = 0; col < WORLD_MAP_WIDTH; ++col ) {
     for ( size_t row = 0; row < WORLD_MAP_HEIGHT; ++row ) {
-      Terrain terrain{ static_cast<Terrain>( new_grid[col][row] ) };
-      CoordPair coords{ static_cast<int>( col ), static_cast<int>( row ) };
-      grid_[col][row] = std::make_shared<GridTile>( coords, terrain );
-      assert( grid_[col][row] != nullptr && "WorldMap::loadGrid -> GridTile ptr is null after init" );
-    }
-  }
-}
-// NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
-
-bool WorldMap::getIfCoordsInBounds( CoordPair coords ) const {
-  return ( coords.x_ < WORLD_MAP_WIDTH && coords.y_ < WORLD_MAP_HEIGHT );
-}
-
-bool WorldMap::getIfCoordsInBounds( CoordPair coords, ShiftPair shift ) const {
-  CoordPair new_coords = coords + shift;
-  return getIfCoordsInBounds( new_coords );
-}
-
-WorldMap::WorldMap( std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& new_grid ) {
-  this->loadGrid( new_grid );
-}
-
-void WorldMap::loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacels ) {
-  for ( auto& obstacle : obstacels ) {
-    try {
-      setMapObject( obstacle->getCoords(), obstacle );
-    } catch ( const std::exception& e ) {
-      std::cout << e.what() << '\n';
+      assert( new_grid[col][row] <= static_cast<int>( Terrain::COUNT ) && ( new_grid[col][row] >= 0 ) );
+      background_[col][row] = static_cast<Terrain>( new_grid[col][row] );
     }
   }
 }
 
-void WorldMap::setMapObject( CoordPair coords, std::shared_ptr<MapObject> object ) {
-  if ( !getIfCoordsInBounds( coords ) ) {
-    err::raise<CoordinateOutOfBoundsException>(
-        std::format( "Cannot set object out of bounds: x={}, y={}", coords.x_, coords.y_ ) );
+void WorldMap::loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>> obstacles ) noexcept {
+  // SINGLE_CALL_GUARD()
+  for ( auto& obstacle : obstacles ) {
+    setMapObject( obstacle->getCoords(), std::move( obstacle ) );
   }
-  auto tile = this->getTile( coords );
-  tile->setMapObject( std::move( object ) );
+}
+
+/* === @PUBLIC === */
+
+// omit zero initialization of array
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
+WorldMap::WorldMap( const WorldMapGrid<int>& new_grid ) noexcept {
+  WorldMap::loadBackground( new_grid );
+}
+
+WorldMap::WorldMap( const WorldMapGrid<int>& new_grid,
+                    std::vector<std::shared_ptr<OverworldObstacle>> new_obstacles ) noexcept
+    : WorldMap( new_grid ) {
+  loadObstacles( std::move( new_obstacles ) );
+}
+
+bool WorldMap::areCoordsInBounds( CoordPair coords ) noexcept {
+  return coords.x_ >= 0 && coords.x_ < WORLD_MAP_WIDTH && coords.y_ >= 0 && coords.y_ < WORLD_MAP_HEIGHT;
+}
+
+[[nodiscard]] Terrain WorldMap::getTerrain( CoordPair coords ) const noexcept {
+  return background_[coords.xAsId()][coords.yAsId()];
+}
+
+[[nodiscard]] std::shared_ptr<MapObject>& WorldMap::getMapObjectShared( CoordPair coords ) noexcept {
+  return foreground_[coords.xAsId()][coords.yAsId()];
+}
+[[nodiscard]] const MapObject* WorldMap::getMapObject( CoordPair coords ) const noexcept {
+  return foreground_[coords.xAsId()][coords.yAsId()].get();
+}
+[[nodiscard]] MapObject* WorldMap::getMapObject( CoordPair coords ) noexcept {
+  return foreground_[coords.xAsId()][coords.yAsId()].get();
+}
+
+void WorldMap::setMapObject( CoordPair coords, std::shared_ptr<MapObject> object ) noexcept {
+  foreground_[coords.xAsId()][coords.yAsId()] = std::move( object );
+}
+void WorldMap::resetMapObject( CoordPair coords ) noexcept {
+  foreground_[coords.xAsId()][coords.yAsId()].reset();
 }
 
 StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
   if ( old_coords == new_coords ) {
     return NoTransition{};
   }
-  if ( !getIfCoordsInBounds( old_coords ) ) {
-    err::raise<CoordinateOutOfBoundsException>(
-        std::format( "Origin out of bounds: x={}, y={}", old_coords.x_, old_coords.y_ ) );
-  }
-  if ( !getIfCoordsInBounds( new_coords ) ) {
-    err::raise<CoordinateOutOfBoundsException>(
-        std::format( "Destination out of bounds: x={}, y={}", old_coords.x_, old_coords.y_ ) );
-  }
-  auto old_tile = this->getTile( old_coords );
-  auto new_tile = this->getTile( new_coords );
-  auto map_obj_src = old_tile->getMapObject();
-  auto map_obj_dest = new_tile->getMapObject();
+  COORDS_IN_BOUNDS_OR_THROW( old_coords, "Origin: " );
+  COORDS_IN_BOUNDS_OR_THROW( new_coords, "Destination: " );
 
-  if ( !map_obj_src ) {
-    err::raise<InvalidMapMoveException>( std::format(
-        "Tried moving object from an empty tile. Source coords: x={}, y={}", old_coords.x_, old_coords.y_ ) );
-  }
+  auto map_obj_src = getMapObjectShared( old_coords );
+  auto map_obj_dest = getMapObjectShared( new_coords );
 
-  if ( !map_obj_dest ) {
-    new_tile->setMapObject( map_obj_src );
-    old_tile->deleteObject();
+  err::passCondOrThrow<InvalidMapMoveException>( map_obj_src != nullptr,
+                                                 "Tried moving object from an empty tile. Source coords:", old_coords );
+
+  if ( map_obj_dest == nullptr ) {
+    setMapObject( new_coords, map_obj_src );
+    resetMapObject( old_coords );
     map_obj_src->setCoords( new_coords );
     return NoTransition{};
   }
+  // TODO from here, below, battle is launched; rewrite cleanly
 
   bool is_dest_character = map_obj_dest->asCharacter() != nullptr;
-  if ( !is_dest_character ) {
-    err::raise<InvalidMapMoveException>( std::format(
-        "Tried moving object onto an occupied tile. Destination coords: x={}, y={}", new_coords.x_, new_coords.y_ ) );
-  }
+  err::passCondOrThrow<InvalidMapMoveException>(
+      is_dest_character, "Tried moving object onto an occupied tile. Destination coords:", new_coords );
+
   double distance = new_coords.distanceFrom( old_coords );
-  if ( distance > 1.5 ) {
-    err::raise<InvalidMapMoveException>( "Tried engaging in battle from more than 1 tile away" );
-  }
+  err::passCondOrThrow<InvalidMapMoveException>( distance < 1.5,
+                                                 "Tried engaging in battle from more than 1 tile away" );
+
   return RequestBattle{ .attacker_id_ = map_obj_src->asCharacter()->getId(),
                         .defender_id_ = map_obj_dest->asCharacter()->getId(),
                         .at_ = new_coords };
 }
-
-StateTransition WorldMap::moveMapObject( CoordPair old_coords, ShiftPair shift ) {
-  return this->moveMapObject( old_coords, old_coords + shift );
-}
-
-std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) {
-  // TODO change to const cast from const method equivalent
-  if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
-    err::raise<CoordinateOutOfBoundsException>( coords );
-  }
-  return grid_[coords.xAsId()][coords.yAsId()];
-}
-
-std::shared_ptr<GridTile> WorldMap::getTile( const CoordPair coords ) const {
-  // TODO move replace safety check with method, call
-  if ( coords.x_ >= WORLD_MAP_WIDTH || coords.y_ >= WORLD_MAP_HEIGHT || coords.x_ < 0 || coords.y_ < 0 ) {
-    err::raise<CoordinateOutOfBoundsException>( coords );
-  }
-  return grid_[coords.xAsId()][coords.yAsId()];
-}
-
-// std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> WorldMap::getGridTransposed() {
-//     std::array<std::array<std::shared_ptr<GridTile>, WORLD_MAP_WIDTH>, WORLD_MAP_HEIGHT> grid_transposed;
-// }
-// std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>& WorldMap::getGrid() const {
-
-// }
-// std::array<std::unique_ptr<GridTile>, WORLD_MAP_WIDTH>& WorldMap::getRow( const uint32_t row_num ) const {
-
-// }
-// std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>& WorldMap::getColumn( const uint32_t column_num ) const {
-
-// }
-
-// std::shared_ptr<MapObject>& WorldMap::getObject( const CoordPair coords ) const {
-
-// }
-// std::shared_ptr<MapObject>& WorldMap::getObject( const std::unique_ptr<GridTile>& base_tile ) const {
-
-// }
-
-// CoordPair WorldMap::getTileCoords( const std::unique_ptr<GridTile>& tile ) const {
-//     for (int i = 0; i < WORLD_MAP_WIDTH; ++i) {
-//         for (int j = 0; j < WORLD_MAP_HEIGHT; ++j) {
-//             if (grid_[i][j] == tile) {
-//                 return {i, j};
-//             }
-//         }
-//     }
-//     throw TileNotFoundException("Tile not found.");
-// }
-// CoordPair WorldMap::getObjectCoords( const std::unique_ptr<MapObject>& object ) const {
-//     for (int i = 0; i < WORLD_MAP_WIDTH; ++i) {
-//         for (int j = 0; j < WORLD_MAP_HEIGHT; ++j) {
-//             if (grid_[i][j]->getMapObject() == object) {
-//                 return {i, j};
-//             }
-//         }
-//     }
-//     throw ObjectNotFoundException("Object not found.");
-// }
-// CoordPair WorldMap::getCharacterCoords( const std::string& character_name ) const {
-//     for (const std::shared_ptr<Character>& c :  characters_) {
-//         if (c->getName() == character_name)
-//             return c->getCoords();
-//     }
-//     throw ObjectNotFoundException("Character not found.");
-// }
-// CoordPair WorldMap::getBuildingCoords( const std::string& building_name ) const {
-//     for (int i = 0; i < WORLD_MAP_WIDTH; ++i) {
-//         for (int j = 0; j < WORLD_MAP_HEIGHT; ++j) {
-//             if (grid_[i][j]->getMapObject()) {
-//             }
-//         }
-//     }
-// }
-
-// std::vector<std::unique_ptr<Character>>& WorldMap::getCharacters() const {
-//     return this->characters_;
-// }
-// std::vector<std::unique_ptr<Building>>& WorldMap::getBuildings() const {
-
-// }
-
-// void WorldMap::setGrid( std::array<std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>&
-// new_grid ) {
-
-// }
-// void WorldMap::setRow( std::array<std::unique_ptr<GridTile>, WORLD_MAP_WIDTH>& new_row ) {
-
-// }
-// void WorldMap::setColumn( std::array<std::unique_ptr<GridTile>, WORLD_MAP_HEIGHT>& new_column ) {
-
-// }
-
-// void WorldMap::setTile( std::unique_ptr<GridTile>& tile, const CoordPair where ) {`
-//     grid_[where.first][where.second] = std::move(tile);
-// }
-// void WorldMap::swapTiles( const CoordPair coords_a, const CoordPair coords_b ) {
-//     std::unique_ptr<GridTile> temp = std::move(grid_[coords_a.first][coords_a.second]);
-//     grid_[coords_a.first][coords_a.second] = std::move(grid_[coords_b.first][coords_b.second]);
-//     grid_[coords_b.first][coords_b.second] = std::move(temp);
-// }
-
-// void WorldMap::setMapObject( std::unique_ptr<MapObject>& map_object, std::unique_ptr<GridTile>& grid_tile ) {
-//     grid_tile->setMapObject(map_object);
-// }
-// void WorldMap::setMapObject( std::unique_ptr<MapObject>& map_object, const CoordPair coords ) {
-//     grid_[coords.first][coords.second]->setMapObject(map_object);
-// }
-// void WorldMap::swapMapObjects( const CoordPair coords_a, const CoordPair coords_b ) {
-//     std::unique_ptr<MapObject> temp = std::move(grid_[coords_a.first][coords_a.second]->getMapObject());
-//     grid_[coords_a.first][coords_a.second]->setMapObject(grid_[coords_b.first][coords_b.second]->getMapObject());
-//     grid_[coords_b.first][coords_b.second]->setMapObject(temp);
-// }
-
-// void WorldMap::addCharacter( const std::shared_ptr<Character>& character ) {
-//     characters_.push_back(std::make_shared<Character>(character));
-// }
-// void WorldMap::removeCharacter( const std::string& character_name ) {
-//     // TODO also remove from map
-//     for (auto i = characters_.begin(); i != characters_.end(); ++i) {
-//         if((*i)->getName() == character_name) {
-//             characters_.erase(i);
-//             return;
-//         }
-//     }
-//     throw ObjectNotFoundException("Character not found.");
-// }
-// void WorldMap::removeCharacters() {
-//     characters_.empty();
-// }
-
-// void WorldMap::addBuilding( const std::unique_ptr<Building>& building ) {
-//     buildings_.push_back(std::make_shared<Building>(building));
-// }
-// void WorldMap::removeBuilding( const std::string& building_name ) {
-//     // TODO also remove from map
-//     for (auto i = buildings_.begin(); i != buildings_.end(); ++i) {
-//         if( (*i)->getName() == building_name) {
-//             buildings_.erase(i);
-//             return;
-//         }
-//     }
-//     throw ObjectNotFoundException("Building not found");
-// }
-// void WorldMap::removeBuildings() {
-//     buildings_.empty();
-// }

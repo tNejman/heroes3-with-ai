@@ -18,6 +18,7 @@
 #include "Game/UserCommand.h"
 #include "Graphics/IRVisitor.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
 
 StateTransition GameStateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
   battle_.move( *battle_.getUnitInAction(), ms.destination );
@@ -54,8 +55,8 @@ StateTransition GameStateBattle::handleWait() noexcept {
 /* === @PUBLIC === */
 
 GameStateBattle::GameStateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-                                  std::shared_ptr<GridTile> background )
-    : battle_( std::move( attacker ), std::move( defender ), std::move( background ) ) {
+                                  Terrain background )
+    : battle_( std::move( attacker ), std::move( defender ), background ) {
 }
 
 [[nodiscard]] std::vector<UserCommand> GameStateBattle::legalCommands() const noexcept {

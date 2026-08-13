@@ -6,11 +6,9 @@
 */
 #include <SFML/Graphics/Texture.hpp>
 #include <cassert>
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "Battle/BattleField.h"
@@ -18,8 +16,8 @@
 #include "Game/UserCommand.h"
 #include "Graphics/Printable.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
-#include "Unit/UnitsLib.h"
 
 class MoveFactory;
 class Move;
@@ -67,10 +65,9 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
 
  public:
   friend MoveFactory;
-  Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-          std::shared_ptr<GridTile> background );
-  Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-          std::shared_ptr<GridTile> background, bool is_minimax );
+  Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
+  Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background,
+          bool is_minimax );
   Battle( const Battle& ) = delete;
   Battle( Battle&& ) = delete;
 

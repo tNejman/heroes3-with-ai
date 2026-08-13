@@ -16,26 +16,27 @@
 class Tile;
 class GridTile;
 
-using Grid = std::array<std::array<std::shared_ptr<Tile>, MAP_HEIGHT_BF>, MAP_WIDTH_BF>;
+using BattleGrid = std::array<std::array<std::shared_ptr<Tile>, MAP_HEIGHT_BF>, MAP_WIDTH_BF>;
 
 class BattleField {
  private:
-  Grid battle_grid_;
+  BattleGrid battle_grid_;
   // battle_grid[width][height]
-  std::shared_ptr<GridTile> background_;
+  Terrain background_;
 
  public:
-  BattleField( std::shared_ptr<GridTile> background );
+  BattleField( Terrain background );
 
-  [[nodiscard]] const Grid& getGrid() const noexcept;
+  [[nodiscard]] const BattleGrid& getGrid() const noexcept;
 
-  std::vector<std::shared_ptr<Tile>> getTileNeighbours( const CoordPair coords );
+  std::vector<std::shared_ptr<Tile>> getTileNeighbours( CoordPair coords );
   std::vector<std::shared_ptr<Tile>> getTileNeighbours( const std::shared_ptr<Tile>& tile );
   std::shared_ptr<Tile> getTileByProxy( CoordPair coords );
   // int createRandomObstacles( int amount );         // TODO
   static std::vector<CoordPair> getCoordPairs( CoordPair coords );
 
-  std::shared_ptr<GridTile> getBackground();
+  [[nodiscard]] Terrain getBackground() const noexcept;
+
   // @Warning do not use method getBattleGrid(); the only safe access to tiles i via getTileByProxy()
   // std::array<std::array<std::shared_ptr<Tile>, MAP_HEIGHT_BF>, MAP_WIDTH_BF>& getBattleGrid() = delete;
   void eraseEmptyTiles();

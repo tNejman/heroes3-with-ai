@@ -25,9 +25,7 @@ void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_c
 
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      const auto tile = object_.get().getTile( CoordPair( x, y ) );
-      const auto map_obj = tile->getMapObject();
-      const auto terrain = tile->getTerrain();
+      const auto terrain = object_.get().getTerrain( { x, y } );
 
       double screen_x = ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2 );
       double screen_y =
@@ -52,12 +50,11 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
 
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      const auto tile = object_.get().getTile( CoordPair( x, y ) );
-      const auto map_obj = tile->getMapObject();
+      const auto* const map_obj = object_.get().getMapObject( { x, y } );
       if ( map_obj == nullptr ) {
         continue;
       }
-      if ( auto character_ptr = std::dynamic_pointer_cast<Character>( map_obj ) ) {
+      if ( dynamic_cast<const Character*>( map_obj ) != nullptr ) {
         double screen_x =
             ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2.0 );
         double screen_y =
@@ -75,7 +72,7 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
         } else {
           err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
-      } else if ( auto obstacle_ptr = std::dynamic_pointer_cast<OverworldObstacle>( map_obj ) ) {
+      } else if ( const auto* obstacle_ptr = dynamic_cast<const OverworldObstacle*>( map_obj ) ) {
         double screen_x =
             ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2 );
         double screen_y =
@@ -88,7 +85,7 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
         } else {
           err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
-      } else if ( auto artifact_ptr = std::dynamic_pointer_cast<Artifact>( map_obj ) ) {
+      } else if ( const auto* artifact_ptr = dynamic_cast<const Artifact*>( map_obj ) ) {
         double screen_x =
             ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2 );
         double screen_y =

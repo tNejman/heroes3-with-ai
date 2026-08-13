@@ -38,6 +38,7 @@ namespace {
 ShiftPair getShiftFromDirection( CharacterMoveDirection direction ) {
   return WORLD_MAP_DIRECTIONS[static_cast<size_t>( direction )];
 }
+
 }  // namespace
 
 int main() {
@@ -97,26 +98,7 @@ int main() {
   players.push_back( std::make_shared<Player>( std::move( characters ) ) );
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
-  const uint32_t obstacle_count = 1'000U;
-  std::vector<std::shared_ptr<OverworldObstacle>> obstacles;
-  double step = std::sqrt( ( WORLD_MAP_WIDTH * WORLD_MAP_HEIGHT ) / static_cast<double>( obstacle_count ) );
-  uint32_t count = 0;
-  for ( double y = step / 2; y < WORLD_MAP_HEIGHT && count < obstacle_count; y += step ) {
-    for ( double x = step / 2; x < WORLD_MAP_WIDTH && count < obstacle_count; x += step ) {
-      auto x_loc = static_cast<int>( x );
-      auto y_loc = static_cast<int>( y );
-      // if ( int( x * y ) % 3 == 0 )
-      // obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLs11s0", CoordPair( x_loc, y_loc ) ) );
-      if ( int( x * y ) % 2 == 0 ) {
-        obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLtRo06", CoordPair( x_loc, y_loc ) ) );
-      } else {
-        obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLswt15", CoordPair( x_loc, y_loc ) ) );
-      }
-    }
-  }
-
   std::shared_ptr<Game> game = std::make_shared<Game>( players );
-  game->mapLoadObstacles( obstacles );
 
   // std::ofstream out( "CharacterSave2.txt" );
   // CharacterSaver character_saver = CharacterSaver( "CharacterSave2.txt", characters[0] );
@@ -166,7 +148,7 @@ int main() {
       }
     }
     window->clear( sf::Color( 4 ) );
-    game->performGameLoopIteration( maybe_command );
+    game->applyCommand( maybe_command );
     // std::this_thread::sleep_for( std::chrono::milliseconds{ 500 } );
     GameRenderer{ *game }.render( *window, game->getMainCharacter()->getCoords() );
     // if ( game->getFrameCountSinceStart() == 4 ) {

@@ -14,8 +14,7 @@
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 
-BattleField::BattleField( std::shared_ptr<GridTile> background )
-    : battle_grid_(), background_( std::move( background ) ) {
+BattleField::BattleField( Terrain background ) : battle_grid_(), background_( background ) {
   for ( size_t i = 0; i < battle_grid_.size(); ++i ) {
     for ( size_t j = 0; j < battle_grid_[0].size(); ++j ) {
       battle_grid_[i][j] = std::make_shared<Tile>( CoordPair{ static_cast<int>( i ), static_cast<int>( j ) } );
@@ -69,47 +68,47 @@ std::vector<CoordPair> BattleField::getCoordPairs( CoordPair coords ) {
   std::vector<CoordPair> tmp;
   if ( y % 2 == 0U ) {
     if ( y < (int)MAP_HEIGHT_BF - 1 && x < (int)MAP_WIDTH_BF - 1 ) {
-      tmp.push_back( CoordPair( x + 1, y + 1 ) );
+      tmp.emplace_back( x + 1, y + 1 );
     }
     if ( x < (int)MAP_WIDTH_BF - 1 ) {
-      tmp.push_back( CoordPair( x + 1, y ) );
+      tmp.emplace_back( x + 1, y );
     }
     if ( y > 0 && x < (int)MAP_WIDTH_BF - 1 ) {
-      tmp.push_back( CoordPair( x + 1, y - 1 ) );
+      tmp.emplace_back( x + 1, y - 1 );
     }
     if ( y > 0 ) {
-      tmp.push_back( CoordPair( x, y - 1 ) );
+      tmp.emplace_back( x, y - 1 );
     }
     if ( x > 0 ) {
-      tmp.push_back( CoordPair( x - 1, y ) );
+      tmp.emplace_back( x - 1, y );
     }
     if ( y < (int)MAP_HEIGHT_BF - 1 ) {
-      tmp.push_back( CoordPair( x, y + 1 ) );
+      tmp.emplace_back( x, y + 1 );
     }
   } else {
     if ( y < (int)MAP_HEIGHT_BF - 1 ) {
-      tmp.push_back( CoordPair( x, y + 1 ) );
+      tmp.emplace_back( x, y + 1 );
     }
     if ( x < (int)MAP_WIDTH_BF - 1 ) {
-      tmp.push_back( CoordPair( x + 1, y ) );
+      tmp.emplace_back( x + 1, y );
     }
     if ( y > 0 ) {
-      tmp.push_back( CoordPair( x, y - 1 ) );
+      tmp.emplace_back( x, y - 1 );
     }
     if ( x > 0 && y > 0 ) {
-      tmp.push_back( CoordPair( x - 1, y - 1 ) );
+      tmp.emplace_back( x - 1, y - 1 );
     }
     if ( x > 0 ) {
-      tmp.push_back( CoordPair( x - 1, y ) );
+      tmp.emplace_back( x - 1, y );
     }
     if ( x > 0 && y < (int)MAP_HEIGHT_BF - 1 ) {
-      tmp.push_back( CoordPair( x - 1, y + 1 ) );
+      tmp.emplace_back( x - 1, y + 1 );
     }
   }
   return tmp;
 }
 
-std::shared_ptr<GridTile> BattleField::getBackground() {
+[[nodiscard]] Terrain BattleField::getBackground() const noexcept {
   return background_;
 }
 

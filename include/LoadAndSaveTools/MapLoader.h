@@ -1,12 +1,13 @@
 #pragma once
 
-#include <array>
 #include <cassert>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "LoadAndSaveTools/ILoader.hpp"
 #include "Miscellaneous/ProjectLib.h"
+#include "WorldMap/OverworldObstacle.h"
 #include "WorldMap/WorldMap.h"
 /**
  * @brief
@@ -23,14 +24,16 @@
  * the value of 4'294'967'295 because it is decremented one too many times,
  * which causes the value to turn from 0 to uint32_t.max_val
  */
-class MapLoader : public ILoader<WorldMap, std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH>> {
+class MapLoader : public ILoader<WorldMap, WorldMapGrid<int>> {
  private:
   uint32_t x_counter_ = 0;
   uint32_t y_counter_ = WORLD_MAP_HEIGHT - 1;
 
   void resetCounters() override;
   void moveWordToContainer( int word ) override;
-  WorldMap getObjectFromContainer() override;
+  [[nodiscard]] WorldMap getObjectFromContainer() override;
+
+  [[nodiscard]] static std::vector<std::shared_ptr<OverworldObstacle>> generateObstacles();
 
  public:
 };

@@ -4,21 +4,15 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
-#include <algorithm>
 #include <cassert>
 #include <format>
-#include <iostream>
 #include <memory>
-#include <optional>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include "Algorithms/MinimaxAI.h"
 #include "Battle/Battle.h"
-#include "Battle/Moves/AttackMove.h"
-#include "Battle/Moves/Move.hpp"
-#include "Battle/Moves/MoveFactory.h"
 #include "Character/Character.h"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
@@ -28,114 +22,28 @@
 #include "Game/IGameState.h"
 #include "Game/UserCommand.h"
 #include "Graphics/IRVisitor.h"
-#include "Miscellaneous/Coords.h"
 #include "Miscellaneous/Overload.hpp"
+#include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
-#include "WorldMap/GridTile.h"
-#include "WorldMap/OverworldObstacle.h"
 #include "WorldMap/WorldMap.h"
 
-// void Game::performGameLoopIterationOverworld( const UserCommand& command ) {
-//   bool is_overworld_command = std::visit(
-//       Overload{ []( const WorldMapCommand& ) { return true; }, []( const auto& ) { return false; } }, command );
-//   CharacterMoveDirection move_direction = CharacterMoveDirection::NONE;
-//   if ( is_overworld_command ) {
-//     std::visit( Overload{ [&]( const MoveCharacter& mc ) { move_direction = mc.direction; },
-//                           [&]( const EndTurn& ) { return; } },
-//                 std::get<WorldMapCommand>( command ) );
-//   }
-
-//   if ( move_direction == CharacterMoveDirection::NONE ) {
-//     return;
-//   }
-
-//   CoordPair center_coords = getMainCharacter()->getCoords();
-//   try {
-//     world_map_.moveMapObject( center_coords, WORLD_MAP_DIRECTIONS.at( static_cast<size_t>( move_direction ) ) );
-//     center_coords = getMainCharacter()->getCoords();
-//     getMainCharacter()->setOrientation( move_direction );
-//   } catch ( const CoordinateOutOfBoundsException& e ) {
-//     std::cout << e.what() << '\n';
-//   } catch ( const InvalidMapMoveException& e ) {
-//     try {
-//       auto player_coords = getMainCharacter()->getCoords();
-//       CoordPair new_coords =
-//           player_coords + WORLD_MAP_DIRECTIONS.at( (size_t)move_direction );  // exception caught earlier, this is
-//           safe
-//       auto new_tile_obj = world_map_.getTile( new_coords )->getMapObject();
-//       if ( new_tile_obj != nullptr ) {
-//         if ( auto character_ptr = std::dynamic_pointer_cast<Character>( new_tile_obj ) ) {
-//           startBattle( players_[0]->getCharacters()[0], character_ptr, world_map_.getTile( new_coords ) );
-//         }
-//       }
-//       std::cout << e.what() << '\n';
-//     } catch ( const std::exception& start_battle_failed_exception ) {
-//       std::cout << "Game::_performGameLoopIterationOverworld() failed to start battle"
-//                 << start_battle_failed_exception.what() << '\n';
-//     }
-//   }
-// }
-
-// void Game::performGameLoopIterationBattle( const UserCommand& command ) {
-//   if ( battle_->getAttackingArmy().size() == 0 || battle_->getDefendingArmy().size() == 0
-//        || battle_->getState() == BattleState::WIN_ATTACKER || battle_->getState() == BattleState::WIN_ATTACKER ) {
-//     game_state_ = GameState::OVERWORLD;
-//     battle_.reset();
-//     removeCharactersWithNoUnits();
-//     return;
-//   }
-//   auto moves = MoveFactory::generateMoves( battle_ );
-
-//   if ( battle_->isAIMove() ) {
-//     performBattleAiMove();
-//   } else {
-//     performBattleUserMove( command );
-//   }
-// }
-
-// void Game::performBattleAiMove() {
-//   auto moves = MoveFactory::generateMoves( battle_ );
-//   std::shared_ptr<Move> best_move = nullptr;
-//   for ( auto& move : moves ) {
-//     if ( auto move_atk = std::dynamic_pointer_cast<AttackMove>( move ) ) {
-//       best_move = move;
-//       break;
-//     }
-//   }
-//   // if ( best_move == nullptr ) best_move = minimax_->getBestMove( battle_, MINIMAX_MAX_DEPTH );
-//   if ( best_move == nullptr ) {
-//     best_move = moves[0];
-//   }
-//   best_move->execute( battle_ );
-// }
-
-// void Game::performBattleUserMove( const UserCommand& command ) {
-//   auto moves = MoveFactory::generateMoves( *battle_ );
-//   bool is_battle_command = std::visit(
-//       Overload{ []( const BattleCommand& ) { return true; }, []( const auto& ) { return false; } }, command );
-//   if ( !is_battle_command ) {
-//     return;
-//   }
-//   std::optional<CoordPair> battle_coords = std::visit(
-//       Overload{ []( const MoveStack& ms ) -> std::optional<CoordPair> { return CoordPair{ ms.destination }; },
-//                 []( const AttackStack& as ) -> std::optional<CoordPair> { return CoordPair{ as.destination }; },
-//                 []( const Wait& ) -> std::optional<CoordPair> { return std::nullopt; },
-//                 []( const Defend& ) -> std::optional<CoordPair> { return std::nullopt; } },
-//       std::get<BattleCommand>( command ) );
-//   auto it = std::ranges::find_if(
-//       moves, [&]( const std::shared_ptr<Move>& move ) { return move->destinationCoords() == battle_coords.value(); }
-//       );
-
-//   if ( it != moves.end() ) {
-//     std::cout << "DEBUG: executing: " << ( *it )->getInfo( battle_ ) << '\n';
-//     ( *it )->execute( battle_ );
-//     waiting_for_print_ = true;
-//   }
-// }
+void Game::handleStateTransition( const StateTransition& transition ) noexcept {
+  std::visit( Overload{
+                  []( const NoTransition& ) {},
+                  [&]( const PopState& ) { state_stack_.pop(); },
+                  [&]( const RequestBattle& rb ) {
+                    auto terrain = dynamic_cast<GameStateOverworld&>( state_stack_.top() )
+                                       .viewMap()
+                                       .getTerrain( rb.at_ );  // TODO rewrite ASAP (dynamic cast bad)
+                    startBattle( rb, terrain );
+                  },
+              },
+              transition );
+}
 
 void Game::removeCharactersWithNoUnits() {
-  // TODO
+  // TODO fix
   for ( auto& player : context_.getPlayers() ) {
     for ( auto it = player->getCharacters().begin(); it != player->getCharacters().end(); ++it ) {
       bool all_empty = true;
@@ -145,7 +53,6 @@ void Game::removeCharactersWithNoUnits() {
         }
       }
       if ( all_empty ) {
-        // world_map_.setMapObject( ( *it )->getCoords(), nullptr );
         state_stack_.top().applyGameCommand( EraseTile{ ( *it )->getCoords() }, context_ );
         player->getCharacters().erase( it );
         break;
@@ -164,15 +71,7 @@ void Game::placeCharactersOnWorldMap() {
   }
 }
 
-// @Deprecated
-// void Game::startBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-//                         std::shared_ptr<GridTile> background ) {
-//   battle_ = std::make_shared<Battle>( attacker, defender, background );
-//   game_state_ = GameState::BATTLE;
-//   waiting_for_print_ = true;
-// }
-
-void Game::startBattle( const RequestBattle& request, std::shared_ptr<GridTile> background ) {
+void Game::startBattle( const RequestBattle& request, Terrain background ) {
   auto attacker = context_.findCharacterById( request.attacker_id_ );
   auto defender = context_.findCharacterById( request.defender_id_ );
   if ( attacker == nullptr ) {
@@ -193,32 +92,20 @@ Game::Game( std::vector<std::shared_ptr<Player>> players )
 }
 
 /* === COMMAND === */
-// [[nodiscard]] std::vector<UserCommand> Game::legalCommands() const noexcept {
-// }
-// void Game::applyCommand( const UserCommand& command );
-// [[nodiscard]] bool Game::isLegalCommand( const UserCommand& command ) const noexcept;
 
-/* === END COMMMAND === */
-
-void Game::mapLoadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) {
-  dynamic_cast<GameStateOverworld&>( state_stack_.top() ).loadObstacles( obstacles );  // TODO rewrite ASAP
+[[nodiscard]] std::vector<UserCommand> Game::legalCommands() const noexcept {
+  return state_stack_.top().legalCommands();
 }
-
-void Game::performGameLoopIteration( const UserCommand& command ) {
+void Game::applyCommand( const UserCommand& command ) {
   StateTransition transition = state_stack_.top().applyCommand( command, context_ );
-  std::visit( Overload{
-                  []( const NoTransition& ) {},
-                  [&]( const PopState& ) { state_stack_.pop(); },
-                  [&]( const RequestBattle& rb ) {
-                    auto grid_tile = dynamic_cast<GameStateOverworld&>( state_stack_.top() )
-                                         .viewMap()
-                                         .getTile( rb.at_ );  // TODO rewrite ASAP
-                    startBattle( rb, grid_tile );
-                  },
-              },
-              transition );
+  handleStateTransition( transition );
   ++frames_since_start_;
 }
+[[nodiscard]] bool Game::isLegalCommand( const UserCommand& command ) const noexcept {
+  return state_stack_.top().isLegalCommand( command );
+}
+
+/* === END COMMMAND === */
 
 std::shared_ptr<Character> Game::getMainCharacter() const {
   return context_.getPlayers()[0]->getCharacters()[0];
