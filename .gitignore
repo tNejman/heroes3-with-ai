@@ -6,6 +6,7 @@ _deps
 CMakeCache.txt
 CMakeFiles/
 Sprites/
+sprites/
 compile_commands.json
 .clangd
 lsan.supp

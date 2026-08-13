@@ -45,6 +45,14 @@ FetchContent_MakeAvailable(SFML)
 FetchContent_MakeAvailable(json)
 set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
 
+execute_process(
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/fetch_sprites.py ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE rc
+)
+if(NOT rc EQUAL 0)
+    message(FATAL_ERROR "sprite fetch failed")
+endif()
+
 set(MODULES
     # Algorithms
     Artifact 

@@ -61,9 +61,10 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
             ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window.getSize().y ) / 2.0 );
 
         sf::Sprite sprite_map_obj( map_obj->accept( *sprite_visitor_ ) );
-        sprite_map_obj.setTextureRect( sf::IntRect( { 0, 0 }, { HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT } ) );
-        sprite_map_obj.setOrigin(
-            sf::Vector2f( static_cast<float>( HERO_SPRITE_WIDTH ) / 2.F, static_cast<float>( HERO_SPRITE_HEIGHT ) ) );
+        sprite_map_obj.setTextureRect(
+            sf::IntRect( { 0, 0 }, { HERO_SPRITE_WIDTH_DEPRECATED, HERO_SPRITE_HEIGHT_DEPRECATED } ) );
+        sprite_map_obj.setOrigin( sf::Vector2f( static_cast<float>( HERO_SPRITE_WIDTH_DEPRECATED ) / 2.F,
+                                                static_cast<float>( HERO_SPRITE_HEIGHT_DEPRECATED ) ) );
         sprite_map_obj.setPosition(
             sf::Vector2f( static_cast<float>( screen_x ) + ( static_cast<float>( TERRAIN_SPRITE_WIDTH ) / 2.F ),
                           static_cast<float>( screen_y ) + static_cast<float>( TERRAIN_SPRITE_HEIGHT ) ) );

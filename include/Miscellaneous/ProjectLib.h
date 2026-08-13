@@ -158,8 +158,8 @@ constexpr inline int WINDOW_HEIGHT = 600;
 constexpr inline int TERRAIN_SPRITE_HEIGHT = 32;
 constexpr inline int TERRAIN_SPRITE_WIDTH = 32;
 
-constexpr inline int HERO_SPRITE_WIDTH = 95;
-constexpr inline int HERO_SPRITE_HEIGHT = 64;
+constexpr inline int HERO_SPRITE_WIDTH_DEPRECATED = 95;
+constexpr inline int HERO_SPRITE_HEIGHT_DEPRECATED = 64;
 
 const std::string HEXAGON_SPRITE_DEFAULT_PATH = "Sprites/Battle/Auxiliary/Hexagon.png";
 const std::string HEXAGON_MOVEMENT_SPRITE_PATH = "Sprites/Battle/Auxiliary/Hexagon_Movement.png";
