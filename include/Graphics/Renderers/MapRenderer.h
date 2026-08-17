@@ -10,14 +10,15 @@
 
 class MapRenderer : public IRenderer<WorldMap> {
  private:
-  void renderGrid( sf::RenderWindow& window, CoordPair center_coords ) const;
-  void renderObjects( sf::RenderWindow& window, CoordPair center_coords ) const;
+  CoordPair center_coords_;
+
+  void renderGrid() const;
+  void renderObjects() const;
 
  public:
   //     IRenderer(const SpriteVisitor& sprite_visitor, const T& object) :
   // sprite_visitor_(sprite_visitor), object_(object) {};
-  MapRenderer( const std::shared_ptr<SpriteVisitor>& sprite_visitor, const WorldMap& object )
-      : IRenderer( sprite_visitor, object ) {};
+  MapRenderer( sf::RenderWindow& window, const WorldMap& object, CoordPair center_coords );
   ~MapRenderer() override = default;
-  void render( sf::RenderWindow& window, CoordPair center_coords ) override;
+  void render() override;
 };

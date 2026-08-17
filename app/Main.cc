@@ -14,13 +14,16 @@
 #include <memory>
 #include <optional>
 #include <thread>
+#include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "Character/Character.h"
 #include "Character/CharacterBuilder.h"
 #include "Character/CharacterStats.h"
 #include "Game/Game.h"
+
 // #include "LoadAndSaveTools/CharacterSaver.h"
 #include "Game/KeyboardHandler.h"
 #include "Game/MouseHandler.h"
@@ -87,7 +90,7 @@ int main() {
   characters_2[0]->setIfUser( false );
   characters_2[0]->army().recruitUnitStack( unit_stack_2 );
   characters_2[0]->army().recruitUnitStack( unit_stack_5 );
-  characters_2[0]->setCoords( CoordPair( 10u, 10u ) );
+  characters_2[0]->setCoords( CoordPair( 2u, 2u ) );
 
   characters_2[1]->setIfUser( false );
   characters_2[1]->army().recruitUnitStack( unit_stack_6 );
@@ -112,6 +115,7 @@ int main() {
       sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close );
   window->setFramerateLimit( 30 );
   window->setSize( sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+  GameRenderer{ *window, *game }.render();
   while ( window->isOpen() ) {
     if ( window->getSize() != sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
       window->setSize( { WINDOW_WIDTH, WINDOW_HEIGHT } );
@@ -147,14 +151,16 @@ int main() {
         }
       }
     }
-    window->clear( sf::Color( 4 ) );
     game->applyCommand( maybe_command );
+    GameRenderer{ *window, *game }.render();
     // std::this_thread::sleep_for( std::chrono::milliseconds{ 500 } );
-    GameRenderer{ *game }.render( *window, game->getMainCharacter()->getCoords() );
+    if ( !std::holds_alternative<None>( maybe_command ) ) {
+      // const auto& state = game->getState();
+      // std::cout << typeid( state ).name() << '\n';
+    }
     // if ( game->getFrameCountSinceStart() == 4 ) {
     //   std::chrono::milliseconds timespan{ 5'000 };
     //   std::this_thread::sleep_for( timespan );
     // }
-    window->display();
   }
 };

@@ -4,38 +4,35 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <memory>
 
 #include "Artifact/Artifact.h"
 #include "Character/Character.h"
 #include "Exceptions/Err.hpp"
 #include "Exceptions/NotOpenWindowException.hpp"
+#include "Graphics/Renderers/IRenderer.hpp"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/OverworldObstacle.h"
+#include "WorldMap/WorldMap.h"
 
-void MapRenderer::render( sf::RenderWindow& window, const CoordPair center_coords ) {
-  renderGrid( window, center_coords );
-  renderObjects( window, center_coords );
-}
-
-void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_coords ) const {
-  int center_x = center_coords.x_;
-  int center_y = center_coords.y_;
+void MapRenderer::renderGrid() const {
+  int center_x = center_coords_.x_;
+  int center_y = center_coords_.y_;
 
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
       const auto terrain = object_.get().getTerrain( { x, y } );
 
-      double screen_x = ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2 );
+      double screen_x =
+          ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
       double screen_y =
-          ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window.getSize().y ) / 2 );
+          ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
       // sprite visitor has to visit explicitly, because terrain is not a class but enum
-      sf::Sprite sprite( sprite_visitor_->visit( terrain ) );
+      sf::Sprite sprite( sprite_visitor->visit( terrain ) );
       sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
-      if ( window.isOpen() ) {
-        window.draw( sprite );
+      if ( window_.get().isOpen() ) {
+        window_.get().draw( sprite );
       } else {
         err::raise<NotOpenWindowException>( "Tried to render with no window open" );
       }
@@ -43,10 +40,10 @@ void MapRenderer::renderGrid( sf::RenderWindow& window, const CoordPair center_c
   }
 }
 
-void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair center_coords ) const {
+void MapRenderer::renderObjects() const {
   // This method iterates through the grid again to terrain overlapping sprites
-  int center_x = center_coords.x_;
-  int center_y = center_coords.y_;
+  int center_x = center_coords_.x_;
+  int center_y = center_coords_.y_;
 
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
@@ -56,11 +53,11 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
       }
       if ( dynamic_cast<const Character*>( map_obj ) != nullptr ) {
         double screen_x =
-            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2.0 );
+            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2.0 );
         double screen_y =
-            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window.getSize().y ) / 2.0 );
+            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2.0 );
 
-        sf::Sprite sprite_map_obj( map_obj->accept( *sprite_visitor_ ) );
+        sf::Sprite sprite_map_obj( map_obj->accept( *sprite_visitor ) );
         sprite_map_obj.setTextureRect(
             sf::IntRect( { 0, 0 }, { HERO_SPRITE_WIDTH_DEPRECATED, HERO_SPRITE_HEIGHT_DEPRECATED } ) );
         sprite_map_obj.setOrigin( sf::Vector2f( static_cast<float>( HERO_SPRITE_WIDTH_DEPRECATED ) / 2.F,
@@ -68,38 +65,48 @@ void MapRenderer::renderObjects( sf::RenderWindow& window, const CoordPair cente
         sprite_map_obj.setPosition(
             sf::Vector2f( static_cast<float>( screen_x ) + ( static_cast<float>( TERRAIN_SPRITE_WIDTH ) / 2.F ),
                           static_cast<float>( screen_y ) + static_cast<float>( TERRAIN_SPRITE_HEIGHT ) ) );
-        if ( window.isOpen() ) {
-          window.draw( sprite_map_obj );
+        if ( window_.get().isOpen() ) {
+          window_.get().draw( sprite_map_obj );
         } else {
           err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
       } else if ( const auto* obstacle_ptr = dynamic_cast<const OverworldObstacle*>( map_obj ) ) {
         double screen_x =
-            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2 );
+            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
         double screen_y =
-            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window.getSize().y ) / 2 );
+            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
-        sf::Sprite sprite( obstacle_ptr->accept( *sprite_visitor_ ) );
+        sf::Sprite sprite( obstacle_ptr->accept( *sprite_visitor ) );
         sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
-        if ( window.isOpen() ) {
-          window.draw( sprite );
+        if ( window_.get().isOpen() ) {
+          window_.get().draw( sprite );
         } else {
           err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
       } else if ( const auto* artifact_ptr = dynamic_cast<const Artifact*>( map_obj ) ) {
         double screen_x =
-            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window.getSize().x ) / 2 );
+            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
         double screen_y =
-            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window.getSize().y ) / 2 );
+            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
-        sf::Sprite sprite( artifact_ptr->accept( *sprite_visitor_ ) );
+        sf::Sprite sprite( artifact_ptr->accept( *sprite_visitor ) );
         sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
-        if ( window.isOpen() ) {
-          window.draw( sprite );
+        if ( window_.get().isOpen() ) {
+          window_.get().draw( sprite );
         } else {
           err::raise<NotOpenWindowException>( "Tried to render with no window open" );
         }
       }
     }
   }
+}
+
+/* === @PUBLIC === */
+MapRenderer::MapRenderer( sf::RenderWindow& window, const WorldMap& object, CoordPair center_coords )
+    : IRenderer( window, object ), center_coords_( center_coords ) {
+}
+
+void MapRenderer::render() {
+  renderGrid();
+  renderObjects();
 }

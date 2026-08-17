@@ -164,9 +164,9 @@ sf::Texture& SpriteVisitor::visit( const Battle& e ) {
     CoordPair unit_coords = unit.getCoordsInBattle();
     int offset_x = 0;
     int offset_y = 0;
-    offset_x = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( unit_coords.x_ * BATTLE_MAP_SPRITE_X_DELTA );
+    offset_x = BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( unit_coords.x_ * BATTLE_MAP_SPRITE_X_DELTA );
     offset_y =
-        BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT + ( ( 4 - ( unit_coords.y_ / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
+        BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD_UNIT + ( ( 4 - ( unit_coords.y_ / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
     if ( unit_coords.y_ % 2 == 0 ) {
       offset_x += BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
       offset_y += BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
@@ -234,8 +234,8 @@ std::pair<sf::Texture&, std::string> SpriteVisitor::getBattleHexagons( std::vect
       int offset_x_temp = 0;
       int offset_y_temp = 0;
       // set offset for even rows
-      offset_x_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD + ( x * BATTLE_MAP_SPRITE_X_DELTA );
-      offset_y_temp = BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD + ( ( 5 - ( y / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
+      offset_x_temp = BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( x * BATTLE_MAP_SPRITE_X_DELTA );
+      offset_y_temp = BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD + ( ( 5 - ( y / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
 
       // adjust if even
       if ( ( y % 2 == 0 ) ) {

@@ -95,6 +95,10 @@ enum class Terrain : uint8_t {
   COUNT = 6
 };
 
+constexpr size_t operator+( Terrain t ) {
+  return static_cast<size_t>( t );
+}
+
 const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain::GRASS, 1.0 },
                                                                        { Terrain::DIRT, 1.2 } };
 
@@ -102,7 +106,7 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 ====== CHARACTER ======
 */
 
-enum class CharacterType { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
+enum class CharacterType { FIRE_HERO, BLACK_HERO_WHITE_HORSE, COUNT };
 
 constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0
@@ -171,9 +175,9 @@ constexpr inline int HEXAGON_SPRITE_HEIGHT = 56;
 constexpr inline int BATTLE_MAP_SPRITE_X_DELTA = 48;
 constexpr inline int BATTLE_MAP_SPRITE_Y_DELTA = 86;
 
-constexpr inline int BATTLE_MAP_SPRITE_INITAL_OFFSET_X_ODD = 24;
-constexpr inline int BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD = 24;
-constexpr inline int BATTLE_MAP_SPRITE_INITAL_OFFSET_Y_ODD_UNIT = 64;
+constexpr inline int BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD = 24;
+constexpr inline int BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD = 24;
+constexpr inline int BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD_UNIT = 64;
 
 constexpr inline int BATTLE_MAP_SPRITE_ADJUST_EVEN_X = 24;
 constexpr inline int BATTLE_MAP_SPRITE_ADJUST_EVEN_Y = 43;

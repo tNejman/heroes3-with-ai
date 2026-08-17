@@ -54,10 +54,12 @@ enum class CastleUnitType : uint8_t {
 
 enum class WarMachineType : uint8_t { BALLISTA = 0, AMMO_CART = 1, FIRST_AID_TENT = 2, CATAPULT = 3, COUNT = 4 };
 
+using UnitTypeV = std::variant<ForgeUnitType, ConfluxUnitType, CastleUnitType, WarMachineType>;
+
 // NOLINTBEGIN(cppcoreguidelines-avoid-const-or-ref-data-members)
 struct UnitData {
   const std::string name_;
-  const std::variant<ForgeUnitType, ConfluxUnitType, CastleUnitType, WarMachineType> type_;
+  const UnitTypeV type_;
   const int level_;
   const int attack_;
   const int defense_;

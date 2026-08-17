@@ -2,10 +2,13 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <functional>
 #include <memory>
 
+#include "Game/GameContext.h"
 #include "Game/GameStateBattle.h"
 #include "Game/GameStateOverworld.h"
+#include "Graphics/Renderers/BattleRenderer.h"
 #include "Graphics/Renderers/MapRenderer.h"
 #include "Graphics/SpriteVisitor.h"
 #include "IRVisitor.h"
@@ -13,20 +16,23 @@
 
 class RVisitor : public IRVisitor {
  private:
-  sf::RenderWindow& window_;
-  CoordPair center_coords_;
+  std::reference_wrapper<sf::RenderWindow> window_;
+  std::reference_wrapper<const GameContext> context_;
 
  public:
-  RVisitor( sf::RenderWindow& window, CoordPair center_coords ) : window_( window ), center_coords_( center_coords ) {
+  RVisitor( sf::RenderWindow& window, const GameContext& context ) : window_( window ), context_( context ) {
   }
 
   void visit( const GameStateOverworld& s ) noexcept override {
-    MapRenderer{ std::make_shared<SpriteVisitor>(), s.viewMap() }.render( window_, center_coords_ );
+    // TODO do NOT hardcode fist character as main
+    CoordPair center_coords = context_.get().getPlayers()[0]->getCharacters()[0]->getCoords();
+    MapRenderer{ window_, s.viewMap(), center_coords }.render();
   }
 
   void visit( const GameStateBattle& s ) noexcept override {
-    auto sprite_visitor = std::make_shared<SpriteVisitor>();
-    sf::Sprite sprite{ s.viewBattle().accept( *sprite_visitor ) };
-    window_.draw( sprite );
+    // auto sprite_visitor = std::make_shared<SpriteVisitor>();
+    // sf::Sprite sprite{ s.viewBattle().accept( *sprite_visitor ) };
+    // window_.get().draw( sprite );
+    BattleRenderer{ window_, s.viewBattle() }.render();
   }
 };

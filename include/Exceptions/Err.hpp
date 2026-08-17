@@ -46,9 +46,17 @@ requires( !std::convertible_to<Forward, std::string_view> )
   throw E{ std::format( "{} -> {} -> {}", typeid( E ).name(), scopeFunName( loc ), text ), arg };
 }
 
+struct Cond {
+  bool value;
+  std::source_location loc;
+  Cond( bool v, std::source_location l = std::source_location::current() ) : value( v ), loc( l ) {
+  }
+};
+
 template <typename... Args>
-inline void passCondOrAbort( bool condition, Args&&... msgs ) {
-  if ( !condition ) {
+inline void passCondOrAbort( Cond c, Args&&... msgs ) {
+  if ( !c.value ) {
+    std::cout << scopeFunName( c.loc ) << " -> ";
     ( std::cout << ... << std::forward<Args>( msgs ) ) << '\n';
     std::abort();
   }

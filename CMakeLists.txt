@@ -31,11 +31,16 @@ FetchContent_Declare(
     GIT_TAG 3.0.1
     SYSTEM
 )
-
 FetchContent_Declare(
     json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
     GIT_TAG v3.12.0
+    SYSTEM
+)
+FetchContent_Declare(
+    magic_enum
+    GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+    GIT_TAG v0.9.7
     SYSTEM
 )
 
@@ -43,6 +48,7 @@ set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
 set(CMAKE_CXX_CLANG_TIDY "")
 FetchContent_MakeAvailable(SFML)
 FetchContent_MakeAvailable(json)
+FetchContent_MakeAvailable(magic_enum)
 set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
 
 execute_process(

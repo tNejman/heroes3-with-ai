@@ -17,6 +17,7 @@
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Game/GameCommand.h"
+#include "Game/GameContext.h"
 #include "Game/GameStateBattle.h"
 #include "Game/GameStateOverworld.h"
 #include "Game/IGameState.h"
@@ -117,4 +118,8 @@ std::shared_ptr<Character> Game::getMainCharacter() const {
 
 [[nodiscard]] const IGameState& Game::getState() const noexcept {
   return state_stack_.top();
+}
+
+[[nodiscard]] const GameContext& Game::getContext() const noexcept {
+  return context_;
 }

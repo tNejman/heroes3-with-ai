@@ -50,4 +50,5 @@ class Game {
   [[nodiscard]] int getFrameCountSinceStart() const noexcept;
 
   [[nodiscard]] const IGameState& getState() const noexcept;
+  [[nodiscard]] const GameContext& getContext() const noexcept;
 };

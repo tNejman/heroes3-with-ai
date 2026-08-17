@@ -45,10 +45,12 @@ FACTIONS: list[Faction] = [
 
 EXTRAS: dict[str, str] = {
     "38/41246.png": "heroes_adventure.png",
+    "38/41261.png": "artifacts/artifacts.png"
 }
 
 ARCHIVES: dict[str, str] = {
     "41/43587.zip": "terrain",
+    "38/41267.zip": "battle_backgrounds"
 }
 
 

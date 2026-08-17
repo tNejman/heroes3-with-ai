@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Window.hpp>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -11,12 +12,12 @@
 template <class T>
 class IRenderer {
  protected:
-  std::shared_ptr<SpriteVisitor> sprite_visitor_;
+  std::reference_wrapper<sf::RenderWindow> window_;
+  static inline std::shared_ptr<SpriteVisitor> sprite_visitor = std::make_shared<SpriteVisitor>();
   std::reference_wrapper<const T> object_;
 
  public:
-  IRenderer( std::shared_ptr<SpriteVisitor> sprite_visitor, const T& object )
-      : sprite_visitor_( std::move( sprite_visitor ) ), object_( object ) {};
+  IRenderer( sf::RenderWindow& window, const T& object ) : window_( window ), object_( object ) {};
   virtual ~IRenderer() = default;
-  virtual void render( sf::RenderWindow& window, CoordPair center_coords ) = 0;
+  virtual void render() = 0;
 };

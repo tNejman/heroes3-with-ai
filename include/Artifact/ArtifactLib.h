@@ -48,6 +48,9 @@ enum class ArtifactType : uint8_t {
   BOOTS_OF_SPEED,
 
   // Misc
+
+  // Special
+  COUNT
 };
 
 enum class EquipmentSlots : uint8_t {

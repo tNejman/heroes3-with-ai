@@ -16,14 +16,14 @@ class GameStateStack {
  public:
   GameStateStack();
 
-  [[nodiscard]] const IGameState& nth( int i ) const;
-  [[nodiscard]] IGameState& nth( int i );
+  [[nodiscard]] const IGameState& nth( int i ) const noexcept;
+  [[nodiscard]] IGameState& nth( int i ) noexcept;
 
-  [[nodiscard]] const IGameState& top() const;
-  [[nodiscard]] IGameState& top();
+  [[nodiscard]] const IGameState& top() const noexcept;
+  [[nodiscard]] IGameState& top() noexcept;
 
-  void push( std::unique_ptr<IGameState> );
-  void pop();
+  void push( std::unique_ptr<IGameState> ) noexcept;
+  void pop() noexcept;
 
-    [[nodiscard]] bool empty() const noexcept;
+  [[nodiscard]] bool empty() const noexcept;
 };

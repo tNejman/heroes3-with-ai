@@ -22,6 +22,10 @@ BattleField::BattleField( Terrain background ) : battle_grid_(), background_( ba
   }
 };
 
+[[nodiscard]] const BattleGrid& BattleField::getGrid() const noexcept {
+  return battle_grid_;
+}
+
 std::vector<std::shared_ptr<Tile>> BattleField::getTileNeighbours( const CoordPair coords ) {
   const int x = coords.x_;
   const int y = coords.y_;

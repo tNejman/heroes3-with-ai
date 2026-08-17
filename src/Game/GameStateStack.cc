@@ -12,39 +12,31 @@ GameStateStack::GameStateStack() {
   buf_.reserve( 10 );
 }
 
-[[nodiscard]] const IGameState& GameStateStack::nth( int i ) const {
-  if ( i < 0 ) {
-    err::raise<std::runtime_error>( "id can't be negative" );
-  }
-  if ( static_cast<size_t>( i ) >= buf_.size() ) {
-    err::raise<std::runtime_error>( "index out of bounds" );
-  }
+[[nodiscard]] const IGameState& GameStateStack::nth( int i ) const noexcept {
+  err::passCondOrAbort( i >= 0, "id can't be negative" );
+  err::passCondOrAbort( static_cast<size_t>( i ) < buf_.size(), "index out of bounds" );
   return *( buf_[static_cast<size_t>( i )] );
 }
 
-[[nodiscard]] IGameState& GameStateStack::nth( int i ) {
+[[nodiscard]] IGameState& GameStateStack::nth( int i ) noexcept {
   return const_cast<IGameState&>( std::as_const( *this ).nth( i ) );
 }
 
-[[nodiscard]] const IGameState& GameStateStack::top() const {
-  if ( buf_.empty() ) {
-    err::raise<std::runtime_error>( "tried getting from empty buf" );
-  }
+[[nodiscard]] const IGameState& GameStateStack::top() const noexcept {
+  err::passCondOrAbort( !this->empty(), "tried getting from empty buf" );
   return *( buf_[buf_.size() - 1] );
 }
 
-[[nodiscard]] IGameState& GameStateStack::top() {
+[[nodiscard]] IGameState& GameStateStack::top() noexcept {
   return const_cast<IGameState&>( std::as_const( *this ).top() );
 }
 
-void GameStateStack::push( std::unique_ptr<IGameState> new_state ) {
+void GameStateStack::push( std::unique_ptr<IGameState> new_state ) noexcept {
   buf_.push_back( std::move( new_state ) );
 }
 
-void GameStateStack::pop() {
-  if ( buf_.empty() ) {
-    err::raise<std::runtime_error>( "tried popping from empty" );
-  }
+void GameStateStack::pop() noexcept {
+  err::passCondOrAbort( !buf_.empty(), "tried popping from empty" );
   buf_.pop_back();
 }
 
