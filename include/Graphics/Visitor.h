@@ -4,9 +4,6 @@
   - Klasa Visitor odpowiada za interfejs odwiedzania różnych obiektów w grze.
 */
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Texture.hpp>
-
 class Castle;
 class Character;
 class Building;
@@ -26,19 +23,13 @@ class OverworldObstacle;
 class Visitor {  // NOLINT(cppcoreguidelines-special-member-functions)
  public:
   virtual ~Visitor() = default;
-  // Do not make this virtual method: visit(const Terrain&)
-  virtual sf::Texture& visit( const Artifact& e ) = 0;
-  virtual sf::Texture& visit( const Obstacle& e ) = 0;
-  virtual sf::Texture& visit( const Character& e ) = 0;
-  virtual sf::Texture& visit( const SecondarySkill& e ) = 0;
-  virtual sf::Texture& visit( const Spell& e ) = 0;
-  // virtual sf::Texture& visit(const SpellBook& e) = 0;
-  // virtual sf::Texture& visit( const UnitStack& e ) = 0;
-  virtual sf::Texture& visit( const Resource& e ) = 0;
-  virtual sf::Texture& visit( const OverworldObstacle& e ) = 0;
-  virtual sf::Texture& visit( const Building& e ) = 0;
-  // virtual sf::Texture& visit(const WorldMap& e) = 0;
-  // virtual sf::Texture& visit(const Player& e) = 0;
-  // virtual sf::Texture& visit(const Castle& e) = 0;
-  virtual sf::Texture& visit( const Battle& e ) = 0;
+  virtual void visit( const Artifact& ) = 0;
+  virtual void visit( const Obstacle& ) = 0;
+  virtual void visit( const Character& ) = 0;
+  virtual void visit( const SecondarySkill& ) = 0;
+  virtual void visit( const Spell& ) = 0;
+  virtual void visit( const Resource& ) = 0;
+  virtual void visit( const OverworldObstacle& ) = 0;
+  virtual void visit( const Building& ) = 0;
+  virtual void visit( const UnitStack& ) = 0;
 };

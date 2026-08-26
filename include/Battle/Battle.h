@@ -4,7 +4,6 @@
   - Klasa Battle odpowiada za zarządzanie bitwą pomiędzy dwoma armiami.
   - Zawiera metody do atakowania jednostek, zarządzania kolejnością jednostek w bitwie.
 */
-#include <SFML/Graphics/Texture.hpp>
 #include <cassert>
 #include <cstdint>
 #include <functional>
@@ -14,7 +13,6 @@
 #include "Battle/BattleField.h"
 #include "Battle/TileObject.hpp"
 #include "Game/UserCommand.h"
-#include "Graphics/Printable.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitStack.h"
@@ -37,7 +35,7 @@ enum class BattleState : uint8_t {
   WIN_DEFENDER
 };
 
-class Battle : public Printable, std::enable_shared_from_this<Battle> {
+class Battle : public std::enable_shared_from_this<Battle> {
  private:
   BattleState state_ = BattleState::PREPPING;
   std::shared_ptr<BattleField> battlefield_;
@@ -71,7 +69,6 @@ class Battle : public Printable, std::enable_shared_from_this<Battle> {
   Battle( const Battle& ) = delete;
   Battle( Battle&& ) = delete;
 
-  [[nodiscard]] sf::Texture& accept( Visitor& vis ) const override;
   [[nodiscard]] BattleState getState() const;
   [[nodiscard]] bool setUnit( UnitStack& unit_stack, CoordPair new_coords );
   [[nodiscard]] bool killUnit( UnitStack& dead_unit_to_kill );

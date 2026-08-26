@@ -1,11 +1,9 @@
 #include "Unit/UnitStack.h"
 
 #include "Battle/TileObject.hpp"
-// #include "Unit/Faction.hpp"  // IWYU pragma: keep
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
 #include "Miscellaneous/Coords.h"
-#include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
 
 UnitStack::UnitStack( const UnitData& data, int size )

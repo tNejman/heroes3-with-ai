@@ -50,7 +50,8 @@ EXTRAS: dict[str, str] = {
 
 ARCHIVES: dict[str, str] = {
     "41/43587.zip": "terrain",
-    "38/41267.zip": "battle_backgrounds"
+    "38/41267.zip": "battle_backgrounds",
+    "41/43585.zip": "landscape"
 }
 
 

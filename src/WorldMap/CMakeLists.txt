@@ -13,5 +13,4 @@ target_link_libraries(WorldMap PUBLIC
 
 target_link_libraries(WorldMap PRIVATE 
     Character
-    SFML::Graphics
 )

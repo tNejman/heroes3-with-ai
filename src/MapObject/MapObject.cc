@@ -1,8 +1,7 @@
 #include "MapObject/MapObject.h"
 
-#include <SFML/Graphics/Texture.hpp>
-
 #include "Miscellaneous/Coords.h"
+
 
 MapObject::MapObject( CoordPair coords ) : coords_( coords ), is_traversable_( false ) {};
 

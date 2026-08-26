@@ -17,7 +17,6 @@ class SpellBook : public Equippable {
 
  public:
   friend class CharacterSaver;
-  //  virtual sf::Texture& accept(Visitor& v) const override { return v.visit(*this); }
   void learnSpell( std::unique_ptr<Spell> spell );
   [[nodiscard]] std::unique_ptr<SpellBook> copy() const;
 };

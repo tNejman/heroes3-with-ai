@@ -9,8 +9,6 @@
         - statystyki jakie przyznaje po założeniu
 */
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <functional>
 
 #include "Artifact/ArtifactLib.h"
@@ -26,9 +24,9 @@ class Artifact {
 
  public:
   Artifact() = delete;
-  [[nodiscard]] sf::Texture& accept( Visitor& vis ) const;
+  void accept( Visitor& ) const;
 
-  [[nodiscard]] static Artifact create( const ArtifactType type ) noexcept;
+  [[nodiscard]] static Artifact create( ArtifactType type ) noexcept;
   [[nodiscard]] const ArtifactData& getData() const noexcept;
   [[nodiscard]] Artifact copy() const noexcept;
 

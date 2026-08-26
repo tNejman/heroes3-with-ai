@@ -1,3 +1,4 @@
+
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <cassert>
@@ -11,10 +12,9 @@
 
 #include "Exceptions/Err.hpp"
 #include "Exceptions/UnknownStateException.hpp"
-#include "Game/KeyboardHandler.h"
+#include "IO/KeyboardHandler.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-
 
 // void KeyHandler::processBufferedInput() {
 //   removeEmptyFramesFromFront();

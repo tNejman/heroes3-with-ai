@@ -1,9 +1,7 @@
 #include "Artifact/Artifact.h"
 
-#include <SFML/Graphics/Texture.hpp>
 #include <algorithm>
 #include <cassert>
-#include <memory>
 
 #include "Artifact/ArtifactLib.h"
 #include "Graphics/Visitor.h"
@@ -11,8 +9,8 @@
 Artifact::Artifact( const ArtifactData& data ) : data_( data ) {
 }
 
-[[nodiscard]] sf::Texture& Artifact::accept( Visitor& vis ) const {
-  return vis.visit( *this );
+void Artifact::accept( Visitor& vis ) const {
+  vis.visit( *this );
 }
 
 [[nodiscard]] Artifact Artifact::create( const ArtifactType type ) noexcept {

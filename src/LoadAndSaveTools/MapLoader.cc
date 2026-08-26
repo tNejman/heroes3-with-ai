@@ -52,9 +52,11 @@ std::vector<std::shared_ptr<OverworldObstacle>> MapLoader::generateObstacles() {
       // if ( int( x * y ) % 3 == 0 )
       // obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLs11s0", CoordPair( x_loc, y_loc ) ) );
       if ( int( x * y ) % 2 == 0 ) {
-        obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLtRo06", CoordPair( x_loc, y_loc ) ) );
+        obstacles.push_back( std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE,
+                                                                  CoordPair( x_loc, y_loc ) ) );  // dried tree
       } else {
-        obstacles.push_back( std::make_shared<OverworldObstacle>( "AVLswt15", CoordPair( x_loc, y_loc ) ) );
+        obstacles.push_back( std::make_shared<OverworldObstacle>( OverworldObstacleType::GREEN_TREE,
+                                                                  CoordPair( x_loc, y_loc ) ) );  // green tree
       }
     }
   }

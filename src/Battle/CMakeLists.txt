@@ -17,5 +17,4 @@ target_link_libraries(Battle PUBLIC
 )
 
 target_link_libraries(Battle PRIVATE 
-    SFML::Graphics
 )

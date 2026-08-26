@@ -1,7 +1,6 @@
 #pragma once
 // Autor: Tomasz Nejman
 
-#include <SFML/Graphics/Texture.hpp>
 #include <string>
 
 #include "Graphics/Visitor.h"
@@ -14,7 +13,7 @@ class Building : public MapObject {
 
  public:
   Building( CoordPair coords, std::string name );
-  sf::Texture& accept( Visitor& v ) const override;
+  void accept( Visitor& v ) const override;
 
   [[nodiscard]] std::string getName() const;
 };

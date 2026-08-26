@@ -6,5 +6,4 @@ target_include_directories(Resource PRIVATE
 )
 
 target_link_libraries(Resource PRIVATE
-    SFML::Graphics
 )

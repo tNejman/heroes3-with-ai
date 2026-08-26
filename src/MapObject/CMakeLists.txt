@@ -3,5 +3,4 @@ add_library(MapObject SHARED
 )
 
 target_link_libraries(MapObject PRIVATE
-    SFML::Graphics
 )

@@ -1,9 +1,5 @@
 #include "Battle/Battle.h"
 
-#include <X11/X.h>
-#include <sys/types.h>
-
-#include <SFML/Graphics/Texture.hpp>
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -27,7 +23,6 @@
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
 
 void Battle::setAttackingArmy() {
@@ -154,10 +149,6 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
                 bool is_minimax )
     : Battle( std::move( attacker ), std::move( defender ), background ) {
   is_minimax_ = is_minimax;
-}
-
-sf::Texture& Battle::accept( Visitor& v ) const {
-  return v.visit( *this );
 }
 
 BattleState Battle::getState() const {

@@ -4,13 +4,10 @@
   - Klasa jest obiektem reprezentującym oddział jednostki w grze. Posiada informacje o jednostce oraz jej ilości.
 */
 
-#include <cstdint>
 #include <functional>
-#include <memory>
 
 #include "Battle/TileObject.hpp"
 #include "Miscellaneous/Coords.h"
-#include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
 
 namespace {

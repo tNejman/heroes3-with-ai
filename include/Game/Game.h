@@ -5,9 +5,6 @@
     - Zawiera metody do inicjalizacji gry, dodawania graczy i frakcji oraz zarządzania rozgrywką.
 */
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window.hpp>
 #include <memory>
 #include <vector>
 

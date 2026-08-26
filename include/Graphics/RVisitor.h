@@ -3,14 +3,12 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <functional>
-#include <memory>
 
 #include "Game/GameContext.h"
 #include "Game/GameStateBattle.h"
 #include "Game/GameStateOverworld.h"
 #include "Graphics/Renderers/BattleRenderer.h"
 #include "Graphics/Renderers/MapRenderer.h"
-#include "Graphics/SpriteVisitor.h"
 #include "IRVisitor.h"
 #include "Miscellaneous/Coords.h"
 
@@ -30,9 +28,6 @@ class RVisitor : public IRVisitor {
   }
 
   void visit( const GameStateBattle& s ) noexcept override {
-    // auto sprite_visitor = std::make_shared<SpriteVisitor>();
-    // sf::Sprite sprite{ s.viewBattle().accept( *sprite_visitor ) };
-    // window_.get().draw( sprite );
     BattleRenderer{ window_, s.viewBattle() }.render();
   }
 };

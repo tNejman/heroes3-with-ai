@@ -10,12 +10,13 @@
 #include "Exceptions/Err.hpp"
 #include "Exceptions/NotOpenWindowException.hpp"
 #include "Graphics/Renderers/IRenderer.hpp"
+#include "Graphics/SpriteFactory.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/OverworldObstacle.h"
 #include "WorldMap/WorldMap.h"
 
-void MapRenderer::renderGrid() const {
+void MapRenderer::renderGrid() {
   int center_x = center_coords_.x_;
   int center_y = center_coords_.y_;
 
@@ -28,8 +29,7 @@ void MapRenderer::renderGrid() const {
       double screen_y =
           ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
-      // sprite visitor has to visit explicitly, because terrain is not a class but enum
-      sf::Sprite sprite( sprite_visitor->visit( terrain ) );
+      sf::Sprite sprite = SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::WORLD>{ terrain } );
       sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
       if ( window_.get().isOpen() ) {
         window_.get().draw( sprite );
@@ -40,7 +40,7 @@ void MapRenderer::renderGrid() const {
   }
 }
 
-void MapRenderer::renderObjects() const {
+void MapRenderer::renderObjects() {
   // This method iterates through the grid again to terrain overlapping sprites
   int center_x = center_coords_.x_;
   int center_y = center_coords_.y_;
@@ -57,7 +57,8 @@ void MapRenderer::renderObjects() const {
         double screen_y =
             ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2.0 );
 
-        sf::Sprite sprite_map_obj( map_obj->accept( *sprite_visitor ) );
+        map_obj->accept( *sprite_visitor );
+        sf::Sprite sprite_map_obj( sprite_visitor->extractSprite() );
         sprite_map_obj.setTextureRect(
             sf::IntRect( { 0, 0 }, { HERO_SPRITE_WIDTH_DEPRECATED, HERO_SPRITE_HEIGHT_DEPRECATED } ) );
         sprite_map_obj.setOrigin( sf::Vector2f( static_cast<float>( HERO_SPRITE_WIDTH_DEPRECATED ) / 2.F,
@@ -76,7 +77,8 @@ void MapRenderer::renderObjects() const {
         double screen_y =
             ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
-        sf::Sprite sprite( obstacle_ptr->accept( *sprite_visitor ) );
+        obstacle_ptr->accept( *sprite_visitor );
+        sf::Sprite sprite( sprite_visitor->extractSprite() );
         sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
         if ( window_.get().isOpen() ) {
           window_.get().draw( sprite );
@@ -89,7 +91,8 @@ void MapRenderer::renderObjects() const {
         double screen_y =
             ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
-        sf::Sprite sprite( artifact_ptr->accept( *sprite_visitor ) );
+        artifact_ptr->accept( *sprite_visitor );
+        sf::Sprite sprite( sprite_visitor->extractSprite() );
         sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
         if ( window_.get().isOpen() ) {
           window_.get().draw( sprite );

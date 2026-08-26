@@ -2,15 +2,12 @@
 // Autor: Tomasz Nejman
 // zawartość: zawiera stałe używane w grze
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <map>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "Miscellaneous/Coords.h"
 
@@ -106,7 +103,7 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 ====== CHARACTER ======
 */
 
-enum class CharacterType { FIRE_HERO, BLACK_HERO_WHITE_HORSE, COUNT };
+enum class CharacterType : uint8_t { FIRE_HERO, BLACK_HERO_WHITE_HORSE, COUNT };
 
 constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0
@@ -139,17 +136,6 @@ const std::map<int, int> SPEED_TO_MOVEMENT = { {
 */
 
 // constexpr sf::Time FRAME_DURATION = sf::seconds( 1.f / 30.f );
-
-constexpr inline int KEY_BUFFER_DURATION = 5;
-
-constexpr sf::Keyboard::Key W = sf::Keyboard::Key::W;
-constexpr sf::Keyboard::Key S = sf::Keyboard::Key::S;
-constexpr sf::Keyboard::Key A = sf::Keyboard::Key::A;
-constexpr sf::Keyboard::Key D = sf::Keyboard::Key::D;
-constexpr std::array<sf::Keyboard::Key, 4> MOVEMENT_KEYS = { W, S, A, D };
-
-const std::map<sf::Keyboard::Key, std::vector<sf::Keyboard::Key>> VALID_DIAGONAL_MOVE_COMP = {
-    { W, { A, D } }, { S, { A, D } }, { A, { W, S } }, { D, { W, S } } };
 
 constexpr inline int WORLD_MAP_MAX_TILES_SEEN_LEFT = 12U;
 constexpr inline int WORLD_MAP_MAX_TILES_SEEN_RIGHT = 12U;

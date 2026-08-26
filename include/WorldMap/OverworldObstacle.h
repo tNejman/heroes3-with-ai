@@ -1,17 +1,18 @@
 #pragma once
 
-#include <SFML/Graphics/Texture.hpp>
-#include <string>
+#include <cstdint>
 
 #include "Graphics/Visitor.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 
+enum class OverworldObstacleType : uint8_t { DRIED_TREE, GREEN_TREE, COUNT };
+
 class OverworldObstacle : public MapObject {
-  const std::string name_;
+  OverworldObstacleType type_;
 
  public:
-  OverworldObstacle( std::string name, CoordPair coords );
-  sf::Texture& accept( Visitor& v ) const override;
-  [[nodiscard]] const std::string& getName() const;
+  OverworldObstacle( OverworldObstacleType type, CoordPair coords );
+  void accept( Visitor& v ) const override;
+  [[nodiscard]] OverworldObstacleType getType() const;
 };

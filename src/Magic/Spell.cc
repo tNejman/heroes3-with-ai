@@ -4,10 +4,6 @@
 #include <memory>
 #include <string>
 
-// sf::Texture& Spell::accept( Visitor& v ) const {
-//   return v.visit( *this );
-// }
-
 MagicSchool Spell::getMagicSchoolFromSpellType( SpellType type ) noexcept {
   switch ( type ) {
     case SpellType::MAGIC_ARROW:

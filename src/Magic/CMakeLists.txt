@@ -7,5 +7,4 @@ target_include_directories(Magic PRIVATE
 )
 
 target_link_libraries(Magic PRIVATE
-    SFML::Graphics
 )

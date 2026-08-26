@@ -25,6 +25,7 @@
 #include "Miscellaneous/ProjectLib.h"
 #include "Miscellaneous/ToLowerString.hpp"
 #include "Unit/UnitsLib.h"
+#include "WorldMap/OverworldObstacle.h"
 
 [[nodiscard]] sf::Sprite SpriteFactory::cropTexture( const sf::Texture& texture, sf::Vector2<int> ltc_pos,
                                                      sf::Vector2<int> size ) noexcept {
@@ -125,7 +126,7 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> t ) noexcept {
-  static constexpr std::string_view FILE_LOCATION = "sprites/terrain/";
+  static constexpr std::string_view FILE_LOCATION = "sprites/terrain/bg/";
   const std::string tex_filename = std::string{ FILE_LOCATION } + [&] -> const char* {
     switch ( t.val ) {
       case Terrain::GRASS: return "tgrb000";
@@ -157,6 +158,18 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
     }
   }() + ".png";
   return sf::Sprite{ getTexture<Terrain, SpriteDomain::BATTLE>( t.val, tex_filename ) };
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( OverworldObstacleType obt ) noexcept {
+  static constexpr std::string_view FILE_LOCATION = "sprites/landscape/";
+  const std::string tex_filename = std::string{ FILE_LOCATION } + [&] -> const char* {
+    switch ( obt ) {
+      case OverworldObstacleType::DRIED_TREE: return "AVLtRo06";
+      case OverworldObstacleType::GREEN_TREE: return "AVLswt15";
+      case OverworldObstacleType::COUNT: std::unreachable();
+    }
+  }() + ".png";
+  return sf::Sprite{ getTexture<OverworldObstacleType>( obt, tex_filename ) };
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( CharacterType ct, CharacterMoveDirection cmd ) noexcept {

@@ -1,6 +1,5 @@
 #include "Character/Character.h"
 
-#include <SFML/Graphics/Texture.hpp>
 #include <memory>
 #include <optional>
 #include <string>
@@ -25,8 +24,8 @@ Character::Character( int id, std::string name, CoordPair coords, CharacterStats
       is_user_character_( true ),
       stats_( std::move( stats ) ) {};
 
-sf::Texture& Character::accept( Visitor& v ) const {
-  return v.visit( *this );
+void Character::accept( Visitor& v ) const {
+  v.visit( *this );
 }
 
 [[nodiscard]] int Character::getId() const noexcept {

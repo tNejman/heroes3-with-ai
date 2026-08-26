@@ -12,7 +12,6 @@
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/Faction.hpp"
-#include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
 
 // Easy factory constructor

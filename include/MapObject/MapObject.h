@@ -3,7 +3,6 @@
 /*
   - klasa
 */
-#include <SFML/Graphics/Texture.hpp>
 
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
@@ -21,7 +20,7 @@ class MapObject : public Printable {
   MapObject( CoordPair coords, bool is_traversable );
   virtual ~MapObject() = default;
 
-  sf::Texture& accept( Visitor& v ) const override = 0;
+  void accept( Visitor& v ) const override = 0;
   [[nodiscard]] CoordPair getCoords() const noexcept;
   void setCoords( CoordPair new_coords ) noexcept;
   [[nodiscard]] bool isTraversable() const noexcept;

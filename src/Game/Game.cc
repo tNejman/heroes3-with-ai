@@ -1,9 +1,5 @@
 #include "Game/Game.h"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Window/VideoMode.hpp>
-#include <SFML/Window/WindowEnums.hpp>
 #include <cassert>
 #include <format>
 #include <memory>
@@ -28,6 +24,7 @@
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/WorldMap.h"
+
 
 void Game::handleStateTransition( const StateTransition& transition ) noexcept {
   std::visit( Overload{

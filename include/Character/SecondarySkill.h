@@ -4,10 +4,7 @@
   - Klasa SecondarySkill odpowiada za umiejętności drugorzędne postaci.
   - Zawiera metody do zarządzania poziomem umiejętności, kosztami i typem umiejętności.
 */
-// #include <SFML/Graphics.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
 #include <memory>
 
@@ -31,7 +28,7 @@ class SecondarySkill : public Printable {
   static std::unique_ptr<SecondarySkill> create( SecondarySkillType type, SecondarySkillLevel level );
   static std::unique_ptr<SecondarySkill> create( SecondarySkillType type );
 
-  sf::Texture& accept( Visitor& vis ) const override;
+  void accept( Visitor& vis ) const override;
   [[nodiscard]] SecondarySkillType getType() const;
   [[nodiscard]] SecondarySkillLevel getLevel() const;
   [[nodiscard]] std::unique_ptr<SecondarySkill> copy() const;

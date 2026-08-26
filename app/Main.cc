@@ -25,10 +25,10 @@
 #include "Game/Game.h"
 
 // #include "LoadAndSaveTools/CharacterSaver.h"
-#include "Game/KeyboardHandler.h"
-#include "Game/MouseHandler.h"
 #include "Game/UserCommand.h"
 #include "Graphics/Renderers/GameRenderer.h"
+#include "IO/KeyboardHandler.h"
+#include "IO/MouseHandler.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
@@ -36,6 +36,7 @@
 #include "Unit/UnitStack.h"
 #include "Unit/UnitsLib.h"
 #include "WorldMap/OverworldObstacle.h"
+
 
 namespace {
 ShiftPair getShiftFromDirection( CharacterMoveDirection direction ) {

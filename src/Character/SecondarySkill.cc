@@ -1,6 +1,5 @@
 #include "Character/SecondarySkill.h"
 
-#include <SFML/Graphics/Texture.hpp>
 #include <memory>
 
 #include "Graphics/Visitor.h"
@@ -11,8 +10,8 @@ SecondarySkill::SecondarySkill( SecondarySkillType skill_type )
 SecondarySkill::SecondarySkill( SecondarySkillType skill_type, SecondarySkillLevel skill_level )
     : type_( skill_type ), level_( skill_level ), cost_( 0 ) {};
 
-sf::Texture& SecondarySkill::accept( Visitor& v ) const {
-  return v.visit( *this );
+void SecondarySkill::accept( Visitor& v ) const {
+  v.visit( *this );
 }
 
 SecondarySkillType SecondarySkill::getType() const {

@@ -1,5 +1,5 @@
 
-#include "Game/MouseHandler.h"
+#include "IO/MouseHandler.h"
 
 #include <cmath>
 #include <optional>

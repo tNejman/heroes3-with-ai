@@ -6,50 +6,34 @@
   - Zawiera metody do odwiedzania różnych typów obiektów.
   - Każda metoda zwraca odpowiednią teksturę dla danego obiektu.
 */
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Image.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <map>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+
+#include <SFML/Graphics/Sprite.hpp>
+#include <optional>
 
 #include "Artifact/Artifact.h"
 #include "Battle/Battle.h"
-#include "Battle/Moves/MoveFactory.h"
-#include "Battle/Obstacle.h"
+#include "Battle/Obstacle.hpp"
 #include "Character/Character.h"
 #include "Character/SecondarySkill.h"
 #include "Graphics/Visitor.h"
 #include "Magic/Spell.h"
-#include "Miscellaneous/ProjectLib.h"
 #include "Resource/Resource.h"
-#include "Unit/Unit.h"
 #include "WorldMap/OverworldObstacle.h"
 
 class SpriteVisitor : public Visitor {
- public:
-  SpriteVisitor() = default;
-  sf::Texture& visit( const Artifact& e ) override;
-  sf::Texture& visit( const Obstacle& e ) override;
-  sf::Texture& visit( const Character& e ) override;
-  sf::Texture& visit( const SecondarySkill& e ) override;
-  sf::Texture& visit( const Spell& e ) override;
-  // sf::Texture& visit(const SpellBook& e) override;
-  // sf::Texture& visit( const UnitStack& e ) override;
-  sf::Texture& visit( const Resource& e ) override;
-  sf::Texture& visit( const OverworldObstacle& e ) override;
-  sf::Texture& visit( const Building& e ) override;
-  sf::Texture& visit( const Terrain& e );
-  // sf::Texture& visit(const WorldMap& e) override;
-  // sf::Texture& visit(const Player& e) override;
-  // sf::Texture& visit(const Castle& e) override;
-  sf::Texture& visit( const Battle& e ) override;
-  std::pair<sf::Texture&, std::string> getBattleHexagons( std::vector<std::shared_ptr<Move>> moves );
-
  private:
-  std::map<std::string, sf::Texture> textures_;
-  sf::Texture& findTexture( const std::string& path );
-  [[nodiscard]] sf::Image mirrorImageHorizontally( const sf::Image& original ) const;
+  std::optional<sf::Sprite> sprite_;
+
+ public:
+  void visit( const Artifact& e ) override;
+  void visit( const Obstacle& e ) override;
+  void visit( const Character& e ) override;
+  void visit( const SecondarySkill& e ) override;
+  void visit( const Spell& e ) override;
+  void visit( const Resource& e ) override;
+  void visit( const OverworldObstacle& e ) override;
+  void visit( const Building& e ) override;
+  void visit( const UnitStack& e ) override;
+
+  sf::Sprite extractSprite() noexcept;
 };

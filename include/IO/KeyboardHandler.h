@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "Game/IKeyboardInput.hpp"
+#include "IO/IKeyboardInput.hpp"
 #include "Miscellaneous/ProjectLib.h"
 
 // Movement OverworldOnly

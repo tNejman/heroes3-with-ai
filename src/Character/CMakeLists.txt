@@ -19,5 +19,4 @@ target_link_libraries(Character PUBLIC
 
 target_link_libraries(Character PRIVATE
     Magic
-    SFML::Graphics
 )

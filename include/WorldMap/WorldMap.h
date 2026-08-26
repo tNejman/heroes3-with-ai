@@ -9,8 +9,6 @@
       - teren
 */
 
-// #include <SFML/Graphics.hpp>
-
 #include <array>
 #include <memory>
 #include <vector>

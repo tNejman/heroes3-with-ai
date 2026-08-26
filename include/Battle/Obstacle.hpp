@@ -5,7 +5,6 @@
   - Przeszkody są reprezentowane jako obiekty, które mogą być umieszczane na polu bitwy.
 */
 
-#include <SFML/Graphics/Texture.hpp>
 #include <string>
 #include <utility>
 
@@ -17,7 +16,7 @@ class Visitor;
 class Obstacle : public Printable, public TileObject {
  public:
   Obstacle( std::string name ) : Printable(), TileObject( false ), name_( std::move( name ) ) {};
-  [[nodiscard]] sf::Texture& accept( Visitor& vis ) const override {
+  void accept( Visitor& vis ) const override {
     return vis.visit( *this );
   }
   [[nodiscard]] const std::string& getName() const {

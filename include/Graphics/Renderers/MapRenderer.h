@@ -12,8 +12,8 @@ class MapRenderer : public IRenderer<WorldMap> {
  private:
   CoordPair center_coords_;
 
-  void renderGrid() const;
-  void renderObjects() const;
+  void renderGrid();
+  void renderObjects();
 
  public:
   //     IRenderer(const SpriteVisitor& sprite_visitor, const T& object) :

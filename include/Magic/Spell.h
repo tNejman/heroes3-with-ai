@@ -34,7 +34,6 @@ class Spell : public Equippable {
         magic_school_( getMagicSchoolFromSpellType( spell_type ) ),
         mana_cost_( getManaCostFromSpellType( spell_type ) ) {
   }
-  // sf::Texture& accept( Visitor& v ) const override;
   [[nodiscard]] std::string getName() const;
   [[nodiscard]] SpellType getType() const;
   [[nodiscard]] MagicSchool getSchool() const;

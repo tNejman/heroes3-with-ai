@@ -66,6 +66,7 @@ set(MODULES
     Character
     Game 
     Graphics
+    IO
     LoadAndSaveTools
     Magic 
     MapObject

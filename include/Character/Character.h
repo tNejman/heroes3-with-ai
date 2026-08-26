@@ -10,10 +10,7 @@
       - nieużywane obecnie artefakty (backpack_)
       - podwładne jednostki (party_)
 */
-// #include <SFML/Graphics.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <array>
 #include <memory>
 #include <optional>
@@ -57,7 +54,7 @@ class Character : public MapObject {
   ~Character() override = default;
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
-  sf::Texture& accept( Visitor& v ) const override;
+  void accept( Visitor& v ) const override;
 
   [[nodiscard]] int getId() const noexcept;
 

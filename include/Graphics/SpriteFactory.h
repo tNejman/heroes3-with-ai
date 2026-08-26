@@ -16,9 +16,11 @@
 
 #include "Artifact/ArtifactLib.h"
 #include "Exceptions/Err.hpp"
+#include "Game/GameStateOverworld.h"
 #include "Miscellaneous/EnumWithCount.hpp"
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/UnitsLib.h"
+#include "WorldMap/OverworldObstacle.h"
 
 // using SpriteBinding = std::variant<Terrain, CharacterType, CastleUnitType, ConfluxUnitType, ForgeUnitType>;
 
@@ -65,6 +67,7 @@ class SpriteFactory {
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ArtifactType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::BATTLE> ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( OverworldObstacleType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( CharacterType, CharacterMoveDirection ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( CastleUnitType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ConfluxUnitType ) noexcept;

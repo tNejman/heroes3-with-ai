@@ -45,5 +45,4 @@ class Player {
   Resource getResource( ResourceType resource );
   Resource setResource( ResourceType resource, int amount );
   std::shared_ptr<Move> makeMove( std::vector<Move> possible_states );
-  // virtual sf::Texture& accept(Visitor& v) const override {return v.visit(*this); }
 };

@@ -4,7 +4,6 @@
 
 #include "Miscellaneous/ProjectLib.h"
 #include "Unit/Faction.hpp"
-#include "Unit/Unit.h"
 #include "Unit/UnitsLib.h"
 
 // TEST( UnitTest, findUnitData ) {
@@ -18,7 +17,8 @@
 //   std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
 //   CastleUnitType unit_type = CastleUnitType::ANGEL;
 //   auto unit_data_ptr = UNITS_PRESET_CASTLE.find( unit_type )->second;  // not .end(), checked in previous test
-//   std::shared_ptr<Unit> unit = std::make_shared<Unit>( unit_data_ptr, faction_castle, static_cast<int>( unit_type ) );
+//   std::shared_ptr<Unit> unit = std::make_shared<Unit>( unit_data_ptr, faction_castle, static_cast<int>( unit_type )
+//   );
 //   // no assert, just checking if anything is thrown
 // }
 
@@ -26,7 +26,8 @@
 //   std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
 //   CastleUnitType unit_type = CastleUnitType::ANGEL;
 //   auto unit_data_ptr = UNITS_PRESET_CASTLE.find( unit_type )->second;  // not .end(), checked in previous test
-//   std::shared_ptr<Unit> unit = std::make_shared<Unit>( unit_data_ptr, faction_castle, static_cast<int>( unit_type ) );
+//   std::shared_ptr<Unit> unit = std::make_shared<Unit>( unit_data_ptr, faction_castle, static_cast<int>( unit_type )
+//   );
 
 //   ASSERT_EQ( unit->getName(), unit_data_ptr->name_ );
 //   ASSERT_EQ( unit->getLevel(), unit_data_ptr->level_ );
