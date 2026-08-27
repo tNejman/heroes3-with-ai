@@ -15,7 +15,7 @@
 
 constexpr inline int MAX_PARTY_SIZE = 7;
 
-enum class PartySlot : uint8_t {  // do not change numeration
+enum class PartySlot : char {  // do not change numeration
   ONE,
   TWO,
   THREE,

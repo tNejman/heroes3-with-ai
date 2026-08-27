@@ -25,8 +25,8 @@
 // std::shared_ptr<const Unit> angel = faction_castle->getUnit(CastleUnitType::ANGEL);
 
 TEST( BattleTest, checkattacking ) {
-  UnitStack pikeman_army{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 };
-  UnitStack angel_army{ getCastleUnit( CastleUnitType::ANGEL ), 1 };
+  UnitStack pikeman_army{ CastleUnitType::PIKEMAN, 30 };
+  UnitStack angel_army{ CastleUnitType::ANGEL, 1 };
 
   std::shared_ptr<Character> character1 = CharacterBuilder{}
                                               .setStats( CharacterStats{ CharacterStats::PrimarySkills{
@@ -76,13 +76,10 @@ TEST( BattleTest, checkingattacking ) {
               CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .buildSharedPtr();
 
-  auto& pikeman_john_ref =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
-  auto& angel_silverhand_ref =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
-  auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
-  auto& pikeman_panam_ref =
-      character4->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+  auto& pikeman_john_ref = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
+  auto& angel_silverhand_ref = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
+  auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
+  auto& pikeman_panam_ref = character4->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
 
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
   std::unique_ptr<Battle> battle_v_panam = std::make_unique<Battle>( character3, character4, Terrain::GRASS );
@@ -114,13 +111,10 @@ TEST( BattleTest, checkingMaxattackBonus ) {
                                                   .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
                                               .buildSharedPtr();
 
-  auto& pikeman_john_ref =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
-  auto& angel_silverhand_ref =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
-  auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
-  auto& pikeman_panam_ref =
-      character4->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+  auto& pikeman_john_ref = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
+  auto& angel_silverhand_ref = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
+  auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
+  auto& pikeman_panam_ref = character4->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
 
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
   std::unique_ptr<Battle> battle_v_panam = std::make_unique<Battle>( character3, character4, Terrain::GRASS );
@@ -149,11 +143,10 @@ TEST( BattleTest, checkingMaxdefenseBonus ) {
                                               .setStats( CharacterStats{ CharacterStats::PrimarySkills{
                                                   .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
                                               .buildSharedPtr();
-  auto& angel_john_ref = character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 5 } );
-  auto& angel_silverhand_ref =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 5 } );
-  auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 5 } );
-  auto& angel_panam_ref = character4->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 5 } );
+  auto& angel_john_ref = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
+  auto& angel_silverhand_ref = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
+  auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
+  auto& angel_panam_ref = character4->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
 
   std::shared_ptr<Battle> battle = std::make_shared<Battle>( character1, character2, Terrain::GRASS );
   std::shared_ptr<Battle> battle_v_panam = std::make_shared<Battle>( character3, character4, Terrain::GRASS );
@@ -179,19 +172,14 @@ TEST( BattleTestMoving, checksettingarmies ) {
                                                   .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
                                               .buildSharedPtr();
 
-  auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
-  auto& pikeman_2_army =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
-  auto& pikeman_3_army =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+  auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
+  auto& pikeman_2_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
+  auto& pikeman_3_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
 
-  auto& angel_army = character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
-  auto& swordsman_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 2 } );
-  auto& swordsman_2_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 3 } );
-  auto& swordsman_3_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 4 } );
+  auto& angel_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
+  auto& swordsman_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 2 } );
+  auto& swordsman_2_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 3 } );
+  auto& swordsman_3_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 4 } );
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
 
   ASSERT_EQ( &pikeman_army, battle->getBattlefield()->getTileByProxy( { 0, 0 } )->getObject() );
@@ -214,19 +202,14 @@ TEST( BattleTestMoving, checkmovingarmies ) {
                                                   .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
                                               .buildSharedPtr();
 
-  auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
-  auto& pikeman_2_army =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
-  auto& pikeman_3_army =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+  auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
+  auto& pikeman_2_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
+  auto& pikeman_3_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
 
-  auto& angel_army = character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
-  auto& swordsman_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 2 } );
-  auto& swordsman_2_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 3 } );
-  auto& swordsman_3_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 4 } );
+  auto& angel_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
+  auto& swordsman_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 2 } );
+  auto& swordsman_2_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 3 } );
+  auto& swordsman_3_army = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 4 } );
 
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
   ASSERT_EQ( &swordsman_army, battle->getBattlefield()->getTileByProxy( CoordPair( 14u, 2u ) )->getObject() );
@@ -250,19 +233,19 @@ TEST( BattleTestAttack, check_attacking_armies ) {
                                                   .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
                                               .buildSharedPtr();
 
-  auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+  auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{  CastleUnitType::PIKEMAN , 30 } );
   auto& pikeman_2_army =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+      character1->army().recruitUnitStack( UnitStack{  CastleUnitType::PIKEMAN , 30 } );
   auto& pikeman_3_army =
-      character1->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::PIKEMAN ), 30 } );
+      character1->army().recruitUnitStack( UnitStack{  CastleUnitType::PIKEMAN , 30 } );
 
-  auto& angel_army = character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::ANGEL ), 1 } );
+  auto& angel_army = character2->army().recruitUnitStack( UnitStack{  CastleUnitType::ANGEL , 1 } );
   auto& swordsman_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 2 } );
+      character2->army().recruitUnitStack( UnitStack{  CastleUnitType::SWORDSMAN , 2 } );
   auto& swordsman_2_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 3 } );
+      character2->army().recruitUnitStack( UnitStack{  CastleUnitType::SWORDSMAN , 3 } );
   auto& swordsman_3_army =
-      character2->army().recruitUnitStack( UnitStack{ getCastleUnit( CastleUnitType::SWORDSMAN ), 4 } );
+      character2->army().recruitUnitStack( UnitStack{  CastleUnitType::SWORDSMAN , 4 } );
 
   std::unique_ptr<Battle> battle = std::make_unique<Battle>( character1, character2, Terrain::GRASS );
 

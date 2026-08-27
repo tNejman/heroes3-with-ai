@@ -3,17 +3,17 @@
 /* zawarość klasa spell:
     - klasa ma pozwalać na rzucanie zaklęć
 */
-#include <stdint.h>
-
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include "Miscellaneous/Equippable.h"
+
 // #include "Graphics/Printable.h"
 
-enum class MagicSchool : int { EARTH = 0, AIR = 1, FIRE = 2, WATER = 3 };
+enum class MagicSchool : char { EARTH = 0, AIR = 1, FIRE = 2, WATER = 3 };
 
-enum class SpellType : int { MAGIC_ARROW = 0, LIGHTNING_BOL = 1, DESTROY_UNDEAD = 2 };
+enum class SpellType : char { MAGIC_ARROW = 0, LIGHTNING_BOL = 1, DESTROY_UNDEAD = 2 };
 
 // , public Printable
 class Spell : public Equippable {

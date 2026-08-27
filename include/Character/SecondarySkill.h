@@ -11,9 +11,9 @@
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
 
-enum class SecondarySkillType : int { AIR_MAGIC = 0, FIRE_MAGIC = 1, EARTH_MAGIC = 2, WATER_MAGIC = 3 };
+enum class SecondarySkillType : char { AIR_MAGIC = 0, FIRE_MAGIC = 1, EARTH_MAGIC = 2, WATER_MAGIC = 3 };
 
-enum class SecondarySkillLevel : int { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
+enum class SecondarySkillLevel : char { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
 
 class SecondarySkill : public Printable {
   // TODO zrobic fabryke

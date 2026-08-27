@@ -27,7 +27,7 @@ struct CharacterSaveContainer {
   std::optional<std::array<std::array<int, 6>, 7>> party_;
 };
 
-enum class CharacterDataLoadMode : int {
+enum class CharacterDataLoadMode : char {
   NONE = -1,
   NAME = 0,
   COORDS = 1,

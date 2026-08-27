@@ -5,7 +5,7 @@
 
 #include "Miscellaneous/DisableCopyMoveStructHelper.hpp"
 
-enum class ArtifactType : uint8_t {
+enum class ArtifactType : char {
   // Helmets
   CROWN_OF_THE_SUPREME_MAGI,
   HELM_OF_THE_ALABASTER_UNICORN,
@@ -53,7 +53,7 @@ enum class ArtifactType : uint8_t {
   COUNT
 };
 
-enum class EquipmentSlots : uint8_t {
+enum class EquipmentSlots : char {
   HELMET = 0,
   CAPE = 1,
   NECKLACE = 2,

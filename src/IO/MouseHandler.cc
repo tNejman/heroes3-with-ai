@@ -3,7 +3,10 @@
 
 #include <cmath>
 #include <optional>
+#include <utility>
 
+#include "Game/UserCommand.h"
+#include "Graphics/IRVisitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
 
@@ -43,4 +46,26 @@ bool MouseHandler::pointInHexagon( int px, int py, double hex_x, double hex_y ) 
   double distance_diagonal = std::sqrt( dx_squared + dy_squared );
 
   return distance_diagonal <= HEXAGON_SPRITE_MAX_RADIUS;
+}
+
+/* === @PUBLIC === */
+
+void MouseHandler::updateMouseCoords( MouseCoords new_coords ) noexcept {
+  mouse_coords_ = new_coords;
+}
+
+UserCommand MouseHandler::getCommand() noexcept {
+  UserCommand moved_command = command_;
+  command_ = None{};
+  return moved_command;
+}
+
+void MouseHandler::visit( const GameStateOverworld& ) noexcept {
+}
+
+void MouseHandler::visit( const GameStateBattle& ) noexcept {
+  auto maybe_coords = getHexagonCoordsFromClick( mouse_coords_.x, mouse_coords_.y );
+  if ( maybe_coords.has_value() ) {
+    command_ = BattleCommand{ *maybe_coords };
+  }
 }

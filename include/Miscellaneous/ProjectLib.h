@@ -38,7 +38,7 @@ enum class CharacterMoveDirection : uint8_t { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN
 constexpr inline int MAP_WIDTH_BF = 15;
 constexpr inline int MAP_HEIGHT_BF = 11;
 
-enum BATTLE_DIRECTIONS : int { UR, R, DR, DL, L, UL };
+enum BATTLE_DIRECTIONS : char { UR, R, DR, DL, L, UL };
 
 // {0,0} in the middle, top and bottom rows are shifted right
 constexpr std::array<ShiftPair, 6> EVEN_DIRECTIONS_BATTLE = { {
@@ -82,15 +82,7 @@ constexpr CoordPair BATTLE_MAP_NOT_FOUND_COORDS{ 69'420, 69'420 };
 ====== TERRAIN ======
 */
 
-enum class Terrain : uint8_t {
-  GRASS = 0,
-  DIRT = 1,
-  MOSTLY_GRASS = 2,
-  ROCKS = 3,
-  ROCKS_CRUSHED = 4,
-  SAND = 5,
-  COUNT = 6
-};
+enum class Terrain : char { GRASS = 0, DIRT = 1, MOSTLY_GRASS = 2, ROCKS = 3, ROCKS_CRUSHED = 4, SAND = 5, COUNT = 6 };
 
 constexpr size_t operator+( Terrain t ) {
   return static_cast<size_t>( t );
@@ -103,7 +95,7 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 ====== CHARACTER ======
 */
 
-enum class CharacterType : uint8_t { FIRE_HERO, BLACK_HERO_WHITE_HORSE, COUNT };
+enum class CharacterType : char { FIRE_HERO, BLACK_HERO_WHITE_HORSE, COUNT };
 
 constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0
@@ -193,4 +185,9 @@ constexpr inline int MINIMAX_MAX_DEPTH = 5U;
 /*
 ====== SAVING AND LOADING ======
 */
+
 const std::string CHARACTER_SAVE_START_MARKER = "CHARACTER";
+
+/*
+====== GAME ======
+*/

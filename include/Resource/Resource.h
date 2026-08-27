@@ -2,10 +2,12 @@
 // Autor: Tomasz Naszkowski
 // zawartość: klasa Resource pozwala na zarządzanie zasobami
 
+#include <cstdint>
+
 #include "Graphics/Printable.h"
 #include "Graphics/Visitor.h"
 
-enum class ResourceType { TIMBER, MERCURY, STONE, SULFUR, CRYSTAL, GEMSTONE, MONEY };
+enum class ResourceType : char { TIMBER, MERCURY, STONE, SULFUR, CRYSTAL, GEMSTONE, MONEY, COUNT };
 
 class Resource : public Printable {
  private:

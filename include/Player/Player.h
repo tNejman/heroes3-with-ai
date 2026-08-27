@@ -6,6 +6,8 @@
 */
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -13,23 +15,24 @@
 #include "Miscellaneous/ProjectLib.h"
 #include "Resource/Resource.h"
 #include "WorldMap/Castles/Castle.h"
+
 class Move;
 
-enum Color { RED, BLUE };
+enum PlayerColor : uint8_t { RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK };
 
 // inheritance from Printable is postponed for now
 class Player {
  private:
   std::vector<std::shared_ptr<Character>> characters_on_map_;
   std::vector<std::weak_ptr<Castle>> owned_castles_;
-  std::array<std::unique_ptr<Resource>, AMOUNT_OF_RESOURCES> Resources_;
+  std::array<std::unique_ptr<Resource>, static_cast<size_t>( ResourceType::COUNT )> resources_;
 
  public:
   Player( std::vector<std::shared_ptr<Character>> characters ) : characters_on_map_( characters ) {
   }
   ~Player() = default;
 
-  Color color_;
+  PlayerColor color_;
 
   std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
   const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;

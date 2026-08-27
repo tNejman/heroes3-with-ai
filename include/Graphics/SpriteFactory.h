@@ -24,13 +24,14 @@
 
 // using SpriteBinding = std::variant<Terrain, CharacterType, CastleUnitType, ConfluxUnitType, ForgeUnitType>;
 
-enum class SpriteDomain : bool { WORLD, BATTLE };
+enum class SpriteDomain : char { WORLD, BATTLE };
+
 template <EnumWithCount T, SpriteDomain D>
 struct Tagged {
   T val;
 };
 
-enum class HexagonType : uint8_t { EMPTY, ATTACK, MOVE, IN_ACTION, COUNT };
+enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION, COUNT };
 
 class SpriteFactory {
   template <EnumWithCount Binding>

@@ -1,4 +1,5 @@
 add_library(IO SHARED
+    InputHandler.cc
     KeyHandler.cc
     MouseHandler.cc
 )

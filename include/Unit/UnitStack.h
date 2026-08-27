@@ -28,7 +28,7 @@ class UnitStack : public TileObject {
   // void checkUnit() const;
 
  public:
-  UnitStack( const UnitData& data, int size );
+  UnitStack( UnitTypeV type, int size );
   [[nodiscard]] const UnitData& getData() const noexcept;
 
   [[nodiscard]] int getMorale() const noexcept;

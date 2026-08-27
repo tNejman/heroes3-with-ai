@@ -14,12 +14,13 @@
 
 #include "Exceptions/Err.hpp"
 #include "Miscellaneous/DisableCopyMoveStructHelper.hpp"
+#include "Miscellaneous/Overload.hpp"
 
-enum class FactionAttitude : uint8_t { EVIL, NEUTRAL, GOOD };
+enum class FactionAttitude : char { EVIL, NEUTRAL, GOOD };
 
-enum class FactionType : uint8_t { FORGE, CONFLUX, CASTLE };
+enum class FactionType : char { FORGE, CONFLUX, CASTLE };
 
-enum class ForgeUnitType : uint8_t {
+enum class ForgeUnitType : char {
   GRUNT = 0,
   CYBER_DEAD = 1,
   PYRO = 2,
@@ -30,7 +31,7 @@ enum class ForgeUnitType : uint8_t {
   COUNT = 7
 };
 
-enum class ConfluxUnitType : uint8_t {
+enum class ConfluxUnitType : char {
   PIXIE = 0,
   AIR_ELEMENTAL = 1,
   WATER_ELEMENTAL = 2,
@@ -41,7 +42,7 @@ enum class ConfluxUnitType : uint8_t {
   COUNT = 7,
 };
 
-enum class CastleUnitType : uint8_t {
+enum class CastleUnitType : char {
   PIKEMAN = 0,
   ARCHER = 1,
   GRIFFIN = 2,
@@ -52,7 +53,7 @@ enum class CastleUnitType : uint8_t {
   COUNT = 7,
 };
 
-enum class WarMachineType : uint8_t { BALLISTA = 0, AMMO_CART = 1, FIRST_AID_TENT = 2, CATAPULT = 3, COUNT = 4 };
+enum class WarMachineType : char { BALLISTA = 0, AMMO_CART = 1, FIRST_AID_TENT = 2, CATAPULT = 3, COUNT = 4 };
 
 using UnitTypeV = std::variant<ForgeUnitType, ConfluxUnitType, CastleUnitType, WarMachineType>;
 
@@ -277,9 +278,22 @@ const inline std::array UNITS_PRESET_CASTLE = { UnitData{ .name_ = "pikeman",
                                                           .is_range_ = false,
                                                           .path_to_texture_ = "/path/folder/tex2" } };
 
-inline const UnitData& getCastleUnit( CastleUnitType type ) {
-  if ( type == CastleUnitType::COUNT ) {
-    err::raise<std::runtime_error>( "index out of bounds" );
-  }
-  return UNITS_PRESET_CASTLE[static_cast<size_t>( type )];
+inline const UnitData& getUnitDataFromType( UnitTypeV type ) {
+  return std::visit( Overload{ [&]( ForgeUnitType t ) -> const UnitData& {
+                                err::passCondOrAbort( t != ForgeUnitType::COUNT );
+                                return UNITS_PRESET_FORGE[static_cast<size_t>( t )];
+                              },
+                               [&]( ConfluxUnitType t ) -> const UnitData& {
+                                 err::passCondOrAbort( t != ConfluxUnitType::COUNT );
+                                 return UNITS_PRESET_CONFLUX[static_cast<size_t>( t )];
+                               },
+                               [&]( CastleUnitType t ) -> const UnitData& {
+                                 err::passCondOrAbort( t != CastleUnitType::COUNT );
+                                 return UNITS_PRESET_CASTLE[static_cast<size_t>( t )];
+                               },
+                               [&]( WarMachineType t ) -> const UnitData& {
+                                 err::passCondOrAbort( t != WarMachineType::COUNT );
+                                 return WAR_MACHINES_PRESET[static_cast<size_t>( t )];
+                               } },
+                     type );
 }

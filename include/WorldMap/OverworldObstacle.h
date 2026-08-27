@@ -1,12 +1,10 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Graphics/Visitor.h"
 #include "MapObject/MapObject.h"
 #include "Miscellaneous/Coords.h"
 
-enum class OverworldObstacleType : uint8_t { DRIED_TREE, GREEN_TREE, COUNT };
+enum class OverworldObstacleType : char { DRIED_TREE, GREEN_TREE, COUNT };
 
 class OverworldObstacle : public MapObject {
   OverworldObstacleType type_;

@@ -6,11 +6,13 @@
 #include "Miscellaneous/Coords.h"
 #include "Unit/UnitsLib.h"
 
-UnitStack::UnitStack( const UnitData& data, int size )
-    : TileObject( false ), data_( data ), size_( size ), current_health_( data.health_ ), coords_in_battle_( 0, 0 ) {
-  if ( size_ <= 0 ) {
-    err::raise<UnknownStateException>( "non positive size" );
-  }
+UnitStack::UnitStack( UnitTypeV type, int size )
+    : TileObject( false ),
+      data_( getUnitDataFromType( type ) ),
+      size_( size ),
+      current_health_( data_.get().health_ ),
+      coords_in_battle_( 0, 0 ) {
+  err::passCondOrThrow<UnknownStateException>( size > 0 );
 };
 
 [[nodiscard]] const UnitData& UnitStack::getData() const noexcept {

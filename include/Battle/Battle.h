@@ -24,7 +24,7 @@ class UnitStack;
 class GridTile;
 class Visitor;
 
-enum class BattleState : uint8_t {
+enum class BattleState : char {
   PREPPING,  //@Warning remove later possibly
   //   DEFENDING,
   MOVING,
