@@ -22,8 +22,7 @@ class RVisitor : public IRVisitor {
   }
 
   void visit( const GameStateOverworld& s ) noexcept override {
-    // TODO do NOT hardcode fist character as main
-    CoordPair center_coords = context_.get().getPlayers()[0]->getCharacters()[0]->getCoords();
+    CoordPair center_coords = context_.get().getCurrentCharacter().getCoords();
     MapRenderer{ window_, s.viewMap(), center_coords }.render();
   }
 

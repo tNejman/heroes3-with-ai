@@ -18,7 +18,7 @@
 
 class Move;
 
-enum PlayerColor : uint8_t { RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK };
+enum PlayerColor : uint8_t { RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK, COUNT };
 
 // inheritance from Printable is postponed for now
 class Player {
@@ -27,12 +27,12 @@ class Player {
   std::vector<std::weak_ptr<Castle>> owned_castles_;
   std::array<std::unique_ptr<Resource>, static_cast<size_t>( ResourceType::COUNT )> resources_;
 
+  PlayerColor color_;
+
  public:
   Player( std::vector<std::shared_ptr<Character>> characters ) : characters_on_map_( characters ) {
   }
   ~Player() = default;
-
-  PlayerColor color_;
 
   std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
   const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;
@@ -48,4 +48,6 @@ class Player {
   Resource getResource( ResourceType resource );
   Resource setResource( ResourceType resource, int amount );
   std::shared_ptr<Move> makeMove( std::vector<Move> possible_states );
+
+  [[nodiscard]] PlayerColor getColor() const noexcept;
 };

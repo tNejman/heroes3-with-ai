@@ -27,12 +27,13 @@ class Game {
 
   int frames_since_start_ = 0;
 
+  StateTransition handleStateIndependentCommand( const StateIndependentCommand& ) noexcept;
   void handleStateTransition( const StateTransition& ) noexcept;
 
   void removeCharactersWithNoUnits();
 
   void placeCharactersOnWorldMap();
-  void startBattle( const RequestBattle& request, Terrain background );
+  void startBattle( const RequestBattle& request );
 
  public:
   Game( std::vector<std::shared_ptr<Player>> players );
@@ -41,8 +42,6 @@ class Game {
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept;
   void applyCommand( const UserCommand& command );
   [[nodiscard]] bool isLegalCommand( const UserCommand& command ) const noexcept;
-
-  [[nodiscard]] std::shared_ptr<Character> getMainCharacter() const;
 
   [[nodiscard]] int getFrameCountSinceStart() const noexcept;
 

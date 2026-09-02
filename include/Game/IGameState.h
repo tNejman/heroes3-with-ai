@@ -10,6 +10,7 @@
 #include "Graphics/Visitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/Overload.hpp"
+#include "Miscellaneous/ProjectLib.h"
 
 using NoTransition = std::monostate;
 struct PopState {};
@@ -17,6 +18,7 @@ struct RequestBattle {
   int attacker_id_;
   int defender_id_;
   CoordPair at_;
+  Terrain terrain_;
 };
 
 using StateTransition = std::variant<NoTransition, PopState, RequestBattle>;

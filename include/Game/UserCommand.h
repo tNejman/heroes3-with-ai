@@ -33,11 +33,19 @@ using TownCommand = std::variant<std::monostate>;
 // using BattleCommand = std::variant<MoveStack, AttackStack, Wait, Defend>;
 
 struct BattleCommand {
+  enum class Action : char { MOVE, ATTACK, WAIT, DEFEND } action;
+
   CoordPair destination;
 };
+
+/* === GAME === */
+
+struct SwitchCharacter {};
+
+using StateIndependentCommand = std::variant<SwitchCharacter>;
 
 /* === GENERAL WRAPPER === */
 
 using None = std::monostate;
 
-using UserCommand = std::variant<WorldMapCommand, TownCommand, BattleCommand, None>;
+using UserCommand = std::variant<WorldMapCommand, TownCommand, BattleCommand, StateIndependentCommand, None>;

@@ -1,10 +1,18 @@
 
 #include "IO/MouseHandler.h"
 
+#include <algorithm>
 #include <cmath>
+#include <memory>
 #include <optional>
-#include <utility>
 
+#include "Battle/Battle.h"
+#include "Battle/Moves/AttackMove.h"
+#include "Battle/Moves/Move.hpp"
+#include "Battle/Moves/MoveMove.h"
+#include "Battle/Moves/WaitMove.h"
+#include "Exceptions/Err.hpp"
+#include "Game/GameStateBattle.h"
 #include "Game/UserCommand.h"
 #include "Graphics/IRVisitor.h"
 #include "Miscellaneous/Coords.h"
@@ -63,9 +71,29 @@ UserCommand MouseHandler::getCommand() noexcept {
 void MouseHandler::visit( const GameStateOverworld& ) noexcept {
 }
 
-void MouseHandler::visit( const GameStateBattle& ) noexcept {
+void MouseHandler::visit( const GameStateBattle& gbs ) noexcept {
   auto maybe_coords = getHexagonCoordsFromClick( mouse_coords_.x, mouse_coords_.y );
-  if ( maybe_coords.has_value() ) {
-    command_ = BattleCommand{ *maybe_coords };
+  if ( !maybe_coords.has_value() ) {
+    return;
   }
+  const auto possible_moves = gbs.viewBattle().getPossibleMoves();
+  auto it = std::ranges::find_if(
+      possible_moves, [&]( const std::shared_ptr<Move>& move ) { return move->destinationCoords() == *maybe_coords; } );
+  if ( it == possible_moves.end() ) {
+    return;
+  }
+  BattleCommand::Action action = [&]() -> BattleCommand::Action {  // TODO rewrite without dyn cas
+    if ( dynamic_cast<MoveMove*>( ( *it ).get() ) != nullptr ) {
+      return BattleCommand::Action::MOVE;
+    }
+    if ( dynamic_cast<AttackMove*>( ( *it ).get() ) != nullptr ) {
+      return BattleCommand::Action::ATTACK;
+    }
+    if ( dynamic_cast<WaitMove*>( ( *it ).get() ) != nullptr ) {
+      return BattleCommand::Action::WAIT;
+    }
+    err::abort( "unknown move type" );
+  }();
+
+  command_ = BattleCommand{ .action = action, .destination = *maybe_coords };
 }

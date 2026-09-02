@@ -4,104 +4,71 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <algorithm>
+#include <iostream>
 
-#include "Artifact/Artifact.h"
-#include "Character/Character.h"
 #include "Exceptions/Err.hpp"
-#include "Exceptions/NotOpenWindowException.hpp"
 #include "Graphics/Renderers/IRenderer.hpp"
 #include "Graphics/SpriteFactory.h"
+#include "Graphics/SpriteVisitor.h"
 #include "Miscellaneous/Coords.h"
 #include "Miscellaneous/ProjectLib.h"
-#include "WorldMap/OverworldObstacle.h"
 #include "WorldMap/WorldMap.h"
 
-void MapRenderer::renderGrid() {
+void MapRenderer::renderGridWithFun( void ( MapRenderer::*fun )( int, int ) const ) const noexcept {
+  static constexpr int MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY = 13;
+  static constexpr int MAX_TILES_VISIBLE_FROM_CENTER_VERTICALLY = 11;
+
   int center_x = center_coords_.x_;
   int center_y = center_coords_.y_;
 
-  for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
-    for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      const auto terrain = object_.get().getTerrain( { x, y } );
+  int max_left_visible_tile_x = std::max( 0, center_x - MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY );
+  int max_right_visible_tile_x = std::min( WORLD_MAP_WIDTH, center_x + MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY );
 
-      double screen_x =
-          ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
-      double screen_y =
-          ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
+  int max_bottom_visible_tile_y = std::max( 0, center_y - MAX_TILES_VISIBLE_FROM_CENTER_VERTICALLY );
+  int max_top_visible_tile_y = std::min( WORLD_MAP_HEIGHT, center_y + MAX_TILES_VISIBLE_FROM_CENTER_VERTICALLY );
 
-      sf::Sprite sprite = SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::WORLD>{ terrain } );
-      sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
-      if ( window_.get().isOpen() ) {
-        window_.get().draw( sprite );
-      } else {
-        err::raise<NotOpenWindowException>( "Tried to render with no window open" );
-      }
+  for ( int x = max_left_visible_tile_x; x < max_right_visible_tile_x; ++x ) {
+    for ( int y = max_bottom_visible_tile_y; y < max_top_visible_tile_y; ++y ) {
+      ( *this.*fun )( x, y );
     }
   }
 }
 
-void MapRenderer::renderObjects() {
-  // This method iterates through the grid again to terrain overlapping sprites
-  int center_x = center_coords_.x_;
-  int center_y = center_coords_.y_;
+void MapRenderer::renderBackgroundTile( int x, int y ) const noexcept {
+  const auto terrain = object_.get().getTerrain( { x, y } );
 
-  for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
-    for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      const auto* const map_obj = object_.get().getMapObject( { x, y } );
-      if ( map_obj == nullptr ) {
-        continue;
-      }
-      if ( dynamic_cast<const Character*>( map_obj ) != nullptr ) {
-        double screen_x =
-            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2.0 );
-        double screen_y =
-            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2.0 );
+  double screen_x =
+      ( ( x - center_coords_.x_ ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
+  double screen_y =
+      ( ( center_coords_.y_ - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
-        map_obj->accept( *sprite_visitor );
-        sf::Sprite sprite_map_obj( sprite_visitor->extractSprite() );
-        sprite_map_obj.setTextureRect(
-            sf::IntRect( { 0, 0 }, { HERO_SPRITE_WIDTH_DEPRECATED, HERO_SPRITE_HEIGHT_DEPRECATED } ) );
-        sprite_map_obj.setOrigin( sf::Vector2f( static_cast<float>( HERO_SPRITE_WIDTH_DEPRECATED ) / 2.F,
-                                                static_cast<float>( HERO_SPRITE_HEIGHT_DEPRECATED ) ) );
-        sprite_map_obj.setPosition(
-            sf::Vector2f( static_cast<float>( screen_x ) + ( static_cast<float>( TERRAIN_SPRITE_WIDTH ) / 2.F ),
-                          static_cast<float>( screen_y ) + static_cast<float>( TERRAIN_SPRITE_HEIGHT ) ) );
-        if ( window_.get().isOpen() ) {
-          window_.get().draw( sprite_map_obj );
-        } else {
-          err::raise<NotOpenWindowException>( "Tried to render with no window open" );
-        }
-      } else if ( const auto* obstacle_ptr = dynamic_cast<const OverworldObstacle*>( map_obj ) ) {
-        double screen_x =
-            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
-        double screen_y =
-            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
+  sf::Sprite sprite = SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::WORLD>{ terrain } );
+  sprite.setPosition( sf::Vector2f{ static_cast<float>( screen_x ), static_cast<float>( screen_y ) } );
 
-        obstacle_ptr->accept( *sprite_visitor );
-        sf::Sprite sprite( sprite_visitor->extractSprite() );
-        sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
-        if ( window_.get().isOpen() ) {
-          window_.get().draw( sprite );
-        } else {
-          err::raise<NotOpenWindowException>( "Tried to render with no window open" );
-        }
-      } else if ( const auto* artifact_ptr = dynamic_cast<const Artifact*>( map_obj ) ) {
-        double screen_x =
-            ( ( x - center_x ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
-        double screen_y =
-            ( ( center_y - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
+  err::passCondOrAbort( window_.get().isOpen(), "Tried to render with no window open" );
 
-        artifact_ptr->accept( *sprite_visitor );
-        sf::Sprite sprite( sprite_visitor->extractSprite() );
-        sprite.setPosition( sf::Vector2f( float( screen_x ), float( screen_y ) ) );
-        if ( window_.get().isOpen() ) {
-          window_.get().draw( sprite );
-        } else {
-          err::raise<NotOpenWindowException>( "Tried to render with no window open" );
-        }
-      }
-    }
+  window_.get().draw( sprite );
+}
+
+void MapRenderer::renderObject( int x, int y ) const noexcept {
+  const auto* const map_obj = object_.get().getMapObject( { x, y } );
+  if ( map_obj == nullptr ) {
+    return;
   }
+  map_obj->accept( *sprite_visitor );
+  sf::Sprite sprite_map_obj = sprite_visitor->extractSprite();
+
+  double screen_x =
+      ( ( x - center_coords_.x_ ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2.0 );
+  double screen_y = ( ( center_coords_.y_ - y ) * TERRAIN_SPRITE_HEIGHT )
+                    + ( static_cast<double>( window_.get().getSize().y ) / 2.0 );
+  sprite_map_obj.setOrigin( sf::Vector2f{ static_cast<float>( sprite_map_obj.getTextureRect().size.x ) / 2.F,
+                                          static_cast<float>( sprite_map_obj.getTextureRect().size.y ) } );
+  sprite_map_obj.setPosition(
+      sf::Vector2f{ static_cast<float>( screen_x ) + ( static_cast<float>( TERRAIN_SPRITE_WIDTH ) / 2.F ),
+                    static_cast<float>( screen_y ) + static_cast<float>( TERRAIN_SPRITE_HEIGHT ) } );
+  window_.get().draw( sprite_map_obj );
 }
 
 /* === @PUBLIC === */
@@ -110,6 +77,6 @@ MapRenderer::MapRenderer( sf::RenderWindow& window, const WorldMap& object, Coor
 }
 
 void MapRenderer::render() {
-  renderGrid();
-  renderObjects();
+  renderGridWithFun( &MapRenderer::renderBackgroundTile );
+  renderGridWithFun( &MapRenderer::renderObject );
 }

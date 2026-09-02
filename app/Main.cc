@@ -2,6 +2,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
@@ -45,6 +46,13 @@ int main() {
               CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .buildSharedPtr() );
+  characters.push_back( CharacterBuilder{}
+                            .setName( "john" )
+                            .setCoords( { 5, 5 } )
+                            .setStats( CharacterStats{ CharacterStats::PrimarySkills{
+                                                           .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
+                                                       CharacterStats::Misc{ .morale_ = 1, .luck_ = 1 } } )
+                            .buildSharedPtr() );
 
   characters[0]->army().recruitUnitStack( unit_stack_1 );
   characters[0]->army().recruitUnitStack( unit_stack_3 );
@@ -54,7 +62,7 @@ int main() {
   characters_2.push_back(
       CharacterBuilder{}
           .setName( "black_hero_white_horse_down_right" )
-          .setCoords( { 0, 0 } )
+          .setCoords( { 2, 2 } )
           .setStats( CharacterStats{
               CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
@@ -62,7 +70,7 @@ int main() {
   characters_2.push_back(
       CharacterBuilder{}
           .setName( "black_hero_white_horse_down_right" )
-          .setCoords( { 0, 0 } )
+          .setCoords( { 12, 12 } )
           .setStats( CharacterStats{
               CharacterStats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
               CharacterStats::Misc{ .morale_ = 5, .luck_ = -2 } } )
@@ -71,12 +79,10 @@ int main() {
   characters_2[0]->setIfUser( false );
   characters_2[0]->army().recruitUnitStack( unit_stack_2 );
   characters_2[0]->army().recruitUnitStack( unit_stack_5 );
-  characters_2[0]->setCoords( CoordPair( 2u, 2u ) );
 
   characters_2[1]->setIfUser( false );
   characters_2[1]->army().recruitUnitStack( unit_stack_6 );
   characters_2[1]->army().recruitUnitStack( unit_stack_7 );
-  characters_2[1]->setCoords( CoordPair( 12u, 12u ) );
 
   std::vector<std::shared_ptr<Player>> players;
   players.push_back( std::make_shared<Player>( std::move( characters ) ) );
@@ -110,7 +116,10 @@ int main() {
         window->close();
         return 0;
       }
-      command = InputHandler::processInput( *event, game );  // only the last command of a game iteration is recorded
+      if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Q ) ) {
+        command = SwitchCharacter{};
+      } else
+        command = InputHandler::processInput( *event, game );  // only the last command of a game iteration is recorded
     }
     game.applyCommand( command );
     GameRenderer{ *window, game }.render();

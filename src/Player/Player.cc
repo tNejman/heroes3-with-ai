@@ -5,7 +5,10 @@
 
 #include "Character/Character.h"
 
-
 std::vector<std::shared_ptr<Character>>& Player::getCharacters() noexcept {
   return this->characters_on_map_;
+}
+
+[[nodiscard]] PlayerColor Player::getColor() const noexcept {
+  return color_;
 }

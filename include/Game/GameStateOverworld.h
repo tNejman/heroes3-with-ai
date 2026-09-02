@@ -34,5 +34,5 @@ class GameStateOverworld : public IGameState {
 
   [[nodiscard]] const WorldMap& viewMap() const noexcept;
 
-  void loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& ); // TODO remove
+  void loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>>& );  // TODO remove
 };

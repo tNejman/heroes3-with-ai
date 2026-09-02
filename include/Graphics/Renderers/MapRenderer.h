@@ -1,19 +1,24 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <memory>
+#include <algorithm>
+#include <type_traits>
 
 #include "Graphics/Renderers/IRenderer.hpp"
-#include "Graphics/SpriteVisitor.h"
 #include "Miscellaneous/Coords.h"
+#include "Miscellaneous/ProjectLib.h"
 #include "WorldMap/WorldMap.h"
 
 class MapRenderer : public IRenderer<WorldMap> {
  private:
   CoordPair center_coords_;
 
-  void renderGrid();
-  void renderObjects();
+  void renderGridWithFun( void ( MapRenderer::*fun )( int, int ) const ) const noexcept;
+
+  void renderBackgroundTile( int x, int y ) const noexcept;
+  void renderObject( int x, int y ) const noexcept;
+
+  // void renderObjects();
 
  public:
   //     IRenderer(const SpriteVisitor& sprite_visitor, const T& object) :

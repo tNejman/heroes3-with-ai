@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <format>
+#include <iostream>
 #include <memory>
 #include <utility>
 #include <variant>
@@ -20,22 +21,29 @@
 #include "Game/UserCommand.h"
 #include "Graphics/IRVisitor.h"
 #include "Miscellaneous/Overload.hpp"
-#include "Miscellaneous/ProjectLib.h"
 #include "Player/Player.h"
 #include "Unit/Faction.hpp"
 #include "WorldMap/WorldMap.h"
 
+StateTransition Game::handleStateIndependentCommand( const StateIndependentCommand& command ) noexcept {
+  return std::visit( Overload{ [&]( const SwitchCharacter& ) -> StateTransition {
+                       context_.nextCharacter();
+                       std::cout << "switching hero. Now controlling: " << context_.getCurrentCharacter().getName()
+                                 << ", at x=" << context_.getCurrentCharacter().getCoords().x_
+                                 << " y=" << context_.getCurrentCharacter().getCoords().y_ << std::endl;
+                       return NoTransition{};
+                     } },
+                     command );
+}
 
 void Game::handleStateTransition( const StateTransition& transition ) noexcept {
   std::visit( Overload{
                   []( const NoTransition& ) {},
-                  [&]( const PopState& ) { state_stack_.pop(); },
-                  [&]( const RequestBattle& rb ) {
-                    auto terrain = dynamic_cast<GameStateOverworld&>( state_stack_.top() )
-                                       .viewMap()
-                                       .getTerrain( rb.at_ );  // TODO rewrite ASAP (dynamic cast bad)
-                    startBattle( rb, terrain );
+                  [&]( const PopState& ) {
+                    state_stack_.pop();
+                    removeCharactersWithNoUnits();
                   },
+                  [&]( const RequestBattle& rb ) { startBattle( rb ); },
               },
               transition );
 }
@@ -69,7 +77,7 @@ void Game::placeCharactersOnWorldMap() {
   }
 }
 
-void Game::startBattle( const RequestBattle& request, Terrain background ) {
+void Game::startBattle( const RequestBattle& request ) {
   auto attacker = context_.findCharacterById( request.attacker_id_ );
   auto defender = context_.findCharacterById( request.defender_id_ );
   if ( attacker == nullptr ) {
@@ -78,13 +86,14 @@ void Game::startBattle( const RequestBattle& request, Terrain background ) {
   if ( defender == nullptr ) {
     err::raise<UnknownStateException>( std::format( "defender not found; id={}", request.defender_id_ ) );
   }
-  state_stack_.push( std::make_unique<GameStateBattle>( attacker, defender, background ) );
+  state_stack_.push( std::make_unique<GameStateBattle>( attacker, defender, request.terrain_ ) );
 }
 
 /* === @PUBLIC === */
 
 Game::Game( std::vector<std::shared_ptr<Player>> players )
     : context_( std::move( players ) ), minimax_( std::make_shared<MinimaxAI>() ) {
+  err::passCondOrAbort( context_.getPlayers().size() >= 2, "at least 2 players needed to play" );
   state_stack_.push( GameStateOverworld::createUniqueptr() );
   this->placeCharactersOnWorldMap();
 }
@@ -95,19 +104,21 @@ Game::Game( std::vector<std::shared_ptr<Player>> players )
   return state_stack_.top().legalCommands();
 }
 void Game::applyCommand( const UserCommand& command ) {
-  StateTransition transition = state_stack_.top().applyCommand( command, context_ );
-  handleStateTransition( transition );
   ++frames_since_start_;
+
+  StateTransition transition = [&]() -> StateTransition {
+    if ( const auto* state_indep_command = std::get_if<StateIndependentCommand>( &command ) ) {
+      return handleStateIndependentCommand( *state_indep_command );
+    }
+    return state_stack_.top().applyCommand( command, context_ );
+  }();
+  handleStateTransition( transition );
 }
 [[nodiscard]] bool Game::isLegalCommand( const UserCommand& command ) const noexcept {
   return state_stack_.top().isLegalCommand( command );
 }
 
 /* === END COMMMAND === */
-
-std::shared_ptr<Character> Game::getMainCharacter() const {
-  return context_.getPlayers()[0]->getCharacters()[0];
-}
 
 [[nodiscard]] int Game::getFrameCountSinceStart() const noexcept {
   return frames_since_start_;

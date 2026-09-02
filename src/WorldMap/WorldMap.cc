@@ -104,5 +104,6 @@ StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coo
 
   return RequestBattle{ .attacker_id_ = map_obj_src->asCharacter()->getId(),
                         .defender_id_ = map_obj_dest->asCharacter()->getId(),
-                        .at_ = new_coords };
+                        .at_ = new_coords,
+                        .terrain_ = background_[new_coords.xAsId()][new_coords.yAsId()] };
 }

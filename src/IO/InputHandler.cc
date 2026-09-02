@@ -36,7 +36,7 @@ CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
   if ( move_direction == CharacterMoveDirection::NONE ) {
     return None{};
   }
-  CoordPair source = game.getMainCharacter()->getCoords();
+  CoordPair source = game.getContext().getCurrentCharacter().getCoords();
   CoordPair destination = calculateNewCharacterPosition( source, move_direction );
   return MoveCharacter{ .source_ = source, .destination_ = destination };
 }
