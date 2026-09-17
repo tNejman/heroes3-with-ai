@@ -3,8 +3,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <memory>
 
-#include "Game/KeyHandler.h"
-#include "Miscellaneous/ProjectLib.h"
+#include "core/Game/KeyHandler.h"
+#include "core/Misc/ProjectLib.h"
 
 TEST( KeyHandlerTest, mockInput ) {
   auto key_handler = std::make_shared<KeyHandler>( true, true );

@@ -14,9 +14,9 @@
 #include <string>
 #include <thread>
 
-#include "Artifact/ArtifactLib.h"
-#include "Graphics/SpriteFactory.h"
-#include "Miscellaneous/CycleEnumVal.hpp"
+#include "core/Artifact/ArtifactLib.h"
+#include "engine/Graphics/SpriteFactory.h"
+#include "aux/CycleEnumVal.hpp"
 
 // int main( int, char* argv[] ) {
 int main() {

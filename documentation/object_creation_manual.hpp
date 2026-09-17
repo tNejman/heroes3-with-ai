@@ -6,7 +6,7 @@ DO NOT BUILD THIS FILE
 
 // Manual on how to create objects in Heroes3App
 
-#include <Miscellaneous/ProjectLib.h>
+#include <Misc/ProjectLib.h>
 #include <Units/UnitStack.h>
 
 #include <Units/Faction.hpp>

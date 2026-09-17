@@ -6,13 +6,13 @@
 #include <string>
 #include <vector>
 
-#include "Exceptions/CoordinateOutOfBoundsException.hpp"
-#include "Exceptions/InvalidMapMoveException.hpp"
-#include "Miscellaneous/BuildVector.hpp"
-#include "Miscellaneous/Coords.h"
-#include "Miscellaneous/ProjectLib.h"
-#include "WorldMap/OverworldObstacle.h"
-#include "WorldMap/WorldMap.h"
+#include "aux/BuildVector.hpp"
+#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "core/Exceptions/InvalidMapMoveException.hpp"
+#include "core/Misc/Coords.h"
+#include "core/Misc/ProjectLib.h"
+#include "core/WorldMap/OverworldObstacle.h"
+#include "core/WorldMap/WorldMap.h"
 
 // TEST( WorldMapTests, constructorWithGrid ) {
 //   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};

@@ -59,22 +59,25 @@ if(NOT rc EQUAL 0)
     message(FATAL_ERROR "sprite fetch failed")
 endif()
 
-set(MODULES
+set(CORE_MODULES
     # Algorithms
     Artifact 
     Battle 
     Character
     Game 
-    Graphics
-    IO
-    LoadAndSaveTools
     Magic 
     MapObject
-    Miscellaneous 
+    Misc 
     Player 
     Resource 
     Unit 
     WorldMap
+)
+
+set(ENGINE_MODULES
+    Graphics
+    Input
+    LoadAndSaveTools
 )
 
 function(apply_compiler_flags target)
@@ -105,10 +108,22 @@ function(apply_compiler_flags target)
     )
 endfunction()
 
-foreach(module ${MODULES})
-    add_subdirectory(src/${module})
+foreach(module ${ENGINE_MODULES})
+    add_subdirectory(engine/src/engine/${module})
+    target_include_directories(${module} PRIVATE
+        ${CMAKE_SOURCE_DIR}/engine/include/
+        ${CMAKE_SOURCE_DIR}/aux/include/
+        ${CMAKE_SOURCE_DIR}/core/include # @TODO!!! REMOVE
+    )
+    apply_compiler_flags(${module})
+endforeach()
+
+foreach(module ${CORE_MODULES})
+    add_subdirectory(core/src/core/${module})
     target_include_directories(${module} PRIVATE 
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/core/include/
+        ${CMAKE_SOURCE_DIR}/engine/include/
+        ${CMAKE_SOURCE_DIR}/aux/include/
     )
     apply_compiler_flags(${module})
 endforeach() 

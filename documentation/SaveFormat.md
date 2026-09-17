@@ -21,8 +21,8 @@ Makers: <MarkerName[*args]: Type> : <Explenation>
     x,y                      : Coordinates. [int]x2
     alive: Bool              : Character life status.
     atk, def, pow, knwl      : Primary Skills [uint]x5
-    lvl, exp, mm, cm, movpts : Miscellaneous values [uint]x5
-    mor, lck                 : Miscellaneous values [int]x2
+    lvl, exp, mm, cm, movpts : Misc values [uint]x5
+    mor, lck                 : Misc values [int]x2
     SS1,E1,SS2,E2,SS3,E3 ... : Secondary Skills, where SS1,2,3... are SecondarySkillTypes [enum]
                                     and empty slots should be marked as -1, expected size is 8.
                                     E1,2,3... are SecondarySkillsLevels [enum], if not SS then also -1

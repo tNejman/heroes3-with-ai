@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "Artifact/Artifact.h"
-#include "Artifact/ArtifactLib.h"
-#include "Miscellaneous/ProjectLib.h"
+#include "core/Artifact/Artifact.h"
+#include "core/Artifact/ArtifactLib.h"
+#include "core/Misc/ProjectLib.h"
 
 TEST( ArtifactTest, createValidArtifact ) {
   auto crown_of_the_supreme_magi = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );

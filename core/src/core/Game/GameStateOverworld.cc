@@ -1,0 +1,86 @@
+
+
+#include "core/Game/GameStateOverworld.h"
+
+#include <cassert>
+#include <exception>
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <variant>
+#include <vector>
+
+#include "aux/Err.hpp"
+#include "aux/_NotImplementedException.hpp"
+#include "core/Game/GameCommand.h"
+#include "core/Game/GameContext.h"
+#include "core/Game/IGameState.h"
+#include "core/Game/UserCommand.h"
+#include "engine/Graphics/IRVisitor.h"
+#include "engine/LoadAndSaveTools/MapLoader.h"
+#include "aux/DiscardReturn.hpp"
+#include "aux/Overload.hpp"
+#include "core/Misc/ProjectLib.h"
+#include "core/WorldMap/OverworldObstacle.h"
+#include "core/WorldMap/WorldMap.h"
+
+[[nodiscard]] GameStateOverworld GameStateOverworld::create() noexcept {
+  return GameStateOverworld{ CtorKey{}, MapLoader{}.load( WORLD_MAP_INPUT_PATH ) };
+}
+
+[[nodiscard]] std::unique_ptr<IGameState> GameStateOverworld::createUniqueptr() noexcept {
+  return std::make_unique<GameStateOverworld>( CtorKey{}, MapLoader{}.load( WORLD_MAP_INPUT_PATH ) );
+}
+
+// NOLINTNEXTLINE(readability-named-parameter)
+GameStateOverworld::GameStateOverworld( CtorKey, WorldMap&& world_map ) noexcept : map_( std::move( world_map ) ) {
+}
+
+[[nodiscard]] std::vector<UserCommand> GameStateOverworld::legalCommands() const noexcept {
+  err::raise<NotImplementedException>();
+}
+
+StateTransition GameStateOverworld::applyCommand( const UserCommand& command, GameContext& ) noexcept {
+  if ( !isCommandForThisState<WorldMapCommand>( command ) ) {
+    return NoTransition{};
+  }
+  return std::visit( Overload{ [&]( const MoveCharacter& mc ) -> StateTransition {
+                                try {
+                                  return map_.moveMapObject( mc.source_, mc.destination_ );
+                                } catch ( const std::exception& e ) {
+                                  std::cout << e.what() << '\n';
+                                  return NoTransition{};
+                                }
+                              },
+                               []( const auto& ) -> StateTransition { return NoTransition{}; } },
+                     std::get<WorldMapCommand>( command ) );
+}
+
+[[nodiscard]] bool GameStateOverworld::isLegalCommand( const UserCommand& ) const noexcept {
+  err::raise<NotImplementedException>();
+}
+
+void GameStateOverworld::applyGameCommand( const GameCommand& command, GameContext& context ) noexcept {
+  if ( !isCommandForThisState<WorldMapGameCommand>( command ) ) {
+    return;
+  }
+  // game command is to apply the state transition not recieve it
+  std::visit( Overload{ [&]( const MoveMapObject& mmo ) {
+                         DISCARD_RETURN()
+                         map_.moveMapObject( mmo.from_, mmo.to_ );
+                       },
+                        [&]( const EraseTile& et ) { map_.resetMapObject( et.desitnation_ ); },
+                        [&]( const PlaceCharacter& pc ) {
+                          auto character = context.findCharacterById( pc.character_id_ );
+                          map_.setMapObject( pc.destination_, std::move( character ) );
+                        } },
+              std::get<WorldMapGameCommand>( command ) );
+}
+
+void GameStateOverworld::accept( IRVisitor& v ) const noexcept {
+  v.visit( *this );
+}
+
+[[nodiscard]] const WorldMap& GameStateOverworld::viewMap() const noexcept {
+  return map_;
+}

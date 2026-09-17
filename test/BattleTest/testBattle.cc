@@ -3,16 +3,16 @@
 #include <memory>
 #include <optional>
 
-#include "Battle/Battle.h"
-#include "Battle/Tile.h"
-#include "Character/Character.h"
-#include "Character/CharacterBuilder.h"
-#include "Character/CharacterStats.h"
-#include "Graphics/Visitor.h"
-#include "Miscellaneous/Coords.h"
-#include "Miscellaneous/ProjectLib.h"
-#include "Unit/Faction.hpp"
-#include "Unit/UnitsLib.h"
+#include "core/Battle/Battle.h"
+#include "core/Battle/Tile.h"
+#include "core/Character/Character.h"
+#include "core/Character/CharacterBuilder.h"
+#include "core/Character/CharacterStats.h"
+#include "engine/Graphics/Visitor.h"
+#include "core/Misc/Coords.h"
+#include "core/Misc/ProjectLib.h"
+#include "core/Unit/Faction.hpp"
+#include "core/Unit/UnitsLib.h"
 
 // Easy factory constructor
 // const std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();

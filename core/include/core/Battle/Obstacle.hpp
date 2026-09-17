@@ -1,0 +1,28 @@
+#pragma once
+// Autor: Tomasz Naszkowski
+/* Zawartość klasy Obstacle:
+  - Klasa Obstacle odpowiada za przeszkody na polu bitwy.
+  - Przeszkody są reprezentowane jako obiekty, które mogą być umieszczane na polu bitwy.
+*/
+
+#include <string>
+#include <utility>
+
+#include "core/Battle/TileObject.hpp"
+#include "engine/Graphics/IPrintable.h"
+
+class Visitor;
+
+class Obstacle : public IPrintable, public TileObject {
+ public:
+  Obstacle( std::string name ) : IPrintable(), TileObject( false ), name_( std::move( name ) ) {};
+  void accept( Visitor& vis ) const override {
+    return vis.visit( *this );
+  }
+  [[nodiscard]] const std::string& getName() const {
+    return name_;
+  }
+
+ private:
+  std::string name_;
+};

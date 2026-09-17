@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <memory>
 
-#include "Battle/BattleField.h"
-#include "Miscellaneous/Coords.h"
-#include "Miscellaneous/ProjectLib.h"
+#include "core/Battle/BattleField.h"
+#include "core/Misc/Coords.h"
+#include "core/Misc/ProjectLib.h"
 
 TEST( LayoutTest, check_up_right_neighbour_even ) {
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );

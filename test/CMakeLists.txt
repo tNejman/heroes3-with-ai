@@ -21,7 +21,9 @@ include(GoogleTest)
 function(f_add_test_executable target_name file_name)
     add_executable(${target_name} ${file_name})
     target_include_directories(${target_name} PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/core/include/
+        ${CMAKE_SOURCE_DIR}/aux/include/
+        ${CMAKE_SOURCE_DIR}/engine/include/
     )
     target_link_libraries(${target_name} PRIVATE
         GTest::gtest_main
@@ -36,7 +38,7 @@ set(TEST_DIRS
     BattleTest
     CharacterTest
     # GameTest
-    MiscellaneousTest
+    MiscTest
     UnitTest
     WorldMapTest
 )

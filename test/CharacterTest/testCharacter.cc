@@ -2,17 +2,17 @@
 
 #include <memory>
 
-#include "Artifact/Artifact.h"
-#include "Artifact/ArtifactLib.h"
-#include "Character/Character.h"
-#include "Character/CharacterBuilder.h"
-#include "Character/CharacterStats.h"
-#include "Exceptions/InvalidArtifactTypeException.hpp"
-#include "Exceptions/NotEmptySlotException.hpp"
-#include "Miscellaneous/Coords.h"
-#include "Unit/Faction.hpp"
-#include "Unit/UnitStack.h"
-#include "Unit/UnitsLib.h"
+#include "core/Artifact/Artifact.h"
+#include "core/Artifact/ArtifactLib.h"
+#include "core/Character/Character.h"
+#include "core/Character/CharacterBuilder.h"
+#include "core/Character/CharacterStats.h"
+#include "core/Exceptions/InvalidArtifactTypeException.hpp"
+#include "core/Exceptions/NotEmptySlotException.hpp"
+#include "core/Misc/Coords.h"
+#include "core/Unit/Faction.hpp"
+#include "core/Unit/UnitStack.h"
+#include "core/Unit/UnitsLib.h"
 
 TEST( CharacterTest, createValidCharacter ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>(

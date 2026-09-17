@@ -12,19 +12,19 @@
 #include <variant>
 #include <vector>
 
-#include "Character/Character.h"
-#include "Character/CharacterBuilder.h"
-#include "Character/CharacterStats.h"
-#include "Game/Game.h"
-#include "Game/UserCommand.h"
-#include "Graphics/Renderers/GameRenderer.h"
-#include "IO/InputHandler.h"
-#include "Miscellaneous/Coords.h"
-#include "Miscellaneous/ProjectLib.h"
-#include "Player/Player.h"
-#include "Unit/Faction.hpp"
-#include "Unit/UnitStack.h"
-#include "Unit/UnitsLib.h"
+#include "core/Character/Character.h"
+#include "core/Character/CharacterBuilder.h"
+#include "core/Character/CharacterStats.h"
+#include "core/Game/Game.h"
+#include "core/Game/UserCommand.h"
+#include "engine/Graphics/Renderers/GameRenderer.h"
+#include "engine/Input/InputHandler.h"
+#include "core/Misc/Coords.h"
+#include "core/Misc/ProjectLib.h"
+#include "core/Player/Player.h"
+#include "core/Unit/Faction.hpp"
+#include "core/Unit/UnitStack.h"
+#include "core/Unit/UnitsLib.h"
 
 int main() {
   UnitStack unit_stack_1{ CastleUnitType::PIKEMAN, 10 };
