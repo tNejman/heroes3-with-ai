@@ -5,23 +5,25 @@
 #include <string>
 #include <utility>
 
+#include "aux/Err.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Character/CharacterArmy.h"
 #include "core/Character/CharacterInventory.h"
 #include "core/Character/CharacterStats.h"
 #include "core/Exceptions/EmptySlotException.hpp"
-#include "aux/Err.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
-Character::Character( int id, std::string name, CoordPair coords, CharacterStats stats )
+/* ==== @PRIVATE ==== */
+
+Character::Character( int id, std::string name, CoordPair coords, CharacterStats stats, bool is_user ) noexcept
     : MapObject( coords ),
       id_( id ),
       name_( std::move( name ) ),
-      is_user_character_( true ),
+      is_user_character_( is_user ),
       stats_( std::move( stats ) ) {};
 
 void Character::accept( Visitor& v ) const {
@@ -174,14 +176,14 @@ void Character::equipSpellBook( SpellBook spell_book ) {
   }
   this->spell_book_ = std::move( spell_book );
 }
-SpellBook Character::unequipSpellBook() {
-  if ( !spell_book_ ) {
-    err::raise<EmptySlotException>();
-  }
-  auto spell_book = std::move( this->spell_book_ );
-  this->spell_book_ = std::nullopt;
-  return std::move( *spell_book );
-}
+// SpellBook Character::unequipSpellBook() {
+//   if ( !spell_book_ ) {
+//     err::raise<EmptySlotException>();
+//   }
+//   auto spell_book = std::move( this->spell_book_ );
+//   this->spell_book_ = std::nullopt;
+//   return std::move( *spell_book );
+// }
 
 // const std::vector<Artifact>& Character::getBackpack() {
 //   return this->backpack_;
@@ -210,8 +212,19 @@ SpellBook Character::unequipSpellBook() {
 //     }
 //   }
 // }
-std::shared_ptr<Character> Character::copy() {
-  return nullptr;  // TODO fix
+[[nodiscard]] std::shared_ptr<Character> Character::copy() const noexcept {
+  auto character_copy =
+      std::make_shared<Character>( this->id_, this->name_, this->coords_, this->stats_.copy(), is_user_character_ );
+  character_copy->orientation_ = this->orientation_;
+  // character_copy->character_type_ = this->character_type_; // TODO
+  character_copy->is_user_character_ = this->is_user_character_;
+  character_copy->inventory_ = this->inventory_.copy();
+  character_copy->army_ = this->army_.copy();
+  character_copy->secondary_skills_ = this->secondary_skills_;
+  character_copy->spell_book_ =
+      this->spell_book_.transform( []( const SpellBook& spellbook ) { return spellbook.copy(); } );
+
+  return character_copy;
 }
 //   std::shared_ptr<Character> copy =
 //       std::make_shared<Character>( this->name_, this->coords_, this->attack_, this->defense_, this->power_,

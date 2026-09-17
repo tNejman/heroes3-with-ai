@@ -35,7 +35,7 @@ class Character : public MapObject {
 
   const int id_;
 
-    const std::string name_;
+  const std::string name_;
   bool is_user_character_;  // TODO change to const
 
   CharacterStats stats_;
@@ -49,8 +49,8 @@ class Character : public MapObject {
   // friend class CharacterSaver;
   Character() = delete;
   Character( const Character& ) = delete;
-  Character( Character&& ) = delete;
-  Character( int id, std::string name, CoordPair coords, CharacterStats stats );
+  Character( Character&& ) = default;
+  Character( int id, std::string name, CoordPair coords, CharacterStats stats, bool is_user ) noexcept;
   ~Character() override = default;
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
@@ -92,7 +92,7 @@ class Character : public MapObject {
   // void unequipWarMachine( const std::string& slot_name );
 
   void equipSpellBook( SpellBook spell_book );
-  SpellBook unequipSpellBook();
+  // [[nodiscard]] SpellBook unequipSpellBook();
 
   // const std::vector<Artifact>& getBackpack();
   // std::array<std::shared_ptr<UnitStack>, MAX_PARTY_SIZE>& getParty();
@@ -104,5 +104,5 @@ class Character : public MapObject {
   //  void learnSpell( const std::unique_ptr<Spell>& spell );
   //  void forgetSpell( const std::unique_ptr<Spell>& spell );
   //  void castSpell( const std::unique_ptr<Spell>& spell );
-  std::shared_ptr<Character> copy();
+  [[nodiscard]] std::shared_ptr<Character> copy() const noexcept;
 };

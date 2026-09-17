@@ -40,3 +40,11 @@ UnitStack& CharacterArmy::recruitUnitStack( const UnitStack& stack ) {
   *ptr = stack;
   return ptr->value();
 }
+
+[[nodiscard]] CharacterArmy CharacterArmy::copy() const noexcept {
+  CharacterArmy army_copy{};
+  army_copy.party_ = this->party_;
+  army_copy.war_machines_ = this->war_machines_;
+
+  return army_copy;
+}

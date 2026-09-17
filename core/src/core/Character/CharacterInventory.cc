@@ -5,10 +5,10 @@
 #include <numeric>
 #include <optional>
 
+#include "aux/Err.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
 #include "core/Exceptions/EmptySlotException.hpp"
-#include "aux/Err.hpp"
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
 
@@ -50,4 +50,29 @@ void CharacterInventory::unequipArtifact( EquipmentSlots slot ) {
   Artifact extracted = *equipment_[slot_id];
   equipment_[slot_id] = std::nullopt;
   backpack_.push_back( extracted );
+}
+
+[[nodiscard]] int CharacterInventory::getTotalAttackBonus() const noexcept {
+  return getStatBonus<&ArtifactData::attack_>();
+}
+[[nodiscard]] int CharacterInventory::getTotalDefenseBonus() const noexcept {
+  return getStatBonus<&ArtifactData::defense_>();
+}
+[[nodiscard]] int CharacterInventory::getTotalPowerBonus() const noexcept {
+  return getStatBonus<&ArtifactData::power_>();
+}
+[[nodiscard]] int CharacterInventory::getTotalKnowledgeBonus() const noexcept {
+  return getStatBonus<&ArtifactData::knowledge_>();
+}
+[[nodiscard]] int CharacterInventory::getTotalSpeedBonus() const noexcept {
+  return getStatBonus<&ArtifactData::speed_>();
+}
+
+
+[[nodiscard]] CharacterInventory CharacterInventory::copy() const noexcept {
+  CharacterInventory inventory_copy{};
+  inventory_copy.equipment_ = this->equipment_;
+  inventory_copy.backpack_ = this->backpack_;
+  
+  return inventory_copy;
 }

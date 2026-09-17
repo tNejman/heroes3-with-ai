@@ -67,6 +67,8 @@ class CharacterStats {
   [[nodiscard]] const Misc& getMisc() const noexcept;
   [[nodiscard]] const Movement& getMovement() const noexcept;
 
+  [[nodiscard]]CharacterStats copy() const noexcept;
+
   //   [[nodiscard]] uint32_t getAttack() const;
   //   void setAttack( const uint32_t new_attack );
   //   void modifyAttack( const uint32_t attack_diff );

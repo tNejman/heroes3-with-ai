@@ -20,23 +20,6 @@ class CharacterInventory {
   Equipment equipment_;
   Backpack backpack_;
 
- public:
-  CharacterInventory() = default;
-  CharacterInventory( const CharacterInventory& ) = delete;
-  CharacterInventory( CharacterInventory&& ) = delete;
-  ~CharacterInventory() = default;
-  CharacterInventory& operator=( const CharacterInventory& ) = delete;
-  CharacterInventory& operator=( CharacterInventory&& ) = delete;
-
-  [[nodiscard]] bool isSlotEmpty( EquipmentSlots slot ) const noexcept;
-  [[nodiscard]] const std::optional<Artifact>& getSlot( EquipmentSlots slot ) const noexcept;
-  [[nodiscard]] const Equipment& getEquipment() const noexcept;
-  [[nodiscard]] const Backpack& getBackpack() const noexcept;
-
-  void pickUpArtifact( Artifact artifact ) noexcept;
-  void equipArtifact( ArtifactType artifact, EquipmentSlots slot );
-  void unequipArtifact( EquipmentSlots slot );
-
   template <auto Member>
   requires std::is_member_object_pointer_v<decltype( Member )> && requires( ArtifactData a ) { a.*Member; }
   [[nodiscard]] int getStatBonus() const noexcept {
@@ -50,19 +33,28 @@ class CharacterInventory {
     return stat_bonus;
   }
 
-  [[nodiscard]] int getTotalAttackBonus() const noexcept {
-    return getStatBonus<&ArtifactData::attack_>();
-  }
-  [[nodiscard]] int getTotalDefenseBonus() const noexcept {
-    return getStatBonus<&ArtifactData::defense_>();
-  }
-  [[nodiscard]] int getTotalPowerBonus() const noexcept {
-    return getStatBonus<&ArtifactData::power_>();
-  }
-  [[nodiscard]] int getTotalKnowledgeBonus() const noexcept {
-    return getStatBonus<&ArtifactData::knowledge_>();
-  }
-  [[nodiscard]] int getTotalSpeedBonus() const noexcept {
-    return getStatBonus<&ArtifactData::speed_>();
-  }
+ public:
+  CharacterInventory() = default;
+  CharacterInventory( const CharacterInventory& ) = delete;
+  CharacterInventory( CharacterInventory&& ) = default;
+  ~CharacterInventory() = default;
+  CharacterInventory& operator=( const CharacterInventory& ) = delete;
+  CharacterInventory& operator=( CharacterInventory&& ) = default;
+
+  [[nodiscard]] bool isSlotEmpty( EquipmentSlots slot ) const noexcept;
+  [[nodiscard]] const std::optional<Artifact>& getSlot( EquipmentSlots slot ) const noexcept;
+  [[nodiscard]] const Equipment& getEquipment() const noexcept;
+  [[nodiscard]] const Backpack& getBackpack() const noexcept;
+
+  void pickUpArtifact( Artifact artifact ) noexcept;
+  void equipArtifact( ArtifactType artifact, EquipmentSlots slot );
+  void unequipArtifact( EquipmentSlots slot );
+
+  [[nodiscard]] int getTotalAttackBonus() const noexcept;
+  [[nodiscard]] int getTotalDefenseBonus() const noexcept;
+  [[nodiscard]] int getTotalPowerBonus() const noexcept;
+  [[nodiscard]] int getTotalKnowledgeBonus() const noexcept;
+  [[nodiscard]] int getTotalSpeedBonus() const noexcept;
+
+  [[nodiscard]] CharacterInventory copy() const noexcept;
 };

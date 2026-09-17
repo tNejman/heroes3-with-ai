@@ -1,18 +1,13 @@
 #include "core/Magic/SpellBook.h"
 
-#include <memory>
-#include <utility>
-
 #include "core/Magic/Spell.h"
 
-void SpellBook::learnSpell( std::unique_ptr<Spell> spell ) {
-  spells_.push_back( std::move( spell ) );
+void SpellBook::learnSpell( Spell spell ) {
+  spells_.push_back( spell );
 }
 
-std::unique_ptr<SpellBook> SpellBook::copy() const {
-  std::unique_ptr<SpellBook> copy = std::make_unique<SpellBook>();
-  for ( const auto& spell : spells_ ) {
-    copy->spells_.push_back( spell->copy() );
-  }
+SpellBook SpellBook::copy() const {
+  SpellBook copy{};
+  copy.spells_ = this->spells_;
   return copy;
 }

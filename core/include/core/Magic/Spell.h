@@ -39,5 +39,4 @@ class Spell : public Equippable {
   [[nodiscard]] MagicSchool getSchool() const;
   [[nodiscard]] uint32_t getLevel() const;
   [[nodiscard]] uint32_t getManaCost() const;
-  [[nodiscard]] std::unique_ptr<Spell> copy() const;
 };

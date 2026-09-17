@@ -36,10 +36,10 @@ class CharacterArmy {
  public:
   CharacterArmy() = default;
   CharacterArmy( const CharacterArmy& ) = delete;
-  CharacterArmy( CharacterArmy&& ) = delete;
+  CharacterArmy( CharacterArmy&& ) = default;
   ~CharacterArmy() = default;
   CharacterArmy& operator=( const CharacterArmy& ) = delete;
-  CharacterArmy& operator=( CharacterArmy&& ) = delete;
+  CharacterArmy& operator=( CharacterArmy&& ) = default;
 
   [[nodiscard]] int getCurrentPartySize() const noexcept;
   [[nodiscard]] const Party& getParty() const noexcept;
@@ -47,6 +47,8 @@ class CharacterArmy {
   [[nodiscard]] const std::optional<UnitStack>& getPartyMember( PartySlot slot ) const noexcept;
   UnitStack& recruitUnitStack( const UnitStack& stack, PartySlot slot );
   UnitStack& recruitUnitStack( const UnitStack& stack );
+
+  [[nodiscard]] CharacterArmy copy() const noexcept;
 
   /* ideas @TODO
     - recruit and unrecruit war machines

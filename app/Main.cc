@@ -1,3 +1,7 @@
+#include <engine/Graphics/GraphicsLib.h>
+#include <engine/Graphics/Renderers/GameRenderer.h>
+#include <engine/Input/InputHandler.h>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -7,7 +11,6 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
 #include <memory>
-#include <optional>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -17,26 +20,17 @@
 #include "core/Character/CharacterStats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
-#include "engine/Graphics/Renderers/GameRenderer.h"
-#include "engine/Input/InputHandler.h"
 #include "core/Misc/Coords.h"
-#include "core/Misc/ProjectLib.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 
+constexpr inline int FRAMES_PER_SECOND = 30;
+
+constexpr inline std::string WINDOW_NAME = "Heroes3App";
+
 int main() {
-  UnitStack unit_stack_1{ CastleUnitType::PIKEMAN, 10 };
-  UnitStack unit_stack_3{ CastleUnitType::PIKEMAN, 15 };
-  UnitStack unit_stack_4{ CastleUnitType::ANGEL, 10 };
-
-  UnitStack unit_stack_2{ CastleUnitType::SWORDSMAN, 5 };
-  UnitStack unit_stack_5{ CastleUnitType::ARCHER, 10 };
-
-  UnitStack unit_stack_6{ CastleUnitType::MONK, 5 };
-  UnitStack unit_stack_7{ CastleUnitType::PIKEMAN, 5 };
-
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
       CharacterBuilder{}
@@ -54,9 +48,9 @@ int main() {
                                                        CharacterStats::Misc{ .morale_ = 1, .luck_ = 1 } } )
                             .buildSharedPtr() );
 
-  characters[0]->army().recruitUnitStack( unit_stack_1 );
-  characters[0]->army().recruitUnitStack( unit_stack_3 );
-  characters[0]->army().recruitUnitStack( unit_stack_4 );
+  characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 10 } );
+  characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 15 } );
+  characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 10 } );
 
   std::vector<std::shared_ptr<Character>> characters_2;
   characters_2.push_back(
@@ -66,6 +60,7 @@ int main() {
           .setStats( CharacterStats{
               CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setIsUser( false )
           .buildSharedPtr() );
   characters_2.push_back(
       CharacterBuilder{}
@@ -74,21 +69,20 @@ int main() {
           .setStats( CharacterStats{
               CharacterStats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
               CharacterStats::Misc{ .morale_ = 5, .luck_ = -2 } } )
+          .setIsUser( false )
           .buildSharedPtr() );
 
-  characters_2[0]->setIfUser( false );
-  characters_2[0]->army().recruitUnitStack( unit_stack_2 );
-  characters_2[0]->army().recruitUnitStack( unit_stack_5 );
+  characters_2[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 5 } );
+  characters_2[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::ARCHER, 10 } );
 
-  characters_2[1]->setIfUser( false );
-  characters_2[1]->army().recruitUnitStack( unit_stack_6 );
-  characters_2[1]->army().recruitUnitStack( unit_stack_7 );
+  characters_2[1]->army().recruitUnitStack( UnitStack{ CastleUnitType::MONK, 5 } );
+  characters_2[1]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 5 } );
 
   std::vector<std::shared_ptr<Player>> players;
   players.push_back( std::make_shared<Player>( std::move( characters ) ) );
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
-  Game game{ players };
+  Game game{ std::move( players ) };
 
   // std::ofstream out( "CharacterSave2.txt" );
   // CharacterSaver character_saver = CharacterSaver( "CharacterSave2.txt", characters[0] );
@@ -98,14 +92,16 @@ int main() {
   // CharacterSaver character_saver3 = CharacterSaver( "CharacterSave2.txt", characters_2[1] );
   // character_saver3.save();
 
-  std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>(
-      sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close );
-  window->setFramerateLimit( 30 );
-  window->setSize( sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) );
+  // TODO make NOT shared_ptr
+  std::shared_ptr<sf::RenderWindow> window =
+      std::make_shared<sf::RenderWindow>( sf::VideoMode( { graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } ),
+                                          WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close );
+  window->setFramerateLimit( FRAMES_PER_SECOND );
+  window->setSize( sf::Vector2u( graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT ) );
   GameRenderer{ *window, game }.render();
   while ( window->isOpen() ) {
-    if ( window->getSize() != sf::Vector2u( WINDOW_WIDTH, WINDOW_HEIGHT ) ) {
-      window->setSize( { WINDOW_WIDTH, WINDOW_HEIGHT } );
+    if ( window->getSize() != sf::Vector2u( graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT ) ) {
+      window->setSize( { graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } );
     }
     // sf::Time start_time = clock.getElapsedTime();
 
@@ -118,8 +114,9 @@ int main() {
       }
       if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Q ) ) {
         command = SwitchCharacter{};
-      } else
+      } else {
         command = InputHandler::processInput( *event, game );  // only the last command of a game iteration is recorded
+      }
     }
     game.applyCommand( command );
     GameRenderer{ *window, game }.render();

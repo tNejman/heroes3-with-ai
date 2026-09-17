@@ -37,7 +37,3 @@ SpellType Spell::getType() const {
 uint32_t Spell::getLevel() const {
   return this->level_;
 }
-
-std::unique_ptr<Spell> Spell::copy() const {
-  return std::make_unique<Spell>( this->type_ );
-}
