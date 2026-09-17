@@ -26,9 +26,9 @@ jobs:
             libgl1-mesa-dev \
             libegl1-mesa-dev \
             clang \
+            clang-format \
             lld \
             ninja-build \
-            clang-format
 
       - name: Install libstdc++ 15
         run: |
@@ -45,9 +45,9 @@ jobs:
       - name: Run Tests
         run: ctest --test-dir build --output-on-failure
 
-      - name: Check formatting
+      - name: Format with clang-format
         run: |
-          files=$(mktemp)
-          find include -type f \( -name '*.h' -o -name '*.hpp' \) -print0 >  "$files"
-          find src     -type f -name '*.cc'                       -print0 >> "$files"
-          xargs -0 clang-format --dry-run --Werror < "$files"
+          find include -type f \( -name '*.h' -o -name '*.hpp' \) -exec clang-format -i {} +
+          find src -type f -name '*.cc' -exec clang-format -i {} +
+          echo "### Files reformatted" >> "$GITHUB_STEP_SUMMARY"
+          git diff --name-only | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"

@@ -35,7 +35,7 @@ class Character : public MapObject {
 
   const int id_;
 
-  const std::string name_;
+    const std::string name_;
   bool is_user_character_;  // TODO change to const
 
   CharacterStats stats_;
