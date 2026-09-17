@@ -7,10 +7,10 @@
 #include "core/Game/GameContext.h"
 #include "core/Game/GameStateBattle.h"
 #include "core/Game/GameStateOverworld.h"
+#include "core/Misc/Coords.h"
+#include "engine/Graphics/IRVisitor.h"
 #include "engine/Graphics/Renderers/BattleRenderer.h"
 #include "engine/Graphics/Renderers/MapRenderer.h"
-#include "engine/Graphics/IRVisitor.h"
-#include "core/Misc/Coords.h"
 
 class RVisitor : public IRVisitor {
  private:

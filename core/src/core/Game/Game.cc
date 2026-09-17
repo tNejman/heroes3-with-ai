@@ -8,10 +8,11 @@
 #include <variant>
 #include <vector>
 
+#include "aux/Err.hpp"
+#include "aux/Overload.hpp"
 #include "core/Algorithms/MinimaxAI.h"
 #include "core/Battle/Battle.h"
 #include "core/Character/Character.h"
-#include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
 #include "core/Game/GameCommand.h"
 #include "core/Game/GameContext.h"
@@ -19,11 +20,11 @@
 #include "core/Game/GameStateOverworld.h"
 #include "core/Game/IGameState.h"
 #include "core/Game/UserCommand.h"
-#include "engine/Graphics/IRVisitor.h"
-#include "aux/Overload.hpp"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/WorldMap/WorldMap.h"
+#include "engine/Graphics/IRVisitor.h"
+
 
 StateTransition Game::handleStateIndependentCommand( const StateIndependentCommand& command ) noexcept {
   return std::visit( Overload{ [&]( const SwitchCharacter& ) -> StateTransition {
@@ -67,7 +68,7 @@ void Game::removeCharactersWithNoUnits() {
   }
 }
 
-void Game::placeCharactersOnWorldMap() {
+void Game::placeCharactersOnWorldMap() noexcept {
   for ( const auto& player_ptr : context_.getPlayers() ) {
     for ( const auto& character_ptr : player_ptr->getCharacters() ) {
       state_stack_.top().applyGameCommand(
@@ -91,7 +92,7 @@ void Game::startBattle( const RequestBattle& request ) {
 
 /* === @PUBLIC === */
 
-Game::Game( std::vector<std::shared_ptr<Player>> players )
+Game::Game( std::vector<std::shared_ptr<Player>>&& players ) noexcept
     : context_( std::move( players ) ), minimax_( std::make_shared<MinimaxAI>() ) {
   err::passCondOrAbort( context_.getPlayers().size() >= 2, "at least 2 players needed to play" );
   state_stack_.push( GameStateOverworld::createUniqueptr() );

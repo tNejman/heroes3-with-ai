@@ -1,16 +1,17 @@
 #include "engine/Graphics/Renderers/MapRenderer.h"
 
+#include <engine/Graphics/GraphicsLib.h>
+#include <engine/Graphics/SpriteFactory.h>
+#include <engine/Graphics/SpriteVisitor.h>
+
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
-#include <iostream>
+#include <engine/Graphics/Renderers/IRenderer.hpp>
 
 #include "aux/Err.hpp"
-#include "engine/Graphics/Renderers/IRenderer.hpp"
-#include "engine/Graphics/SpriteFactory.h"
-#include "engine/Graphics/SpriteVisitor.h"
 #include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/WorldMap.h"
@@ -38,10 +39,10 @@ void MapRenderer::renderGridWithFun( void ( MapRenderer::*fun )( int, int ) cons
 void MapRenderer::renderBackgroundTile( int x, int y ) const noexcept {
   const auto terrain = object_.get().getTerrain( { x, y } );
 
-  double screen_x =
-      ( ( x - center_coords_.x_ ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2 );
-  double screen_y =
-      ( ( center_coords_.y_ - y ) * TERRAIN_SPRITE_HEIGHT ) + ( static_cast<double>( window_.get().getSize().y ) / 2 );
+  double screen_x = ( ( x - center_coords_.x_ ) * graphics::TERRAIN_SPRITE_WIDTH )
+                    + ( static_cast<double>( window_.get().getSize().x ) / 2 );
+  double screen_y = ( ( center_coords_.y_ - y ) * graphics::TERRAIN_SPRITE_HEIGHT )
+                    + ( static_cast<double>( window_.get().getSize().y ) / 2 );
 
   sf::Sprite sprite = SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::WORLD>{ terrain } );
   sprite.setPosition( sf::Vector2f{ static_cast<float>( screen_x ), static_cast<float>( screen_y ) } );
@@ -59,15 +60,15 @@ void MapRenderer::renderObject( int x, int y ) const noexcept {
   map_obj->accept( *sprite_visitor );
   sf::Sprite sprite_map_obj = sprite_visitor->extractSprite();
 
-  double screen_x =
-      ( ( x - center_coords_.x_ ) * TERRAIN_SPRITE_WIDTH ) + ( static_cast<double>( window_.get().getSize().x ) / 2.0 );
-  double screen_y = ( ( center_coords_.y_ - y ) * TERRAIN_SPRITE_HEIGHT )
+  double screen_x = ( ( x - center_coords_.x_ ) * graphics::TERRAIN_SPRITE_WIDTH )
+                    + ( static_cast<double>( window_.get().getSize().x ) / 2.0 );
+  double screen_y = ( ( center_coords_.y_ - y ) * graphics::TERRAIN_SPRITE_HEIGHT )
                     + ( static_cast<double>( window_.get().getSize().y ) / 2.0 );
   sprite_map_obj.setOrigin( sf::Vector2f{ static_cast<float>( sprite_map_obj.getTextureRect().size.x ) / 2.F,
                                           static_cast<float>( sprite_map_obj.getTextureRect().size.y ) } );
   sprite_map_obj.setPosition(
-      sf::Vector2f{ static_cast<float>( screen_x ) + ( static_cast<float>( TERRAIN_SPRITE_WIDTH ) / 2.F ),
-                    static_cast<float>( screen_y ) + static_cast<float>( TERRAIN_SPRITE_HEIGHT ) } );
+      sf::Vector2f{ static_cast<float>( screen_x ) + ( static_cast<float>( graphics::TERRAIN_SPRITE_WIDTH ) / 2.F ),
+                    static_cast<float>( screen_y ) + static_cast<float>( graphics::TERRAIN_SPRITE_HEIGHT ) } );
   window_.get().draw( sprite_map_obj );
 }
 

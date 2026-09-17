@@ -1,20 +1,22 @@
 
 #include "engine/Input/MouseHandler.h"
 
+#include <engine/Graphics/GraphicsLib.h>
+#include <engine/Graphics/IRVisitor.h>
+
 #include <algorithm>
 #include <cmath>
 #include <memory>
 #include <optional>
 
+#include "aux/Err.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Moves/AttackMove.h"
 #include "core/Battle/Moves/Move.hpp"
 #include "core/Battle/Moves/MoveMove.h"
 #include "core/Battle/Moves/WaitMove.h"
-#include "aux/Err.hpp"
 #include "core/Game/GameStateBattle.h"
 #include "core/Game/UserCommand.h"
-#include "engine/Graphics/IRVisitor.h"
 #include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
@@ -23,18 +25,22 @@
     return std::nullopt;
   }
 
+  // TODO maybe not iterate over all hexagons?
+
   for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( int y = 0; y < MAP_HEIGHT_BF; ++y ) {
-      int offset_x_temp = BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( x * BATTLE_MAP_SPRITE_X_DELTA );
-      int offset_y_temp = BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD + ( ( 5 - ( y / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
+      int offset_x_temp =
+          graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( x * graphics::BATTLE_MAP_SPRITE_X_DELTA );
+      int offset_y_temp = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD
+                          + ( ( 5 - ( y / 2 ) ) * graphics::BATTLE_MAP_SPRITE_Y_DELTA );
 
       // adjust if even
       if ( ( y % 2 == 0 ) ) {
-        offset_x_temp += BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
-        offset_y_temp += BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
+        offset_x_temp += graphics::BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
+        offset_y_temp += graphics::BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
       }
-      double hex_center_x = double( offset_x_temp ) + ( HEXAGON_SPRITE_WIDTH / 2.0 );
-      double hex_center_y = double( offset_y_temp ) + ( HEXAGON_SPRITE_HEIGHT / 2.0 );
+      double hex_center_x = double( offset_x_temp ) + ( graphics::HEXAGON_SPRITE_WIDTH / 2.0 );
+      double hex_center_y = double( offset_y_temp ) + ( graphics::HEXAGON_SPRITE_HEIGHT / 2.0 );
 
       if ( pointInHexagon( mx, my, hex_center_x, hex_center_y ) ) {
         return CoordPair( x, y );
@@ -53,7 +59,7 @@ bool MouseHandler::pointInHexagon( int px, int py, double hex_x, double hex_y ) 
 
   double distance_diagonal = std::sqrt( dx_squared + dy_squared );
 
-  return distance_diagonal <= HEXAGON_SPRITE_MAX_RADIUS;
+  return distance_diagonal <= graphics::HEXAGON_SPRITE_MAX_RADIUS;
 }
 
 /* === @PUBLIC === */

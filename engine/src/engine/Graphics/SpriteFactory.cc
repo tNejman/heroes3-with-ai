@@ -19,11 +19,11 @@
 #include <utility>
 #include <variant>
 
-#include "core/Artifact/ArtifactLib.h"
-#include "aux/Err.hpp"
 #include "aux/DiscardReturn.hpp"
-#include "core/Misc/ProjectLib.h"
+#include "aux/Err.hpp"
 #include "aux/ToLowerString.hpp"
+#include "core/Artifact/ArtifactLib.h"
+#include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 
@@ -271,9 +271,9 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
 
 void SpriteFactory::flipSpriteHorizontally( sf::Sprite& sprite ) noexcept {
   const float left_before = sprite.getGlobalBounds().position.x;
-  sprite.scale( { -1.f, 1.f } );
+  sprite.scale( sf::Vector2f{ -1.F, 1.F } );
   const float left_after = sprite.getGlobalBounds().position.x;
-  sprite.move( { left_before - left_after, 0.f } );
+  sprite.move( sf::Vector2f{ left_before - left_after, 0.F } );
 }
 
 [[nodiscard]] int SpriteFactory::getFootHeightForUnit( UnitTypeV type ) noexcept {

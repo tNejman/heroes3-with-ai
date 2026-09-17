@@ -13,10 +13,8 @@
 #include "core/Game/GameStateStack.h"
 #include "core/Game/IGameState.h"
 #include "core/Game/UserCommand.h"
-#include "core/Misc/ProjectLib.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
-#include "core/WorldMap/WorldMap.h"
 
 class Game {
  private:
@@ -32,11 +30,11 @@ class Game {
 
   void removeCharactersWithNoUnits();
 
-  void placeCharactersOnWorldMap();
+  void placeCharactersOnWorldMap() noexcept;
   void startBattle( const RequestBattle& request );
 
  public:
-  Game( std::vector<std::shared_ptr<Player>> players );
+  Game( std::vector<std::shared_ptr<Player>>&& players ) noexcept;
   // TODO add to constructor functionality which initializes preset players
 
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept;

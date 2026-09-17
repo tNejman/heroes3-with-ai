@@ -4,7 +4,7 @@
 
 #include "engine/Graphics/Visitor.h"
 
-class IPrintable {
+class IPrintable { // NOLINT(cppcoreguidelines-special-member-functions)
  public:
   virtual void accept( Visitor& ) const = 0;
   virtual ~IPrintable() = default;

@@ -1,5 +1,8 @@
 #include "engine/Graphics/Renderers/BattleRenderer.h"
 
+#include <engine/Graphics/GraphicsLib.h>
+#include <engine/Graphics/SpriteFactory.h>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -9,31 +12,29 @@
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cstddef>
+#include <engine/Graphics/Renderers/IRenderer.hpp>
 #include <memory>
 #include <optional>
-#include <ranges>
-#include <type_traits>
 #include <utility>
 
+#include "aux/Err.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Moves/AttackMove.h"
 #include "core/Battle/Moves/MoveMove.h"
 #include "core/Battle/Moves/WaitMove.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
-#include "aux/Err.hpp"
-#include "engine/Graphics/Renderers/IRenderer.hpp"
-#include "engine/Graphics/SpriteFactory.h"
 #include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 
 [[nodiscard]] std::pair<int, int> BattleRenderer::getHexagonOffset( CoordPair coords ) noexcept {
-  int offset_x = BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( coords.x_ * BATTLE_MAP_SPRITE_X_DELTA );
-  int offset_y = BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD + ( ( 5 - ( coords.y_ / 2 ) ) * BATTLE_MAP_SPRITE_Y_DELTA );
+  int offset_x = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( coords.x_ * graphics::BATTLE_MAP_SPRITE_X_DELTA );
+  int offset_y = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_Y_ODD
+                 + ( ( 5 - ( coords.y_ / 2 ) ) * graphics::BATTLE_MAP_SPRITE_Y_DELTA );
 
   if ( coords.y_ % 2 == 0 ) {
-    offset_x += BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
-    offset_y += BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
+    offset_x += graphics::BATTLE_MAP_SPRITE_ADJUST_EVEN_X;
+    offset_y += graphics::BATTLE_MAP_SPRITE_ADJUST_EVEN_Y;
   }
   return { offset_x, offset_y };
 }
@@ -64,7 +65,7 @@ void BattleRenderer::renderCharacters() noexcept {
 }
 void BattleRenderer::renderGrid() noexcept {
   const static sf::Texture combined_hexagons_texture = [] {
-    sf::RenderTexture combined_hexagons{ sf::Vector2u{ 800U, 556U } };
+    sf::RenderTexture combined_hexagons{ sf::Vector2u{ graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } };
     sf::Sprite hex_sprite = SpriteFactory::getSpriteFromBindingV( HexagonType::EMPTY );
     combined_hexagons.clear( sf::Color::Transparent );
 
@@ -115,7 +116,7 @@ void BattleRenderer::renderObjects() noexcept {
                dynamic_cast<const UnitStack*>( object_.get().getBattlefield()->getGrid()[x][y]->getObject() ) ) {
         sf::Sprite unit_sprite = SpriteFactory::getSpriteFromBindingV( unit->getData().type_ );
         auto [tile_offset_x, tile_offset_y] = getHexagonOffset( unit->getCoordsInBattle() );
-        int unit_draw_x = tile_offset_x + ( HEXAGON_SPRITE_WIDTH / 2 )
+        int unit_draw_x = tile_offset_x + ( graphics::HEXAGON_SPRITE_WIDTH / 2 )
                           - ( static_cast<int>( unit_sprite.getTextureRect().size.x ) / 2 );
         int unit_draw_y =
             tile_offset_y + FEET_FROM_TOP_OFFSET - SpriteFactory::getFootHeightForUnit( unit->getData().type_ );

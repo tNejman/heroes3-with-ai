@@ -4,25 +4,14 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <array>
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
 #include <magic_enum/magic_enum.hpp>
-#include <optional>
 #include <string_view>
-#include <type_traits>
-#include <variant>
 
-#include "core/Artifact/ArtifactLib.h"
-#include "aux/Err.hpp"
-#include "core/Game/GameStateOverworld.h"
 #include "aux/EnumWithCount.hpp"
+#include "core/Artifact/ArtifactLib.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-
-// using SpriteBinding = std::variant<Terrain, CharacterType, CastleUnitType, ConfluxUnitType, ForgeUnitType>;
 
 enum class SpriteDomain : char { WORLD, BATTLE };
 
@@ -33,30 +22,12 @@ struct Tagged {
 
 enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION, COUNT };
 
-class SpriteFactory {
+class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
   template <EnumWithCount Binding>
-  static const sf::Texture& getTexture( Binding b, std::string_view path ) noexcept {
-    static std::array<std::optional<sf::Texture>, static_cast<size_t>( Binding::COUNT )> lookup;
-
-    err::passCondOrAbort( b != Binding::COUNT, "getTexture -> abort; type: ", magic_enum::enum_type_name<Binding>() );
-
-    const auto index = static_cast<size_t>( b );
-    if ( !lookup[index].has_value() ) {
-      lookup[index] = loadTextureOrAbort( path );
-    }
-    return *lookup[index];
-  }
+  static const sf::Texture& getTexture( Binding b, std::string_view path ) noexcept;
 
   template <EnumWithCount Binding, SpriteDomain D>
-  static const sf::Texture& getTexture( Binding b, std::string_view path ) noexcept {
-    static std::array<std::optional<sf::Texture>, static_cast<size_t>( Binding::COUNT )> lookup;
-    err::passCondOrAbort( b != Binding::COUNT );
-    const auto index = static_cast<size_t>( b );
-    if ( !lookup[index].has_value() ) {
-      lookup[index] = loadTextureOrAbort( path );
-    }
-    return *lookup[index];
-  }
+  static const sf::Texture& getTexture( Binding b, std::string_view path ) noexcept;
 
   [[nodiscard]] static sf::Texture loadTextureOrAbort( std::string_view path ) noexcept;
   [[nodiscard]] static sf::Sprite cropTexture( const sf::Texture& texture, sf::Vector2<int> ltc_pos,
@@ -77,34 +48,24 @@ class SpriteFactory {
 
  public:
   SpriteFactory() = delete;
+  SpriteFactory( const SpriteFactory& ) = delete;
+  SpriteFactory( SpriteFactory&& ) = delete;
+  SpriteFactory& operator=( const SpriteFactory& ) = delete;
+  SpriteFactory& operator=( SpriteFactory&& ) = delete;
 
   static void flipSpriteHorizontally( sf::Sprite& ) noexcept;
 
   template <EnumWithCount T>
-  [[nodiscard]] static sf::Sprite getSpriteFromBindingV( T binding ) noexcept {
-    err::passCondOrAbort( binding != T::COUNT );
-    return getSpriteFromBinding( binding );
-  }
+  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( T binding ) noexcept;
+
   template <Enum T1, Enum T2>
-  [[nodiscard]] static sf::Sprite getSpriteFromBindingV( T1 binding1, T2 binding2 ) noexcept {
-    return getSpriteFromBinding( binding1, binding2 );
-  }
+  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( T1 binding1, T2 binding2 ) noexcept;
 
   template <EnumWithCount T, SpriteDomain D>
-  [[nodiscard]] static sf::Sprite getSpriteFromBindingV( Tagged<T, D> binding ) noexcept {
-    err::passCondOrAbort( binding.val != T::COUNT );
-    return getSpriteFromBinding( binding );
-  }
+  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Tagged<T, D> binding ) noexcept;
 
-  [[nodiscard]] static sf::Sprite getSpriteFromBindingV( UnitTypeV type ) noexcept {
-    return std::visit(
-        [&]( const auto c_type ) {
-          using T = std::decay_t<decltype( c_type )>;
-          err::passCondOrAbort( c_type != T::COUNT, "UnitTypeV val was ::COUNT" );
-          return getSpriteFromBinding( c_type );
-        },
-        type );
-  }
-
+  [[nodiscard]] inline static sf::Sprite getSpriteFromBindingV( UnitTypeV type ) noexcept;
   [[nodiscard]] static int getFootHeightForUnit( UnitTypeV type ) noexcept;
 };
+
+#include "engine/Graphics/SpriteFactory.tpp"  // IWYU pragma: keep

@@ -67,6 +67,7 @@ GameStateBattle::GameStateBattle( std::shared_ptr<Character> attacker, std::shar
   MoveFactory::generateMoves( battle_ );  // updates graphics
 
   if ( !isLegalCommand( command ) ) {
+    // TODO log what got here
     return NoTransition{};
   }
   auto battle_command = std::get<BattleCommand>( command );
