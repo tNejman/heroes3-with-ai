@@ -47,7 +47,6 @@ jobs:
 
       - name: Format with clang-format
         run: |
-          find include -type f \( -name '*.h' -o -name '*.hpp' \) -exec clang-format -i {} +
-          find src -type f -name '*.cc' -exec clang-format -i {} +
+          find core/include core/src engine/include engine/src -type f \( -name '*.h' -o -name '*.hpp' -o -name '*.cc' \) -exec clang-format -i {} +
           echo "### Files reformatted" >> "$GITHUB_STEP_SUMMARY"
           git diff --name-only | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"
