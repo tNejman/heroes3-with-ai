@@ -6,7 +6,7 @@
 
 #include "core/Battle/Battle.h"
 #include "core/Battle/Moves/Move.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 WaitMove::WaitMove( CoordPair coords ) : Move(), coords_( coords ) {
 }

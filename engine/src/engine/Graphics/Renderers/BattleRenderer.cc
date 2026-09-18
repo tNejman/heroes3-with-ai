@@ -23,7 +23,7 @@
 #include "core/Battle/Moves/MoveMove.h"
 #include "core/Battle/Moves/WaitMove.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 

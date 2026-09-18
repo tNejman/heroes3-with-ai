@@ -10,8 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
+
 
 class Tile;
 class GridTile;

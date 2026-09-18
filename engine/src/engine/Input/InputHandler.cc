@@ -10,7 +10,7 @@
 #include "core/Game/UserCommand.h"
 #include "engine/Input/KeyboardHandler.h"
 #include "engine/Input/MouseHandler.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
 CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,

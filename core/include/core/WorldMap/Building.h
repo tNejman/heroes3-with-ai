@@ -5,7 +5,7 @@
 
 #include "engine/Graphics/Visitor.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class Building : public MapObject {
  private:

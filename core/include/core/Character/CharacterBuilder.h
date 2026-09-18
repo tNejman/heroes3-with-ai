@@ -6,7 +6,7 @@
 
 #include "core/Character/Character.h"
 #include "core/Character/CharacterStats.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class CharacterBuilder {
  private:

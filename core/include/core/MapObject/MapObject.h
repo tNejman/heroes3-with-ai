@@ -6,7 +6,7 @@
 
 #include "engine/Graphics/IPrintable.h"
 #include "engine/Graphics/Visitor.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class Character;
 

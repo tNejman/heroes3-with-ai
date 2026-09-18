@@ -1,4 +1,4 @@
-#include "core/Game/GameStateBattle.h"
+#include "core/Game/StateBattle.h"
 
 #include <cassert>
 #include <iostream>
@@ -6,26 +6,26 @@
 #include <utility>
 #include <vector>
 
+#include "aux/Err.hpp"
+#include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Moves/Move.hpp"
 #include "core/Battle/Moves/MoveFactory.h"
 #include "core/Character/Character.h"
-#include "aux/Err.hpp"
-#include "aux/_NotImplementedException.hpp"
-#include "core/Game/GameCommand.h"
-#include "core/Game/GameContext.h"
-#include "core/Game/IGameState.h"
+#include "core/Game/Context.h"
+#include "core/Game/IState.h"
+#include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
-#include "engine/Graphics/IRVisitor.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/Graphics/IRVisitor.h"
 
-StateTransition GameStateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
+game::StateTransition game::StateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
   battle_.move( *battle_.getUnitInAction(), ms.destination );
   battle_.setBattleState( BattleState::ATTACKING );
-  return NoTransition{};
+  return game::NoTransition{};
 }
-StateTransition GameStateBattle::handleAttackStack( const BattleCommand &as ) noexcept {
+game::StateTransition game::StateBattle::handleAttackStack( const BattleCommand &as ) noexcept {
   auto *attacker = battle_.getUnitInAction();
   auto *defender = battle_.getUnitFromCoords( as.destination );
   battle_.attack( *attacker, *defender );
@@ -39,7 +39,7 @@ StateTransition GameStateBattle::handleAttackStack( const BattleCommand &as ) no
   battle_.nextUnit();
   return NoTransition{};
 }
-StateTransition GameStateBattle::handleWait() noexcept {
+game::StateTransition game::StateBattle::handleWait() noexcept {
   if ( battle_.getBattleState() == BattleState::ATTACKING ) {
     battle_.setBattleState( BattleState::MOVING );
     battle_.nextUnit();
@@ -54,16 +54,17 @@ StateTransition GameStateBattle::handleWait() noexcept {
 
 /* === @PUBLIC === */
 
-GameStateBattle::GameStateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
-                                  Terrain background )
+game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                                Terrain background )
     : battle_( std::move( attacker ), std::move( defender ), background ) {
 }
 
-[[nodiscard]] std::vector<UserCommand> GameStateBattle::legalCommands() const noexcept {
+[[nodiscard]] std::vector<UserCommand> game::StateBattle::legalCommands() const noexcept {
   err::raise<NotImplementedException>();
 }
 
-[[nodiscard]] StateTransition GameStateBattle::applyCommand( const UserCommand &command, GameContext & ) noexcept {
+[[nodiscard]] game::StateTransition game::StateBattle::applyCommand( const UserCommand &command,
+                                                                     game::Context & ) noexcept {
   MoveFactory::generateMoves( battle_ );  // updates graphics
 
   if ( !isLegalCommand( command ) ) {
@@ -88,21 +89,21 @@ GameStateBattle::GameStateBattle( std::shared_ptr<Character> attacker, std::shar
   //                              [&]( const Defend &d ) -> StateTransition { return handleDefend( d ); } },
   //                    std::get<BattleCommand>( command ) );
 }
-[[nodiscard]] bool GameStateBattle::isLegalCommand( const UserCommand &command ) const noexcept {
-  if ( !isCommandForThisState<BattleCommand>( command ) ) {
+[[nodiscard]] bool game::StateBattle::isLegalCommand( const UserCommand &command ) const noexcept {
+  if ( !isCommandForThisState( command ) ) {
     return false;
   }
   return battle_.isLegalCommand( std::get<BattleCommand>( command ) );
 }
 
-void GameStateBattle::applyGameCommand( const GameCommand &, GameContext & ) noexcept {
+void game::StateBattle::applySystemCommand( const SystemCommand &, game::Context & ) noexcept {
   err::raise<NotImplementedException>();
 }
 
-void GameStateBattle::accept( IRVisitor &v ) const noexcept {
+void game::StateBattle::accept( IRVisitor &v ) const noexcept {
   v.visit( *this );
 }
 
-const Battle &GameStateBattle::viewBattle() const noexcept {
+const Battle &game::StateBattle::viewBattle() const noexcept {
   return battle_;
 }

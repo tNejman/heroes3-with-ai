@@ -1,4 +1,4 @@
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 #include <cassert>
 #include <cmath>

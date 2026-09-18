@@ -4,7 +4,7 @@
 
 #include "core/Game/UserCommand.h"
 #include "engine/Graphics/IRVisitor.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 struct MouseCoords {
   int x;
@@ -23,6 +23,6 @@ class MouseHandler : public IRVisitor {
   void updateMouseCoords( MouseCoords ) noexcept;
   UserCommand getCommand() noexcept;
 
-  void visit( const GameStateOverworld& ) noexcept override;
-  void visit( const GameStateBattle& ) noexcept override;
+  void visit( const game::StateOverworld& state ) noexcept override;
+  void visit( const game::StateBattle& state ) noexcept override;
 };

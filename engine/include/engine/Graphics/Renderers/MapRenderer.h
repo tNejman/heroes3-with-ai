@@ -5,7 +5,7 @@
 #include <type_traits>
 
 #include "engine/Graphics/Renderers/IRenderer.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/WorldMap.h"
 

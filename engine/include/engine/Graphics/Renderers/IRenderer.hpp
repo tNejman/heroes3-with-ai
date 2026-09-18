@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "engine/Graphics/SpriteVisitor.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 template <class T>
 class IRenderer {

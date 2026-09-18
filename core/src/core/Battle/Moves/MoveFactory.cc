@@ -18,7 +18,7 @@
 #include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
 #include "aux/_NotImplementedException.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Unit/UnitStack.h"
 
 std::vector<std::shared_ptr<Move>> MoveFactory::createMoveMove( Battle& battle ) {

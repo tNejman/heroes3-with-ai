@@ -23,8 +23,9 @@
 #include "core/Character/SecondarySkill.h"
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
+
 
 constexpr inline int SECONDARY_SKILLS_SLOTS_COUNT = 8;
 

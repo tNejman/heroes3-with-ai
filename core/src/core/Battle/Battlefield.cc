@@ -11,7 +11,7 @@
 #include "core/Battle/Tile.h"
 #include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "aux/Err.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
 BattleField::BattleField( Terrain background ) : battle_grid_(), background_( background ) {

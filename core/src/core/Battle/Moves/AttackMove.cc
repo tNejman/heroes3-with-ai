@@ -7,7 +7,7 @@
 #include "core/Battle/Moves/Move.hpp"
 #include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Unit/UnitStack.h"  // IWYU pragma: keep
 
 AttackMove::AttackMove( CoordPair attacker, CoordPair defender )

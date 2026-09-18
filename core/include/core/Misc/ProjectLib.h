@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 /*
 ====== WORLD MAP ======
@@ -122,7 +122,6 @@ const std::map<int, int> SPEED_TO_MOVEMENT = { {
     { 10, 1960 },
     { 11, 2000 }  // accounts for 11 or more
 } };
-
 
 /*
 ====== MISC ======

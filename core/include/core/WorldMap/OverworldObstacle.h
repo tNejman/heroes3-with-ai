@@ -2,7 +2,7 @@
 
 #include "engine/Graphics/Visitor.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 enum class OverworldObstacleType : char { DRIED_TREE, GREEN_TREE, COUNT };
 

@@ -4,7 +4,7 @@
 
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
 class InputHandler {

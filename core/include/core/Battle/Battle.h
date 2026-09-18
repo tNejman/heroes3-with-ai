@@ -5,7 +5,6 @@
   - Zawiera metody do atakowania jednostek, zarządzania kolejnością jednostek w bitwie.
 */
 #include <cassert>
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -13,9 +12,9 @@
 #include "core/Battle/BattleField.h"
 #include "core/Battle/TileObject.hpp"
 #include "core/Game/UserCommand.h"
-#include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
+#include "engine/IGame/Coords.h"
 
 class MoveFactory;
 class Move;

@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class Battle;
 

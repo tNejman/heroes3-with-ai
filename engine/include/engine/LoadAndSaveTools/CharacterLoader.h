@@ -10,7 +10,7 @@
 
 #include "engine/Character/Character.h"
 #include "engine/LoadAndSaveTools/ILoader.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 struct CharacterSaveContainer {
  public:

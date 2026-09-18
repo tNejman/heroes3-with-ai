@@ -6,14 +6,17 @@
 
 #include "core/Character/Character.h"
 #include "core/Player/Player.h"
-class GameContext {
+
+namespace game {
+
+class Context {
  private:
   std::vector<std::shared_ptr<Player>> players_;
   std::reference_wrapper<Player> current_player_;
   std::reference_wrapper<Character> current_character_;
 
  public:
-  GameContext( std::vector<std::shared_ptr<Player>>&& ) noexcept;
+  Context( std::vector<std::shared_ptr<Player>>&& ) noexcept;
 
   [[nodiscard]] const std::vector<std::shared_ptr<Player>>& getPlayers() const noexcept;
   [[nodiscard]] std::vector<std::shared_ptr<Player>>& getPlayers() noexcept;
@@ -30,3 +33,5 @@ class GameContext {
   Player& nextPlayer() noexcept;
   Character& nextCharacter() noexcept;
 };
+
+}  // namespace game

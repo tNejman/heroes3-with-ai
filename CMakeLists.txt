@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 3.25.0)
 project(Heroes3App LANGUAGES CXX)
 set(APP_NAME Heroes3App)
 
-set(CMAKE_CXX_STANDARD 23) 
-set(CMAKE_CXX_STANDARD_REQUIRED ON) 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Debug)
 endif()
 message("Build type is: ${CMAKE_BUILD_TYPE}")
 
@@ -59,57 +59,63 @@ if(NOT rc EQUAL 0)
     message(FATAL_ERROR "sprite fetch failed")
 endif()
 
-set(CORE_MODULES
-    # Algorithms
-    Artifact 
-    Battle 
-    Character
-    Game 
-    Magic 
-    MapObject
-    Misc 
-    Player 
-    Resource 
-    Unit 
-    WorldMap
-)
-
 set(ENGINE_MODULES
     Graphics
+    IGame
+    Coords
     Input
     LoadAndSaveTools
+)
+
+set(CORE_MODULES
+    # Algorithms
+    Artifact
+    Battle
+    Character
+    Game
+    Magic
+    MapObject
+    Player
+    Resource
+    Unit
+    WorldMap
 )
 
 function(apply_compiler_flags target)
     target_compile_options(${target} PRIVATE
         $<$<CONFIG:Debug>:
         -g -O0
-        -Wall -Wextra -Wpedantic -Werror 
-        -Wcast-align -Wcast-qual 
-        -Wconversion -Wsign-conversion -Wshadow 
-        -Wdouble-promotion -Wnull-dereference 
-        -Wformat=2 
-        -Wzero-as-null-pointer-constant 
+        -Wall -Wextra -Wpedantic -Werror
+        -Wcast-align -Wcast-qual
+        -Wconversion -Wsign-conversion -Wshadow
+        -Wdouble-promotion -Wnull-dereference
+        -Wformat=2
+        -Wzero-as-null-pointer-constant
         -Wvla
         -fno-omit-frame-pointer
         -fsanitize=address
         -fsanitize=undefined
-        
+
         # --coverage
         >
 
         $<$<CONFIG:Release>:-march=native>
     )
-    target_link_options(${target} PUBLIC 
+    target_link_options(${target} PUBLIC
         $<$<CONFIG:Debug>:
-        -fsanitize=address,undefined 
+        -fsanitize=address,undefined
         # --coverage
         >
     )
 endfunction()
 
 foreach(module ${ENGINE_MODULES})
-    add_subdirectory(engine/src/engine/${module})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/src/engine/${module})
+        add_subdirectory(engine/src/engine/${module})
+    else()
+        MESSAGE("skipping nonexistent dir: ./engine/src/engine/${module}")
+    endif()
+
     target_include_directories(${module} PRIVATE
         ${CMAKE_SOURCE_DIR}/engine/include/
         ${CMAKE_SOURCE_DIR}/aux/include/
@@ -120,15 +126,15 @@ endforeach()
 
 foreach(module ${CORE_MODULES})
     add_subdirectory(core/src/core/${module})
-    target_include_directories(${module} PRIVATE 
+    target_include_directories(${module} PRIVATE
         ${CMAKE_SOURCE_DIR}/core/include/
         ${CMAKE_SOURCE_DIR}/engine/include/
         ${CMAKE_SOURCE_DIR}/aux/include/
     )
     apply_compiler_flags(${module})
-endforeach() 
+endforeach()
 
-add_subdirectory(app) 
+add_subdirectory(app)
 
-enable_testing() 
-add_subdirectory(test) 
+enable_testing()
+add_subdirectory(test)

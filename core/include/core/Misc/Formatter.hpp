@@ -2,7 +2,8 @@
 
 #include <format>
 
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
+
 template <>
 struct std::formatter<CoordPair> {
   constexpr auto parse( std::format_parse_context& ctx ) {

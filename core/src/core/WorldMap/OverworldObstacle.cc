@@ -5,7 +5,7 @@
 
 #include "engine/Graphics/Visitor.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 OverworldObstacle::OverworldObstacle( OverworldObstacleType type, CoordPair coords )
     : MapObject( coords ), type_( type ) {

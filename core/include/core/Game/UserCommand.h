@@ -2,8 +2,7 @@
 
 #include <variant>
 
-#include "core/Misc/Coords.h"
-#include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
 
 /* === WORLD MAP === */
 struct MoveCharacter {

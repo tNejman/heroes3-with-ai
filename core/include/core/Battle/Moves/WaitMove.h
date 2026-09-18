@@ -5,8 +5,7 @@
 
 #include "core/Battle/Battle.h"
 #include "core/Battle/Moves/Move.hpp"
-#include "core/Misc/Coords.h"
-
+#include "engine/IGame/Coords.h"
 
 class WaitMove : public Move {
  private:

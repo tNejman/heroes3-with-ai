@@ -21,7 +21,7 @@
 #include "aux/_NotImplementedException.hpp"
 #include "core/Game/UserCommand.h"
 #include "engine/Graphics/Visitor.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
 

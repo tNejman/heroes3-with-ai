@@ -13,7 +13,7 @@
 #include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
 #include "engine/Input/KeyboardHandler.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
 // void KeyHandler::processBufferedInput() {

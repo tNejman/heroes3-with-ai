@@ -15,10 +15,10 @@
 #include "core/Battle/Moves/Move.hpp"
 #include "core/Battle/Moves/MoveMove.h"
 #include "core/Battle/Moves/WaitMove.h"
-#include "core/Game/GameStateBattle.h"
+#include "core/Game/StateBattle.h"
 #include "core/Game/UserCommand.h"
-#include "core/Misc/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
 
 [[nodiscard]] std::optional<CoordPair> MouseHandler::getHexagonCoordsFromClick( int mx, int my ) const noexcept {
   if ( mx < 0 || my < 0 ) {
@@ -74,10 +74,10 @@ UserCommand MouseHandler::getCommand() noexcept {
   return moved_command;
 }
 
-void MouseHandler::visit( const GameStateOverworld& ) noexcept {
+void MouseHandler::visit( const game::StateOverworld& ) noexcept {
 }
 
-void MouseHandler::visit( const GameStateBattle& gbs ) noexcept {
+void MouseHandler::visit( const game::StateBattle& gbs ) noexcept {
   auto maybe_coords = getHexagonCoordsFromClick( mouse_coords_.x, mouse_coords_.y );
   if ( !maybe_coords.has_value() ) {
     return;

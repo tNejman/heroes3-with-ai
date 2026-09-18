@@ -1,18 +1,16 @@
 #include <gtest/gtest.h>
 
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "aux/BuildVector.hpp"
-#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
-#include "core/Exceptions/InvalidMapMoveException.hpp"
-#include "core/Misc/Coords.h"
+#include "aux/DiscardReturn.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
+#include "engine/IGame/Coords.h"
 
 // TEST( WorldMapTests, constructorWithGrid ) {
 //   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
@@ -44,7 +42,7 @@ TEST( WorldMapTests, loadGrid ) {
   ASSERT_NO_THROW( world_map = std::make_shared<WorldMap>( grid_temp ) );
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
     for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      ASSERT_NO_THROW( world_map->getMapObject( { x, y } ) );
+      ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { x, y } ) );
     }
   }
 }
@@ -61,8 +59,8 @@ TEST( WorldMapTests, loadObstacles ) {
 
   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp, obstacles );
 
-  ASSERT_NO_THROW( world_map->getMapObject( { 1, 1 } ) );
-  ASSERT_NO_THROW( world_map->getMapObject( { 2, 2 } ) );
+  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 1, 1 } ) );
+  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 2, 2 } ) );
 
   ASSERT_EQ( obstacles[0].get(), world_map->getMapObject( { 1, 1 } ) );
   ASSERT_EQ( obstacles[1].get(), world_map->getMapObject( { 2, 2 } ) );
@@ -79,7 +77,7 @@ TEST( WorldMapTests, loadObjectsDuplicated ) {
 
   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp, obstacles );
 
-  ASSERT_NO_THROW( world_map->getMapObject( { 1, 1 } ) );
+  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 1, 1 } ) );
 
   // check if the first obstacle was replaced by the second one
   for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
@@ -145,7 +143,7 @@ TEST( WorldMapTests, moveMapObject ) {
   auto obstacle = std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) );
   ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle ) );
 
-  ASSERT_NO_THROW( world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( 2, 2 ) ) );
+  ASSERT_NO_THROW( DISCARD_RETURN() world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( 2, 2 ) ) );
   ASSERT_EQ( obstacle.get(), world_map->getMapObject( { 2, 2 } ) );
   ASSERT_EQ( nullptr, world_map->getMapObject( { 1, 1 } ) );
 }
@@ -202,8 +200,8 @@ TEST( WorldMapTests, getTile ) {
 
   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
 
-  ASSERT_NO_THROW( world_map->getMapObject( { 0, 0 } ) );
-  ASSERT_NO_THROW( world_map->getMapObject( { WORLD_MAP_WIDTH - 1, WORLD_MAP_HEIGHT - 1 } ) );
+  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 0, 0 } ) );
+  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { WORLD_MAP_WIDTH - 1, WORLD_MAP_HEIGHT - 1 } ) );
 }
 
 // TEST( WorldMapTests, getTileOutOfBounds ) {

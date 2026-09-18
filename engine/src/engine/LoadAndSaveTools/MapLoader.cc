@@ -8,7 +8,7 @@
 
 #include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "aux/Err.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"

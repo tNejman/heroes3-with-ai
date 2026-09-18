@@ -9,29 +9,26 @@
 #include <vector>
 
 #include "core/Algorithms/MinimaxAI.h"
-#include "core/Game/GameContext.h"
-#include "core/Game/GameStateStack.h"
-#include "core/Game/IGameState.h"
+#include "core/Game/Context.h"
+#include "core/Game/IState.h"
 #include "core/Game/UserCommand.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
+#include "engine/IGame/IGame.h"
 
-class Game {
+class Game : public game::IGame {
  private:
-  GameStateStack state_stack_;
-  GameContext context_;
+  game::Context context_;
 
   std::shared_ptr<MinimaxAI> minimax_;
 
-  int frames_since_start_ = 0;
-
-  StateTransition handleStateIndependentCommand( const StateIndependentCommand& ) noexcept;
-  void handleStateTransition( const StateTransition& ) noexcept;
+  game::StateTransition handleStateIndependentCommand( const StateIndependentCommand& ) noexcept;
+  void handleStateTransition( const game::StateTransition& ) noexcept;
 
   void removeCharactersWithNoUnits();
 
   void placeCharactersOnWorldMap() noexcept;
-  void startBattle( const RequestBattle& request );
+  void startBattle( const game::RequestBattle& request );
 
  public:
   Game( std::vector<std::shared_ptr<Player>>&& players ) noexcept;
@@ -41,8 +38,5 @@ class Game {
   void applyCommand( const UserCommand& command );
   [[nodiscard]] bool isLegalCommand( const UserCommand& command ) const noexcept;
 
-  [[nodiscard]] int getFrameCountSinceStart() const noexcept;
-
-  [[nodiscard]] const IGameState& getState() const noexcept;
-  [[nodiscard]] const GameContext& getContext() const noexcept;
+  [[nodiscard]] const game::Context& getContext() const noexcept;
 };

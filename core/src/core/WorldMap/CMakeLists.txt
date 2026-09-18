@@ -8,7 +8,7 @@ target_include_directories(WorldMap PRIVATE
 )
 
 target_link_libraries(WorldMap PUBLIC
-    Misc
+    Coords
 )
 
 target_link_libraries(WorldMap PRIVATE 

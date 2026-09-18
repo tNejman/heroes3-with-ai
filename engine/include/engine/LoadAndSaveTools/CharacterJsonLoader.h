@@ -9,7 +9,7 @@
 #include "engine/Character/Character.h"
 #include "engine/Character/SecondarySkill.h"
 #include "engine/Magic/SpellBook.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "engine/Unit/Unit.h"
 #include "engine/Unit/UnitStack.h"
 #include "engine/Unit/WarMachine.h"

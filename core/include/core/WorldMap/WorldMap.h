@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "core/Character/Character.h"
-#include "core/Game/IGameState.h"
+#include "core/Game/IState.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 
@@ -56,5 +56,5 @@ class WorldMap {
   [[nodiscard]] MapObject* getMapObject( CoordPair coords ) noexcept;
   void setMapObject( CoordPair coords, std::shared_ptr<MapObject> object ) noexcept;
   void resetMapObject( CoordPair coords ) noexcept;
-  [[nodiscard]] StateTransition moveMapObject( CoordPair old_coords, CoordPair new_coords );
+  [[nodiscard]] game::StateTransition moveMapObject( CoordPair old_coords, CoordPair new_coords );
 };

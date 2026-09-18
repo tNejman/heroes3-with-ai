@@ -3,7 +3,7 @@
 #include "core/Battle/TileObject.hpp"
 #include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Unit/UnitsLib.h"
 
 UnitStack::UnitStack( UnitTypeV type, int size )

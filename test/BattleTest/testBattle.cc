@@ -9,7 +9,7 @@
 #include "core/Character/CharacterBuilder.h"
 #include "core/Character/CharacterStats.h"
 #include "engine/Graphics/Visitor.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitsLib.h"

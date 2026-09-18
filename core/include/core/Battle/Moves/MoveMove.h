@@ -10,7 +10,7 @@
 #include <string>
 
 #include "core/Battle/Moves/Move.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class MoveMove : public Move {
  private:

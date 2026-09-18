@@ -8,7 +8,7 @@ target_link_libraries(testBattle PRIVATE
 f_add_test_executable(testBattlefield testBattlefield.cc)
 target_link_libraries(testBattlefield PRIVATE
     Battle
-    Misc
+    Coords
     WorldMap
     MapObject
 )

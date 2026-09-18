@@ -7,15 +7,15 @@
 #include <utility>
 #include <vector>
 
-#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"  // IWYU pragma: keep
 #include "aux/Err.hpp"
+#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"  // IWYU pragma: keep
 #include "core/Exceptions/InvalidMapMoveException.hpp"
-#include "core/Game/IGameState.h"
+#include "core/Game/IState.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
 #include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/IGame/Coords.h"
 
 void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   // SINGLE_CALL_GUARD();
@@ -73,9 +73,9 @@ void WorldMap::resetMapObject( CoordPair coords ) noexcept {
   foreground_[coords.xAsId()][coords.yAsId()].reset();
 }
 
-StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
+game::StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
   if ( old_coords == new_coords ) {
-    return NoTransition{};
+    return game::NoTransition{};
   }
   COORDS_IN_BOUNDS_OR_THROW( old_coords, "Origin: " );
   COORDS_IN_BOUNDS_OR_THROW( new_coords, "Destination: " );
@@ -90,7 +90,7 @@ StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coo
     setMapObject( new_coords, map_obj_src );
     resetMapObject( old_coords );
     map_obj_src->setCoords( new_coords );
-    return NoTransition{};
+    return game::NoTransition{};
   }
   // TODO from here, below, battle is launched; rewrite cleanly
 
@@ -102,8 +102,8 @@ StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coo
   err::passCondOrThrow<InvalidMapMoveException>( distance < 1.5,
                                                  "Tried engaging in battle from more than 1 tile away" );
 
-  return RequestBattle{ .attacker_id_ = map_obj_src->asCharacter()->getId(),
-                        .defender_id_ = map_obj_dest->asCharacter()->getId(),
-                        .at_ = new_coords,
-                        .terrain_ = background_[new_coords.xAsId()][new_coords.yAsId()] };
+  return game::RequestBattle{ .attacker_id_ = map_obj_src->asCharacter()->getId(),
+                              .defender_id_ = map_obj_dest->asCharacter()->getId(),
+                              .at_ = new_coords,
+                              .terrain_ = background_[new_coords.xAsId()][new_coords.yAsId()] };
 }

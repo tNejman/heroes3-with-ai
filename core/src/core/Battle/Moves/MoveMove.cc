@@ -4,7 +4,7 @@
 #include <string>
 
 #include "core/Battle/Battle.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Unit/UnitStack.h"
 
 MoveMove::MoveMove( CoordPair old_coords, CoordPair new_coords )

@@ -14,7 +14,7 @@
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
 /* ==== @PRIVATE ==== */

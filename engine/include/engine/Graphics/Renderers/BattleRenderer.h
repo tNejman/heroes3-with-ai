@@ -6,7 +6,7 @@
 
 #include "core/Battle/Battle.h"
 #include "engine/Graphics/Renderers/IRenderer.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class BattleRenderer : public IRenderer<Battle> {
  private:

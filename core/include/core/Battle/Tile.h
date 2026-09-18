@@ -5,11 +5,8 @@
   - Kafelek może zawierać obiekt, który jest na nim umieszczony oraz sąsiadujące kafelki.
 */
 
-#include <memory>
-#include <utility>
-
 #include "core/Battle/TileObject.hpp"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 
 class TileObject;
 

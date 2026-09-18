@@ -20,7 +20,7 @@
 #include "core/Character/CharacterStats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
-#include "core/Misc/Coords.h"
+#include "engine/IGame/Coords.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"

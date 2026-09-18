@@ -6,6 +6,6 @@ target_include_directories(Artifact PRIVATE
 )
 
 target_link_libraries(Artifact PRIVATE
-    Misc
+    Coords
     MapObject
 )

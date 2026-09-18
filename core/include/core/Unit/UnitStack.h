@@ -7,8 +7,8 @@
 #include <functional>
 
 #include "core/Battle/TileObject.hpp"
-#include "core/Misc/Coords.h"
 #include "core/Unit/UnitsLib.h"
+#include "engine/IGame/Coords.h"
 
 namespace {
 constexpr inline int DEFAULT_UNIT_STACK_MORALE = 0;
