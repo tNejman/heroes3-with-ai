@@ -20,17 +20,26 @@
 #include "core/Character/CharacterStats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
-#include "engine/IGame/Coords.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
+#include "engine/IGame/Coords.h"
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 
 constexpr inline std::string WINDOW_NAME = "Heroes3App";
 
+namespace {
+
+void preMain() {
+}
+
+}  // namespace
+
 int main() {
+  preMain();
+
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
       CharacterBuilder{}

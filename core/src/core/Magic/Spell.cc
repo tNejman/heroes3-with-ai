@@ -20,16 +20,6 @@ uint32_t Spell::getManaCostFromSpellType( SpellType type ) noexcept {
   }
 }
 
-std::string Spell::getName() const {
-  // TODO don't return by value
-  switch ( this->type_ ) {
-    case SpellType::MAGIC_ARROW: return "Magic Arrow";
-    case SpellType::LIGHTNING_BOL: return "Lightning Bolt";
-    case SpellType::DESTROY_UNDEAD: return "Destroy Undead";
-    default: return "";
-  }
-}
-
 SpellType Spell::getType() const {
   return this->type_;
 }

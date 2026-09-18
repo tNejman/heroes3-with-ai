@@ -11,26 +11,31 @@
 #include "engine/Graphics/IPrintable.h"
 #include "engine/Graphics/Visitor.h"
 
-enum class SecondarySkillType : char { AIR_MAGIC = 0, FIRE_MAGIC = 1, EARTH_MAGIC = 2, WATER_MAGIC = 3 };
+namespace secondary_skill {
 
-enum class SecondarySkillLevel : char { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
+enum class Type : char { AIR_MAGIC, FIRE_MAGIC, EARTH_MAGIC, WATER_MAGIC };
+
+enum class Level : char { BASIC = 0, ADVANCED = 1, EXPERT = 2 };
+
+}  // namespace secondary_skill
 
 class SecondarySkill : public IPrintable {
+ private:
   // TODO zrobic fabryke
-  SecondarySkillType type_;
-  SecondarySkillLevel level_;
+  secondary_skill::Type type_;
+  secondary_skill::Level level_;
   uint32_t cost_;
 
-  SecondarySkill( SecondarySkillType skill_type );
-  SecondarySkill( SecondarySkillType skill_type, SecondarySkillLevel skill_level );
+  SecondarySkill( secondary_skill::Type skill_type );
+  SecondarySkill( secondary_skill::Type skill_type, secondary_skill::Level skill_level );
 
  public:
-  static std::unique_ptr<SecondarySkill> create( SecondarySkillType type, SecondarySkillLevel level );
-  static std::unique_ptr<SecondarySkill> create( SecondarySkillType type );
+  static std::unique_ptr<SecondarySkill> create( secondary_skill::Type type, secondary_skill::Level level );
+  static std::unique_ptr<SecondarySkill> create( secondary_skill::Type type );
 
   void accept( Visitor& vis ) const override;
-  [[nodiscard]] SecondarySkillType getType() const;
-  [[nodiscard]] SecondarySkillLevel getLevel() const;
+  [[nodiscard]] secondary_skill::Type getType() const;
+  [[nodiscard]] secondary_skill::Level getLevel() const;
   [[nodiscard]] std::unique_ptr<SecondarySkill> copy() const;
 };
 
