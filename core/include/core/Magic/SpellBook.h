@@ -7,10 +7,9 @@
 #include <vector>
 
 #include "core/Magic/Spell.h"
-#include "core/Misc/Equippable.h"
 
 // public Printable
-class SpellBook : public Equippable {
+class SpellBook {
  private:
   std::vector<Spell> spells_;
 
@@ -18,7 +17,7 @@ class SpellBook : public Equippable {
   SpellBook() = default;
   SpellBook( const SpellBook& ) = delete;
   SpellBook( SpellBook&& ) = default;
-  ~SpellBook() override = default;
+  ~SpellBook() = default;
   SpellBook& operator=( const SpellBook& ) = delete;
   SpellBook& operator=( SpellBook&& ) = default;
 

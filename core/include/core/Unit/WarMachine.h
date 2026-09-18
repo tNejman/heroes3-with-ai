@@ -7,11 +7,9 @@
 
 #include <memory>
 
-#include "core/Misc/Equippable.h"
-#include "core/Unit/Unit.h"
 #include "core/Unit/UnitsLib.h"
 
-class WarMachine : public Unit, public Equippable {
+class WarMachine : public Unit {
  public:
   WarMachine( const std::shared_ptr<const UnitData> unit_data, const int unit_type ) : Unit( unit_data, unit_type ) {};
 

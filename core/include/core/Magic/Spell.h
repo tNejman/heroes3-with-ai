@@ -4,19 +4,13 @@
     - klasa ma pozwalać na rzucanie zaklęć
 */
 #include <cstdint>
-#include <memory>
 #include <string>
 
-#include "core/Misc/Equippable.h"
+enum class MagicSchool : char { EARTH, AIR, FIRE, WATER };
 
-// #include "engine/Graphics/IPrintable.h"
+enum class SpellType : char { MAGIC_ARROW, LIGHTNING_BOL, DESTROY_UNDEAD };
 
-enum class MagicSchool : char { EARTH = 0, AIR = 1, FIRE = 2, WATER = 3 };
-
-enum class SpellType : char { MAGIC_ARROW = 0, LIGHTNING_BOL = 1, DESTROY_UNDEAD = 2 };
-
-// , public Printable
-class Spell : public Equippable {
+class Spell {
  private:
   // TODO zrobic fabryke jak art i unit
   SpellType type_;
@@ -40,3 +34,4 @@ class Spell : public Equippable {
   [[nodiscard]] uint32_t getLevel() const;
   [[nodiscard]] uint32_t getManaCost() const;
 };
+
