@@ -49,7 +49,7 @@ requires( !std::convertible_to<Forward, std::string_view> )
 struct Cond {
   bool value;
   std::source_location loc;
-  Cond( bool v, std::source_location l = std::source_location::current() ) : value( v ), loc( l ) {
+  constexpr Cond( bool v, std::source_location l = std::source_location::current() ) : value( v ), loc( l ) {
   }
 };
 
@@ -60,7 +60,7 @@ template <typename Arg>
 }
 
 template <typename... Args>
-inline void passCondOrAbort( Cond c, Args&&... msgs ) {
+constexpr void passCondOrAbort( Cond c, Args&&... msgs ) {
   if ( !c.value ) {
     std::cout << scopeFunName( c.loc ) << " -> ";
     ( std::cout << ... << std::forward<Args>( msgs ) ) << '\n';

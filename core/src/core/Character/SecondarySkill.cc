@@ -4,21 +4,17 @@
 
 #include "engine/Graphics/Visitor.h"
 
-SecondarySkill::SecondarySkill( SecondarySkillType skill_type )
-    : type_( skill_type ), level_( SecondarySkillLevel::BASIC ), cost_( 0 ) {};
+constexpr SecondarySkill::SecondarySkill( SecondarySkill::Type skill_type ) noexcept
+    : type_( skill_type ), level_( SecondarySkill::Level::BASIC ) {};
 
-SecondarySkill::SecondarySkill( SecondarySkillType skill_type, SecondarySkillLevel skill_level )
-    : type_( skill_type ), level_( skill_level ), cost_( 0 ) {};
+constexpr SecondarySkill::SecondarySkill( SecondarySkill::Type skill_type, SecondarySkill::Level skill_level ) noexcept
+    : type_( skill_type ), level_( skill_level ) {};
 
-void SecondarySkill::accept( Visitor& v ) const {
-  v.visit( *this );
-}
-
-SecondarySkillType SecondarySkill::getType() const {
+SecondarySkill::Type SecondarySkill::getType() const {
   return this->type_;
 }
 
-SecondarySkillLevel SecondarySkill::getLevel() const {
+SecondarySkill::Level SecondarySkill::getLevel() const {
   return this->level_;
 }
 

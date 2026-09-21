@@ -4,7 +4,9 @@ add_library(Magic SHARED
 )
 
 target_include_directories(Magic PRIVATE
+    magic_enum::magic_enum
 )
 
 target_link_libraries(Magic PRIVATE
+    magic_enum::magic_enum
 )
