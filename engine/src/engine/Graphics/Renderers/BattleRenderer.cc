@@ -4,6 +4,7 @@
 #include <engine/Graphics/SpriteFactory.h>
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -23,9 +24,9 @@
 #include "core/Battle/Moves/MoveMove.h"
 #include "core/Battle/Moves/WaitMove.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
-#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
+#include "engine/IGame/Coords.h"
 
 [[nodiscard]] std::pair<int, int> BattleRenderer::getHexagonOffset( CoordPair coords ) noexcept {
   int offset_x = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( coords.x_ * graphics::BATTLE_MAP_SPRITE_X_DELTA );
@@ -111,9 +112,7 @@ void BattleRenderer::renderObjects() noexcept {
 
   for ( size_t x = 0; x < MAP_WIDTH_BF; ++x ) {
     for ( size_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
-      // TODO remove dynamic cast
-      if ( const auto* unit =
-               dynamic_cast<const UnitStack*>( object_.get().getBattlefield()->getGrid()[x][y]->getObject() ) ) {
+      if ( const UnitStack* unit = object_.get().getBattlefield()->getGrid()[x][y]->getObject()->asUnit() ) {
         sf::Sprite unit_sprite = SpriteFactory::getSpriteFromBindingV( unit->getData().type_ );
         auto [tile_offset_x, tile_offset_y] = getHexagonOffset( unit->getCoordsInBattle() );
         int unit_draw_x = tile_offset_x + ( graphics::HEXAGON_SPRITE_WIDTH / 2 )
@@ -130,6 +129,10 @@ void BattleRenderer::renderObjects() noexcept {
         }
 
         window_.get().draw( unit_sprite );
+
+        /* === draw health === */
+        sf::Font health_num;
+        if ()
       }
     }
   }

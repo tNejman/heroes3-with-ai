@@ -17,7 +17,6 @@ constexpr inline int DEFAULT_UNIT_STACK_LUCK = 0;
 
 class UnitStack : public TileObject {
  private:
-  // CoordPair coords_in_battle_{ 0, 0 };
   std::reference_wrapper<const UnitData> data_;
   int morale_ = DEFAULT_UNIT_STACK_MORALE;
   int luck_ = DEFAULT_UNIT_STACK_LUCK;
@@ -25,10 +24,8 @@ class UnitStack : public TileObject {
   int current_health_;
   CoordPair coords_in_battle_;
 
-  // void checkUnit() const;
-
  public:
-  UnitStack( UnitTypeV type, int size );
+  constexpr UnitStack( UnitTypeV type, int size ) noexcept;
   [[nodiscard]] const UnitData& getData() const noexcept;
 
   [[nodiscard]] int getMorale() const noexcept;
@@ -46,14 +43,4 @@ class UnitStack : public TileObject {
   [[nodiscard]] CoordPair getCoordsInBattle() const noexcept;
 
   [[nodiscard]] UnitStack* asUnit() noexcept override;
-  // [[nodiscard]] uint32_t getSpeed() const;
-  // [[nodiscard]] FactionType getFactionType() const;
-  // [[nodiscard]] int getUnitType() const;
-  // [[nodiscard]] uint32_t getRange() const;
-  // [[nodiscard]] uint32_t getCurrentHealth() const;
-  // void setCurrentHealth( uint32_t new_current_health ) noexcept;
-  // [[nodiscard]] double getEffectiveFightValue() const;
-  // [[nodiscard]] std::shared_ptr<const Unit> getUnit() const;
-  // [[nodiscard]] bool getIfAlive() const;
-  // [[nodiscard]] std::shared_ptr<UnitStack> copy() const;
 };

@@ -1,18 +1,17 @@
 #include "core/Unit/UnitStack.h"
 
-#include "core/Battle/TileObject.hpp"
 #include "aux/Err.hpp"
-#include "core/Exceptions/UnknownStateException.hpp"
-#include "engine/IGame/Coords.h"
+#include "core/Battle/TileObject.hpp"
 #include "core/Unit/UnitsLib.h"
+#include "engine/IGame/Coords.h"
 
-UnitStack::UnitStack( UnitTypeV type, int size )
+constexpr UnitStack::UnitStack( UnitTypeV type, int size ) noexcept
     : TileObject( false ),
       data_( getUnitDataFromType( type ) ),
       size_( size ),
       current_health_( data_.get().health_ ),
       coords_in_battle_( 0, 0 ) {
-  err::passCondOrThrow<UnknownStateException>( size > 0 );
+  err::passCondOrAbort( size > 0 );
 };
 
 [[nodiscard]] const UnitData& UnitStack::getData() const noexcept {
