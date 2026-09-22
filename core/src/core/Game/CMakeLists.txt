@@ -1,6 +1,6 @@
 add_library(Game SHARED
-    Context.cc    
-    Game.cc    
+    Context.cc
+    Game.cc
     StateBattle.cc
     StateOverworld.cc
 )
@@ -8,8 +8,7 @@ add_library(Game SHARED
 target_include_directories(Game PRIVATE
 )
 
-target_link_libraries(Game PRIVATE 
-    # Algorithms
+target_link_libraries(Game PUBLIC
     Coords
-    LoadAndSaveTools
+    magic_enum::magic_enum
 )

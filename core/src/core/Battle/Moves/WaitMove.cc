@@ -1,7 +1,7 @@
 #include "core/Battle/Moves/WaitMove.h"
 
+#include <magic_enum/magic_enum.hpp>
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "core/Battle/Battle.h"
@@ -26,7 +26,8 @@ std::string WaitMove::getInfo( std::shared_ptr<Battle> battle ) const {
     return "no one is waiting in this position";
   }
   std::string info = "Unit: ";
-  info += battle->getUnitFromCoords( coords_ )->getData().name_;
+  info += std::visit( []( const auto& unit_type ) { return magic_enum::enum_name( unit_type ); },
+                      battle->getUnitFromCoords( coords_ )->getData().type_ );
   info += " passes their turn";
   info += ", coords: (x=" + std::to_string( coords_.x_ ) + ",y=" + std::to_string( coords_.y_ ) + ")";
   return info;

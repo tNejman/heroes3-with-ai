@@ -4,14 +4,13 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <chrono>
 
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
+#include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
 #include "engine/Input/KeyboardHandler.h"
 #include "engine/Input/MouseHandler.h"
-#include "engine/IGame/Coords.h"
-#include "core/Misc/ProjectLib.h"
 
 CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
                                                        CharacterMoveDirection direction ) noexcept {

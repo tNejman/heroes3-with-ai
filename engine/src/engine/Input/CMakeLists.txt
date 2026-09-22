@@ -7,6 +7,7 @@ add_library(Input SHARED
 target_include_directories(Input PRIVATE
 )
 
-target_link_libraries(Input PRIVATE 
+target_link_libraries(Input PUBLIC
     SFML::Graphics
+    magic_enum::magic_enum
 )

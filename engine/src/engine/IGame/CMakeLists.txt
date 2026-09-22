@@ -5,7 +5,7 @@ add_library(Coords SHARED
 target_include_directories(Coords PRIVATE
 )
 
-target_link_libraries(Coords PRIVATE 
+target_link_libraries(Coords PRIVATE
 )
 
 # ===== =====
@@ -18,5 +18,6 @@ add_library(IGame SHARED
 target_include_directories(IGame PRIVATE
 )
 
-target_link_libraries(IGame PRIVATE 
+target_link_libraries(IGame PRIVATE
+    Character
 )

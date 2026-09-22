@@ -14,11 +14,11 @@
 #include "core/Battle/Battle.h"
 #include "core/Battle/Obstacle.hpp"
 #include "core/Character/Character.h"
-#include "core/Character/SecondarySkill.h"
-#include "engine/Graphics/Visitor.h"
 #include "core/Magic/Spell.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/Graphics/Visitor.h"
+
 
 class SpriteVisitor : public Visitor {
  private:
@@ -28,7 +28,6 @@ class SpriteVisitor : public Visitor {
   void visit( const Artifact& e ) override;
   void visit( const Obstacle& e ) override;
   void visit( const Character& e ) override;
-  void visit( const SecondarySkill& e ) override;
   void visit( const Spell& e ) override;
   void visit( const Resource& e ) override;
   void visit( const OverworldObstacle& e ) override;

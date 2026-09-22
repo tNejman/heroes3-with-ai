@@ -4,7 +4,6 @@ add_library(Character SHARED
     CharacterBuilder.cc
     CharacterInventory.cc
     CharacterStats.cc
-    SecondarySkill.cc
 )
 
 target_include_directories(Character PRIVATE
@@ -14,9 +13,6 @@ target_link_libraries(Character PUBLIC
     Artifact
     Coords
     Unit
-    MapObject
-)
-
-target_link_libraries(Character PRIVATE
     Magic
+    MapObject
 )

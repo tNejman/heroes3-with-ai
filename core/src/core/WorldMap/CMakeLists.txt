@@ -8,9 +8,6 @@ target_include_directories(WorldMap PRIVATE
 )
 
 target_link_libraries(WorldMap PUBLIC
-    Coords
-)
-
-target_link_libraries(WorldMap PRIVATE 
     Character
+    Coords
 )

@@ -116,7 +116,7 @@ foreach(module ${ENGINE_MODULES})
         MESSAGE("skipping nonexistent dir: ./engine/src/engine/${module}")
     endif()
 
-    target_include_directories(${module} PRIVATE
+    target_include_directories(${module} PUBLIC
         ${CMAKE_SOURCE_DIR}/engine/include/
         ${CMAKE_SOURCE_DIR}/aux/include/
         ${CMAKE_SOURCE_DIR}/core/include # @TODO!!! REMOVE
@@ -126,7 +126,7 @@ endforeach()
 
 foreach(module ${CORE_MODULES})
     add_subdirectory(core/src/core/${module})
-    target_include_directories(${module} PRIVATE
+    target_include_directories(${module} PUBLIC
         ${CMAKE_SOURCE_DIR}/core/include/
         ${CMAKE_SOURCE_DIR}/engine/include/
         ${CMAKE_SOURCE_DIR}/aux/include/

@@ -4,17 +4,16 @@
 #include <optional>
 #include <utility>
 
+#include "aux/Err.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Obstacle.hpp"
 #include "core/Character/Character.h"
-#include "core/Character/SecondarySkill.h"
-#include "aux/Err.hpp"
-#include "engine/Graphics/SpriteFactory.h"
-#include "engine/Graphics/Visitor.h"
 #include "core/Magic/Spell.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/Graphics/SpriteFactory.h"
+#include "engine/Graphics/Visitor.h"
 
 void SpriteVisitor::visit( const Artifact& e ) {
   sprite_ = SpriteFactory::getSpriteFromBindingV( e.getData().type_ );
@@ -26,10 +25,6 @@ void SpriteVisitor::visit( const Obstacle& ) {
 
 void SpriteVisitor::visit( const Character& e ) {
   sprite_ = SpriteFactory::getSpriteFromBindingV( e.getCharacterType(), e.getOrientation() );
-}
-
-void SpriteVisitor::visit( const SecondarySkill& ) {
-  err::passCondOrAbort( false, "not implemented: SECONDARY SKILL" );
 }
 
 void SpriteVisitor::visit( const Spell& ) {

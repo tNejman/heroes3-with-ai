@@ -12,7 +12,6 @@ class Artifact;
 class Obstacle;
 class Spell;
 class SpellBook;
-class SecondarySkill;
 class Resource;
 class WarMachine;
 class Player;
@@ -26,7 +25,6 @@ class Visitor {  // NOLINT(cppcoreguidelines-special-member-functions)
   virtual void visit( const Artifact& ) = 0;
   virtual void visit( const Obstacle& ) = 0;
   virtual void visit( const Character& ) = 0;
-  virtual void visit( const SecondarySkill& ) = 0;
   virtual void visit( const Spell& ) = 0;
   virtual void visit( const Resource& ) = 0;
   virtual void visit( const OverworldObstacle& ) = 0;

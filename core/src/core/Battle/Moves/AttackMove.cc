@@ -1,22 +1,24 @@
 #include "core/Battle/Moves/AttackMove.h"
 
+#include <magic_enum/magic_enum.hpp>
 #include <memory>
 #include <string>
 
+#include "aux/Err.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Moves/Move.hpp"
-#include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
-#include "engine/IGame/Coords.h"
 #include "core/Unit/UnitStack.h"  // IWYU pragma: keep
+#include "engine/IGame/Coords.h"
+
 
 AttackMove::AttackMove( CoordPair attacker, CoordPair defender )
     : Move(), attacker_( attacker ), defender_( defender ) {
 }
 
 void AttackMove::execute( std::shared_ptr<Battle> battle ) {
-  auto *maybe_attacker = battle->getUnitFromCoords( attacker_ );
-  auto *maybe_defender = battle->getUnitFromCoords( defender_ );
+  auto* maybe_attacker = battle->getUnitFromCoords( attacker_ );
+  auto* maybe_defender = battle->getUnitFromCoords( defender_ );
   if ( maybe_attacker == nullptr ) {
     err::raise<UnknownStateException>( "attacker is null" );
   } else if ( maybe_defender == nullptr ) {
@@ -39,9 +41,11 @@ std::string AttackMove::getPath() const {
 
 std::string AttackMove::getInfo( std::shared_ptr<Battle> battle ) const {
   std::string info = "Attacker: ";
-  info += battle->getUnitFromCoords( attacker_ )->getData().name_;
+  info += std::visit( []( const auto& unit_type ) { return magic_enum::enum_name( unit_type ); },
+                      battle->getUnitFromCoords( attacker_ )->getData().type_ );
   info += ", defender: ";
-  info += battle->getUnitFromCoords( defender_ )->getData().name_;
+  info += std::visit( []( const auto& unit_type ) { return magic_enum::enum_name( unit_type ); },
+                      battle->getUnitFromCoords( defender_ )->getData().type_ );
 
   auto x = attacker_.x_;
   auto y = attacker_.y_;
