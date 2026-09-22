@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Window.hpp>
 #include <utility>
@@ -19,6 +20,6 @@ class BattleRenderer : public IRenderer<Battle> {
   void renderObjects() noexcept;
 
  public:
-  BattleRenderer( sf::RenderWindow& window, const Battle& battle ) noexcept;
+  BattleRenderer( sf::RenderTexture& target_render_texture, const Battle& battle ) noexcept;
   void render() override;
 };

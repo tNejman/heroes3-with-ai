@@ -24,16 +24,19 @@ enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION, COUNT };
 
 class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
   template <EnumWithCount Binding>
-  static const sf::Texture& getTexture( Binding b, std::string_view path ) noexcept;
+  static const sf::Texture& getTexture( Binding b, std::string_view path,
+                                        const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
 
   template <EnumWithCount Binding, SpriteDomain D>
-  static const sf::Texture& getTexture( Binding b, std::string_view path ) noexcept;
+  static const sf::Texture& getTexture( Binding b, std::string_view path,
+                                        const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
 
   [[nodiscard]] static sf::Texture loadTextureOrAbort( std::string_view path ) noexcept;
   [[nodiscard]] static sf::Sprite cropTexture( const sf::Texture& texture, sf::Vector2<int> ltc_pos,
                                                sf::Vector2<int> size ) noexcept;
 
   static void eraseCharactersTextureCornerMarkers( sf::Texture&, unsigned int width, unsigned int height ) noexcept;
+  static void cleanupRawMagentaAndCyanTexture( sf::Texture& ) noexcept;
 
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( HexagonType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ArtifactType ) noexcept;

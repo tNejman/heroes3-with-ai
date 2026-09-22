@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Iterator
 
 BASE = "https://www.spriters-resource.com/media/assets"
-ROOT = Path(sys.argv[1]) / "sprites"
+ROOT = Path(sys.argv[1]) / "assets/sprites"
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
     "Referer": "https://www.spriters-resource.com/",

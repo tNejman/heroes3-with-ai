@@ -3,18 +3,23 @@
 #include <engine/Input/InputHandler.h>
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/Window.hpp>
 #include <SFML/Window/WindowEnums.hpp>
+#include <array>
 #include <memory>
 #include <utility>
-#include <variant>
 #include <vector>
 
+#include "aux/Err.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/CharacterBuilder.h"
 #include "core/Character/CharacterStats.h"
@@ -26,16 +31,21 @@
 #include "core/Unit/UnitsLib.h"
 #include "engine/IGame/Coords.h"
 
+
 constexpr inline int FRAMES_PER_SECOND = 30;
 
 constexpr inline std::string WINDOW_NAME = "Heroes3App";
 
 namespace {
 
+int window_scale_mult = 3;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+
 void preMain() {
 }
 
 }  // namespace
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 int main() {
   preMain();
@@ -93,50 +103,49 @@ int main() {
 
   Game game{ std::move( players ) };
 
-  // std::ofstream out( "CharacterSave2.txt" );
-  // CharacterSaver character_saver = CharacterSaver( "CharacterSave2.txt", characters[0] );
-  // character_saver.save();
-  // CharacterSaver character_saver2 = CharacterSaver( "CharacterSave2.txt", characters_2[0] );
-  // character_saver2.save();
-  // CharacterSaver character_saver3 = CharacterSaver( "CharacterSave2.txt", characters_2[1] );
-  // character_saver3.save();
+  sf::RenderWindow window{
+      sf::VideoMode{ sf::Vector2u{ static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
+                                   static_cast<unsigned int>( graphics::WINDOW_HEIGHT * window_scale_mult ) } },
+      WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close };
+  window.setFramerateLimit( FRAMES_PER_SECOND );
+  window.setPosition( sf::Vector2i{ 0, 0 } );
 
-  // TODO make NOT shared_ptr
-  std::shared_ptr<sf::RenderWindow> window =
-      std::make_shared<sf::RenderWindow>( sf::VideoMode( { graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } ),
-                                          WINDOW_NAME, sf::Style::Titlebar | sf::Style::Close );
-  window->setFramerateLimit( FRAMES_PER_SECOND );
-  window->setSize( sf::Vector2u( graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT ) );
-  GameRenderer{ *window, game }.render();
-  while ( window->isOpen() ) {
-    if ( window->getSize() != sf::Vector2u( graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT ) ) {
-      window->setSize( { graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } );
+  sf::RenderTexture target;
+  err::passCondOrAbort( target.resize( sf::Vector2u{ static_cast<unsigned int>( graphics::WINDOW_WIDTH ),
+                                                     static_cast<unsigned int>( graphics::WINDOW_HEIGHT ) } ) );
+  target.setSmooth( false );
+
+  while ( window.isOpen() ) {
+    if ( window.getSize()
+         != sf::Vector2u( static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
+                          static_cast<unsigned int>( graphics::WINDOW_HEIGHT * window_scale_mult ) ) ) {
+      window.setSize( { static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
+                        static_cast<unsigned int>( graphics::WINDOW_HEIGHT * window_scale_mult ) } );
+      window.setView( sf::View{ sf::FloatRect{ { 0.F, 0.F }, sf::Vector2f{ window.getSize() } } } );
     }
-    // sf::Time start_time = clock.getElapsedTime();
 
     UserCommand command = None{};
 
-    while ( std::optional event = window->pollEvent() ) {
+    while ( std::optional event = window.pollEvent() ) {
       if ( event->is<sf::Event::Closed>() ) {
-        window->close();
+        window.close();
         return 0;
       }
       if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Q ) ) {
         command = SwitchCharacter{};
+      } else if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Num1 ) ) {
+        window_scale_mult = 1;
+      } else if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Num2 ) ) {
+        window_scale_mult = 2;
+      } else if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Num3 ) ) {
+        window_scale_mult = 3;
       } else {
-        command = InputHandler::processInput( *event, game );  // only the last command of a game iteration is recorded
+        command = InputHandler::processInput( *event, game, window_scale_mult );
       }
     }
     game.applyCommand( command );
-    GameRenderer{ *window, game }.render();
-    // std::this_thread::sleep_for( std::chrono::milliseconds{ 500 } );
-    if ( !std::holds_alternative<None>( command ) ) {
-      // const auto& state = game->getState();
-      // std::cout << typeid( state ).name() << '\n';
-    }
-    // if ( game->getFrameCountSinceStart() == 4 ) {
-    //   std::chrono::milliseconds timespan{ 5'000 };
-    //   std::this_thread::sleep_for( timespan );
-    // }
+    GameRenderer{ window, target, game }.render();
   }
 };
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

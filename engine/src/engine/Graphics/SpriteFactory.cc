@@ -27,6 +27,8 @@
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 
+static const inline std::string SPRITE_ROOT_DIR = "assets/sprites";
+
 [[nodiscard]] sf::Sprite SpriteFactory::cropTexture( const sf::Texture& texture, sf::Vector2<int> ltc_pos,
                                                      sf::Vector2<int> size ) noexcept {
   return sf::Sprite{ texture, sf::IntRect{ ltc_pos, size } };
@@ -50,11 +52,35 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
   DISCARD_RETURN() texture.loadFromImage( image );
 }
 
+void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noexcept {
+  static constexpr int MEDIUM_SHADOW_ALPHA = 64;
+  static constexpr int DARK_SHADOW_ALPHA = 128;
+
+  sf::Image image{ texture.copyToImage() };
+  const sf::Vector2u size{ image.getSize() };
+
+  for ( unsigned int y{ 0 }; y < size.y; ++y ) {
+    for ( unsigned int x{ 0 }; x < size.x; ++x ) {
+      const sf::Color px{ image.getPixel( { x, y } ) };
+
+      if ( px == sf::Color{ 0, 255, 255 } ) {
+        image.setPixel( { x, y }, sf::Color{ 0, 0, 0, 0 } );
+      } else if ( px == sf::Color{ 255, 150, 255 } ) {
+        image.setPixel( { x, y }, sf::Color{ 0, 0, 0, MEDIUM_SHADOW_ALPHA } );
+      } else if ( px == sf::Color{ 255, 0, 255 } ) {
+        image.setPixel( { x, y }, sf::Color{ 0, 0, 0, DARK_SHADOW_ALPHA } );
+      }
+    }
+  }
+
+  DISCARD_RETURN() texture.loadFromImage( image );
+}
+
 /* === @PUBLIC === */
 
 [[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( HexagonType ht ) noexcept {
-  static constexpr std::string_view HEXAGON_FILES_LOCATION = "sprites/battle/aux/";
-  const std::string filename = std::string{ HEXAGON_FILES_LOCATION } + [&] -> const char* {
+  static const std::string hexagon_files_location = SPRITE_ROOT_DIR + "/battle/aux/";
+  const std::string filename = hexagon_files_location + [&] -> const char* {
     switch ( ht ) {
       case HexagonType::EMPTY: return "Hexagon";
       case HexagonType::ATTACK: return "Hexagon_Attack";
@@ -67,7 +93,7 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( ArtifactType at ) noexcept {
-  static constexpr std::string_view ARTIFACT_SPRITE_FILE_LOCATION = "sprites/artifacts/artifacts.png";
+  static const std::string artifact_sprite_file_location = SPRITE_ROOT_DIR + "/artifacts/artifacts.png";
 
   static constexpr int ARTIFACT_SPRITE_WIDTH = 58;
   static constexpr int ARTIFACT_SRPITE_HEIGHT = 64;
@@ -121,13 +147,13 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
     }
   }();
 
-  return sf::Sprite{ getTexture( at, ARTIFACT_SPRITE_FILE_LOCATION ),
+  return sf::Sprite{ getTexture( at, artifact_sprite_file_location ),
                      sf::IntRect{ sprite_location, { ARTIFACT_SPRITE_WIDTH, ARTIFACT_SRPITE_HEIGHT } } };
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> t ) noexcept {
-  static constexpr std::string_view FILE_LOCATION = "sprites/terrain/bg/";
-  const std::string tex_filename = std::string{ FILE_LOCATION } + [&] -> const char* {
+  static const std::string file_location = SPRITE_ROOT_DIR + "/terrain/bg/";
+  const std::string tex_filename = file_location + [&] -> const char* {
     switch ( t.val ) {
       case Terrain::GRASS: return "tgrb000";
       case Terrain::DIRT: return "tdtb000";
@@ -144,8 +170,8 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( Tagged<Terrain, SpriteDomain::BATTLE> t ) noexcept {
-  static constexpr std::string_view FILE_LOCATION = "sprites/battle_backgrounds/";
-  const std::string tex_filename = std::string{ FILE_LOCATION } + [&] -> const char* {
+  static const std::string file_location = SPRITE_ROOT_DIR + "/battle_backgrounds/";
+  const std::string tex_filename = file_location + [&] -> const char* {
     // TODO find actual sprite names maybe
     switch ( t.val ) {
       case Terrain::GRASS:
@@ -161,25 +187,24 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( OverworldObstacleType obt ) noexcept {
-  static constexpr std::string_view FILE_LOCATION = "sprites/landscape/";
-  const std::string tex_filename = std::string{ FILE_LOCATION } + [&] -> const char* {
+  static const std::string file_location = SPRITE_ROOT_DIR + "/landscape/";
+  const std::string tex_filename = file_location + [&] -> const char* {
     switch ( obt ) {
       case OverworldObstacleType::DRIED_TREE: return "AVLtRo06";
       case OverworldObstacleType::GREEN_TREE: return "AVLswt15";
       case OverworldObstacleType::COUNT: std::unreachable();
     }
   }() + ".png";
-  return sf::Sprite{ getTexture<OverworldObstacleType>( obt, tex_filename ) };
+  return sf::Sprite{ getTexture<OverworldObstacleType>( obt, tex_filename, cleanupRawMagentaAndCyanTexture ) };
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( CharacterType ct, CharacterMoveDirection cmd ) noexcept {
   static constexpr int HERO_SPRITE_WIDTH = 96;
   static constexpr int HERO_SPRITE_HEIGHT = 64;
 
-  static constexpr std::string_view HEROES_SPRITES_FILE_PATH = "sprites/heroes_adventure.png";
-  // std::cout << magic_enum::enum_name( ct ) << std::endl;
+  static const std::string heroes_sprites_file_path = SPRITE_ROOT_DIR + "/heroes_adventure.png";
   static const sf::Texture heroes_sprite_texture = [] {
-    auto tex = loadTextureOrAbort( HEROES_SPRITES_FILE_PATH );
+    auto tex = loadTextureOrAbort( heroes_sprites_file_path );
     eraseCharactersTextureCornerMarkers( tex, HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT );
     return tex;
   }();
@@ -204,7 +229,7 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
       case CharacterMoveDirection::DOWN: return horizontal_offset::FACING_DOWN;
       case CharacterMoveDirection::DOWN_LEFT: return horizontal_offset::FACING_DOWN_RIGHT;
       case CharacterMoveDirection::LEFT: return horizontal_offset::FACING_RIGHT;
-      default: return horizontal_offset::FACING_RIGHT;
+      case CharacterMoveDirection::NONE: std::unreachable();
     }
   }();
   const int vertical_multiplier = [&] {
@@ -232,8 +257,8 @@ void SpriteFactory::eraseCharactersTextureCornerMarkers( sf::Texture& texture, u
 }
 
 [[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( CastleUnitType cut ) noexcept {
-  static constexpr std::string_view FILE_LOCATION = "sprites/units/castle/";
-  const std::string tex_filename = std::string{ FILE_LOCATION } + toLower( magic_enum::enum_name( cut ) ) + ".png";
+  static const std::string file_location = SPRITE_ROOT_DIR + "/units/castle/";
+  const std::string tex_filename = file_location + toLower( magic_enum::enum_name( cut ) ) + ".png";
 
   auto crop = [cut] -> sf::Vector2<int> {
     switch ( cut ) {

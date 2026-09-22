@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <functional>
@@ -14,19 +15,20 @@
 
 class RVisitor : public IRVisitor {
  private:
-  std::reference_wrapper<sf::RenderWindow> window_;
+  std::reference_wrapper<sf::RenderTexture> target_render_texture_;
   std::reference_wrapper<const game::Context> context_;
 
  public:
-  RVisitor( sf::RenderWindow& window, const game::Context& context ) : window_( window ), context_( context ) {
+  RVisitor( sf::RenderTexture& target_render_texture, const game::Context& context )
+      : target_render_texture_( target_render_texture ), context_( context ) {
   }
 
   void visit( const game::StateOverworld& s ) noexcept override {
     CoordPair center_coords = context_.get().getCurrentCharacter().getCoords();
-    MapRenderer{ window_, s.viewMap(), center_coords }.render();
+    MapRenderer{ target_render_texture_, s.viewMap(), center_coords }.render();
   }
 
   void visit( const game::StateBattle& s ) noexcept override {
-    BattleRenderer{ window_, s.viewBattle() }.render();
+    BattleRenderer{ target_render_texture_, s.viewBattle() }.render();
   }
 };

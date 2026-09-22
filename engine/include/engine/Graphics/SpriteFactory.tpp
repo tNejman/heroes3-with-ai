@@ -1,11 +1,15 @@
 #pragma once
 
+#include <SFML/Graphics/Texture.hpp>
+
+#include "aux/Err.hpp"
 #include "engine/Graphics/SpriteFactory.h"
 
 /* ==== @PRIVATE ==== */
 
 template <EnumWithCount Binding>
-const sf::Texture& SpriteFactory::getTexture( Binding b, std::string_view path ) noexcept {
+const sf::Texture& SpriteFactory::getTexture(
+    Binding b, std::string_view path, const std::function<void( sf::Texture& )>& texutre_cleanup_func ) noexcept {
   static std::array<std::optional<sf::Texture>, static_cast<size_t>( Binding::COUNT )> lookup;
 
   err::passCondOrAbort( b != Binding::COUNT, "getTexture -> abort; type: ", magic_enum::enum_type_name<Binding>() );
@@ -13,17 +17,27 @@ const sf::Texture& SpriteFactory::getTexture( Binding b, std::string_view path )
   const auto index = static_cast<size_t>( b );
   if ( !lookup[index].has_value() ) {
     lookup[index] = loadTextureOrAbort( path );
+    ( *lookup[index] ).setSmooth( false );
+    if ( texutre_cleanup_func ) {
+      texutre_cleanup_func( *lookup[index] );
+    }
   }
   return *lookup[index];
 }
 
 template <EnumWithCount Binding, SpriteDomain D>
-const sf::Texture& SpriteFactory::getTexture( Binding b, std::string_view path ) noexcept {
+const sf::Texture& SpriteFactory::getTexture(
+    Binding b, std::string_view path, const std::function<void( sf::Texture& )>& texutre_cleanup_func ) noexcept {
   static std::array<std::optional<sf::Texture>, static_cast<size_t>( Binding::COUNT )> lookup;
+
   err::passCondOrAbort( b != Binding::COUNT );
+
   const auto index = static_cast<size_t>( b );
   if ( !lookup[index].has_value() ) {
     lookup[index] = loadTextureOrAbort( path );
+    if ( texutre_cleanup_func ) {
+      texutre_cleanup_func( *lookup[index] );
+    }
   }
   return *lookup[index];
 }

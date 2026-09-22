@@ -12,18 +12,22 @@
 #include "engine/Input/KeyboardHandler.h"
 #include "engine/Input/MouseHandler.h"
 
+/* ===== @PRIVATE ===== */
+
 CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
                                                        CharacterMoveDirection direction ) noexcept {
   return old_coords + WORLD_MAP_DIRECTIONS[static_cast<size_t>( direction )];
 }
 
-[[nodiscard]] UserCommand InputHandler::processMouseInput( const sf::Event& event, const Game& game ) noexcept {
-  if ( event.getIf<sf::Event::MouseButtonPressed>()->button != sf::Mouse::Button::Left ) {
+[[nodiscard]] UserCommand InputHandler::processMouseInput( const sf::Event& event, const Game& game,
+                                                           int window_scale ) noexcept {
+  const auto* pressed = event.getIf<sf::Event::MouseButtonPressed>();
+  if ( pressed->button != sf::Mouse::Button::Left ) {
     return None{};
   }
   MouseHandler mouse_handler{};
-  mouse_handler.updateMouseCoords( MouseCoords{ .x = event.getIf<sf::Event::MouseButtonPressed>()->position.x,
-                                                .y = event.getIf<sf::Event::MouseButtonPressed>()->position.y } );
+  mouse_handler.updateMouseCoords(
+      MouseCoords{ .x = pressed->position.x / window_scale, .y = pressed->position.y / window_scale } );
   game.getState().accept( mouse_handler );
   return mouse_handler.getCommand();
 }
@@ -40,9 +44,11 @@ CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
   return MoveCharacter{ .source_ = source, .destination_ = destination };
 }
 
-UserCommand InputHandler::processInput( const sf::Event& event, const Game& game ) noexcept {
+/* ===== @PUBLIC ===== */
+
+UserCommand InputHandler::processInput( const sf::Event& event, const Game& game, int window_scale ) noexcept {
   if ( event.is<sf::Event::MouseButtonPressed>() ) {
-    return processMouseInput( event, game );
+    return processMouseInput( event, game, window_scale );
   }
   return processKeyboardInput( event, game );
 }

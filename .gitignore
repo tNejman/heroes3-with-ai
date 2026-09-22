@@ -15,7 +15,9 @@ notes.md
 Sprites/
 Sprites.old/
 
-sprites/*
-!sprites/battle/
-sprites/battle/*
-!sprites/battle/aux/
+assets/sprites/*
+!assets/sprites/battle/
+assets/sprites/battle/*
+!assets/sprites/battle/aux/
+
+assets/fonts/

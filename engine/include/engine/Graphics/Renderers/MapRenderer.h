@@ -1,13 +1,12 @@
 #pragma once
 
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <algorithm>
-#include <type_traits>
 
+#include "core/WorldMap/WorldMap.h"
 #include "engine/Graphics/Renderers/IRenderer.hpp"
 #include "engine/IGame/Coords.h"
-#include "core/Misc/ProjectLib.h"
-#include "core/WorldMap/WorldMap.h"
+
 
 class MapRenderer : public IRenderer<WorldMap> {
  private:
@@ -23,7 +22,7 @@ class MapRenderer : public IRenderer<WorldMap> {
  public:
   //     IRenderer(const SpriteVisitor& sprite_visitor, const T& object) :
   // sprite_visitor_(sprite_visitor), object_(object) {};
-  MapRenderer( sf::RenderWindow& window, const WorldMap& object, CoordPair center_coords );
+  MapRenderer( sf::RenderTexture& target_render_texture, const WorldMap& object, CoordPair center_coords );
   ~MapRenderer() override = default;
   void render() override;
 };

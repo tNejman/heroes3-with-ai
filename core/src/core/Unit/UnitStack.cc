@@ -1,18 +1,8 @@
 #include "core/Unit/UnitStack.h"
 
-#include "aux/Err.hpp"
 #include "core/Battle/TileObject.hpp"
 #include "core/Unit/UnitsLib.h"
 #include "engine/IGame/Coords.h"
-
-constexpr UnitStack::UnitStack( UnitTypeV type, int size ) noexcept
-    : TileObject( false ),
-      data_( getUnitDataFromType( type ) ),
-      size_( size ),
-      current_health_( data_.get().health_ ),
-      coords_in_battle_( 0, 0 ) {
-  err::passCondOrAbort( size > 0 );
-};
 
 [[nodiscard]] const UnitData& UnitStack::getData() const noexcept {
   return data_;

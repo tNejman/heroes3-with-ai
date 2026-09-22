@@ -44,3 +44,15 @@ class UnitStack : public TileObject {
 
   [[nodiscard]] UnitStack* asUnit() noexcept override;
 };
+
+/* ===== @IMPL ===== */
+
+// apparently constexpr must live in header
+constexpr UnitStack::UnitStack( UnitTypeV type, int size ) noexcept
+    : TileObject( false ),
+      data_( getUnitDataFromType( type ) ),
+      size_( size ),
+      current_health_( data_.get().health_ ),
+      coords_in_battle_( 0, 0 ) {
+  err::passCondOrAbort( size > 0 );
+};
