@@ -8,7 +8,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include <string_view>
 
-#include "aux/EnumWithCount.hpp"
+#include "aux/Enum.hpp"
 #include "core/Artifact/ArtifactLib.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
@@ -16,21 +16,21 @@
 
 enum class SpriteDomain : char { WORLD, BATTLE };
 
-template <EnumWithCount T, SpriteDomain D>
+template <Enum E, SpriteDomain D>
 struct Tagged {
-  T val;
+  E val;
 };
 
-enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION, COUNT };
+enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION };
 
 class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
  private:
-  template <EnumWithCount Binding>
+  template <Enum Binding>
   static const sf::Texture& getTexture(
       Binding b, std::string_view path,
       const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
 
-  template <EnumWithCount Binding, SpriteDomain D>
+  template <Enum Binding, SpriteDomain D>
   static const sf::Texture& getTexture(
       Binding b, std::string_view path,
       const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
@@ -66,16 +66,20 @@ class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
 
   static void flipSpriteHorizontally( sf::Sprite& ) noexcept;
 
-  template <EnumWithCount T>
-  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( T binding ) noexcept;
+  template <Enum Binding>
+  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Binding binding ) noexcept;
 
-  template <Enum T1, Enum T2>
-  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( T1 binding1, T2 binding2 ) noexcept;
+  template <Enum Binding1, Enum Binding2>
+  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Binding1 binding1, Binding2 binding2 ) noexcept;
 
-  template <EnumWithCount T, SpriteDomain D>
-  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Tagged<T, D> binding ) noexcept;
+  /**
+   * @note use if enum has different meanings in different contexts
+   */
+  template <Enum Binding, SpriteDomain D>
+  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Tagged<Binding, D> binding ) noexcept;
 
   [[nodiscard]] inline static sf::Sprite getSpriteFromBindingV( UnitTypeV type ) noexcept;
+
   [[nodiscard]] static int getFootHeightForUnit( UnitTypeV type ) noexcept;
 };
 

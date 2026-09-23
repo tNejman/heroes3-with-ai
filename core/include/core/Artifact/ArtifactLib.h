@@ -47,9 +47,6 @@ enum class ArtifactType : char {
   BOOTS_OF_SPEED,
 
   // Misc
-
-  // Special
-  COUNT
 };
 
 enum class EquipmentSlots : char {
@@ -69,7 +66,6 @@ enum class EquipmentSlots : char {
   MISC_3 = 12,
   MISC_4 = 13,
   MISC_5 = 14,
-  COUNT = 15
 };
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-const-or-ref-data-members,misc-non-private-member-variables-in-classes)

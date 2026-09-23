@@ -1,10 +1,10 @@
 #pragma once
 
-#include "engine/Graphics/Visitor.h"
 #include "core/MapObject/MapObject.h"
+#include "engine/Graphics/Visitor.h"
 #include "engine/IGame/Coords.h"
 
-enum class OverworldObstacleType : char { DRIED_TREE, GREEN_TREE, COUNT };
+enum class OverworldObstacleType : char { DRIED_TREE, GREEN_TREE };
 
 class OverworldObstacle : public MapObject {
   OverworldObstacleType type_;

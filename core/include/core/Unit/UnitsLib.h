@@ -8,11 +8,11 @@
 
 #include <array>
 #include <cstddef>
+#include <magic_enum/magic_enum.hpp>
 #include <variant>
 
 #include "aux/DisableCopyMoveStructHelper.hpp"
-#include "aux/EnumWithCount.hpp"
-#include "aux/Err.hpp"
+#include "aux/Enum.hpp"
 #include "aux/Overload.hpp"
 
 enum class FactionAttitude : char { EVIL, NEUTRAL, GOOD };
@@ -27,7 +27,6 @@ enum class ForgeUnitType : char {
   JUMP_SOLDIER = 4,
   TANK = 5,
   JUGGERNAUT = 6,
-  COUNT = 7
 };
 
 enum class ConfluxUnitType : char {
@@ -38,7 +37,6 @@ enum class ConfluxUnitType : char {
   EARTH_ELEMENTAL = 4,
   PSYCHIC_ELEMENTAL = 5,
   FIREBIRD = 6,
-  COUNT = 7,
 };
 
 enum class CastleUnitType : char {
@@ -49,10 +47,9 @@ enum class CastleUnitType : char {
   MONK = 4,
   CAVALIER = 5,
   ANGEL = 6,
-  COUNT = 7,
 };
 
-enum class WarMachineType : char { BALLISTA = 0, AMMO_CART = 1, FIRST_AID_TENT = 2, CATAPULT = 3, COUNT = 4 };
+enum class WarMachineType : char { BALLISTA = 0, AMMO_CART = 1, FIRST_AID_TENT = 2, CATAPULT = 3 };
 
 using UnitTypeV = std::variant<ForgeUnitType, ConfluxUnitType, CastleUnitType, WarMachineType>;
 
@@ -245,15 +242,6 @@ constexpr inline std::array UNITS_PRESET_FORGE = {
         .is_range_ = false,
     },
 };  // TODO
-
-//   PIXIE = 0,
-//   AIR_ELEMENTAL = 1,
-//   WATER_ELEMENTAL = 2,
-//   FIRE_ELEMENTAL = 3,
-//   EARTH_ELEMENTAL = 4,
-//   PSYCHIC_ELEMENTAL = 5,
-//   FIREBIRD = 6,
-//   COUNT = 7,
 
 constexpr inline std::array UNITS_PRESET_CONFLUX = {
     UnitData{
@@ -470,23 +458,12 @@ constexpr inline std::array UNITS_PRESET_CASTLE = { UnitData{
                                                     } };
 
 constexpr const UnitData& getUnitDataFromType( UnitTypeV type ) {
-  return std::visit( Overload{ [&]( ForgeUnitType t ) -> const UnitData& {
-                                err::passCondOrAbort( t != ForgeUnitType::COUNT );
-                                return UNITS_PRESET_FORGE[static_cast<size_t>( t )];
-                              },
-                               [&]( ConfluxUnitType t ) -> const UnitData& {
-                                 err::passCondOrAbort( t != ConfluxUnitType::COUNT );
-                                 return UNITS_PRESET_CONFLUX[static_cast<size_t>( t )];
-                               },
-                               [&]( CastleUnitType t ) -> const UnitData& {
-                                 err::passCondOrAbort( t != CastleUnitType::COUNT );
-                                 return UNITS_PRESET_CASTLE[static_cast<size_t>( t )];
-                               },
-                               [&]( WarMachineType t ) -> const UnitData& {
-                                 err::passCondOrAbort( t != WarMachineType::COUNT );
-                                 return WAR_MACHINES_PRESET[static_cast<size_t>( t )];
-                               } },
-                     type );
+  return std::visit(
+      Overload{ [&]( ForgeUnitType t ) -> const UnitData& { return UNITS_PRESET_FORGE[static_cast<size_t>( t )]; },
+                [&]( ConfluxUnitType t ) -> const UnitData& { return UNITS_PRESET_CONFLUX[static_cast<size_t>( t )]; },
+                [&]( CastleUnitType t ) -> const UnitData& { return UNITS_PRESET_CASTLE[static_cast<size_t>( t )]; },
+                [&]( WarMachineType t ) -> const UnitData& { return WAR_MACHINES_PRESET[static_cast<size_t>( t )]; } },
+      type );
 }
 
 constexpr inline size_t EXPECTED_WAR_MACHINE_COUNT = 4;
@@ -497,11 +474,12 @@ static_assert( UNITS_PRESET_FORGE.size() == EXPECTED_UNITS_PRESET_COUNT );
 static_assert( UNITS_PRESET_CONFLUX.size() == EXPECTED_UNITS_PRESET_COUNT );
 static_assert( UNITS_PRESET_CASTLE.size() == EXPECTED_UNITS_PRESET_COUNT );
 
-template <EnumWithCount T>
-consteval bool areAllUnitsPreset( const std::array<UnitData, static_cast<size_t>( T::COUNT )>& array ) {
+template <Enum E>
+consteval bool areAllUnitsPreset(
+    const std::array<UnitData, static_cast<size_t>( magic_enum::enum_count<E>() )>& array ) {
   for ( size_t i = 0; i < array.size(); ++i ) {
     const auto& unit_data = array[i];
-    if ( std::get<T>( unit_data.type_ ) != static_cast<T>( i ) ) {
+    if ( std::get<E>( unit_data.type_ ) != static_cast<E>( i ) ) {
       return false;
     }
   }

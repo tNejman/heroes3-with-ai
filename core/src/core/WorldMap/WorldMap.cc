@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
+#include <magic_enum/magic_enum.hpp>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -21,7 +22,7 @@ void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   // SINGLE_CALL_GUARD();
   for ( size_t col = 0; col < WORLD_MAP_WIDTH; ++col ) {
     for ( size_t row = 0; row < WORLD_MAP_HEIGHT; ++row ) {
-      assert( new_grid[col][row] <= static_cast<int>( Terrain::COUNT ) && ( new_grid[col][row] >= 0 ) );
+      assert( new_grid[col][row] >= 0 && new_grid[col][row] < static_cast<int>( magic_enum::enum_count<Terrain>() ) );
       background_[col][row] = static_cast<Terrain>( new_grid[col][row] );
     }
   }

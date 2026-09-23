@@ -1,19 +1,20 @@
 #pragma once
 
+#include <magic_enum/magic_enum.hpp>
 #include <utility>
 
-#include "aux/EnumWithCount.hpp"
+#include "aux/Enum.hpp"
 
-template <EnumWithCount T>
-constexpr T next( T t ) {
-  return static_cast<T>( ( std::to_underlying( t ) + 1 ) % std::to_underlying( T::COUNT ) );
+template <Enum E>
+constexpr E next( E e ) {
+  return static_cast<E>( ( std::to_underlying( e ) + 1 ) % std::to_underlying( magic_enum::enum_count<E>() ) );
 }
 
-template <EnumWithCount T>
-constexpr T prev( T t ) {
-  auto num_val = std::to_underlying( t );
+template <Enum E>
+constexpr E prev( E e ) {
+  auto num_val = std::to_underlying( e );
   if ( num_val > 0 ) {
-    return static_cast<T>( --num_val );
+    return static_cast<E>( --num_val );
   }
-  return static_cast<T>( std::to_underlying( T::COUNT ) - 1 );
+  return static_cast<E>( std::to_underlying( magic_enum::enum_count<E>() ) - 1 );
 }

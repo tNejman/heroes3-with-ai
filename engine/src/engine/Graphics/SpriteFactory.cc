@@ -87,7 +87,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case HexagonType::ATTACK: return "Hexagon_Attack";
       case HexagonType::MOVE: return "Hexagon_Movement";
       case HexagonType::IN_ACTION: return "Hexagon_Unit_In_Action";
-      case HexagonType::COUNT: std::unreachable();
     }
   }() + ".png";
   return sf::Sprite{ getTexture( ht, filename ) };
@@ -144,7 +143,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case ArtifactType::DRAGONBONE_GREAVES: return get_sprite_location_from_sprite_relative_pos( 9, 1 );
       case ArtifactType::SANDALS_OF_THE_SAINT: return get_sprite_location_from_sprite_relative_pos( 0, 1 );
       case ArtifactType::BOOTS_OF_SPEED: return get_sprite_location_from_sprite_relative_pos( 15, 3 );
-      case ArtifactType::COUNT: std::unreachable();
     }
   }();
 
@@ -162,7 +160,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case Terrain::ROCKS: return "trob000";
       case Terrain::ROCKS_CRUSHED: return "trob024";
       case Terrain::SAND: return "tsub000";
-      case Terrain::COUNT: std::unreachable();
     }
   }() + ".png";
   err::passCondOrAbort( getTexture<Terrain, SpriteDomain::WORLD>( t.val, tex_filename ).getSize()
@@ -181,7 +178,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case Terrain::ROCKS:
       case Terrain::ROCKS_CRUSHED:
       case Terrain::SAND: return "CmBkDrTr";
-      case Terrain::COUNT: std::unreachable();
     }
   }() + ".png";
   return sf::Sprite{ getTexture<Terrain, SpriteDomain::BATTLE>( t.val, tex_filename ) };
@@ -193,7 +189,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
     switch ( obt ) {
       case OverworldObstacleType::DRIED_TREE: return "AVLtRo06";
       case OverworldObstacleType::GREEN_TREE: return "AVLswt15";
-      case OverworldObstacleType::COUNT: std::unreachable();
     }
   }() + ".png";
   return sf::Sprite{ getTexture<OverworldObstacleType>( obt, tex_filename, cleanupRawMagentaAndCyanTexture ) };
@@ -236,7 +231,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
     switch ( ct ) {
       case CharacterType::FIRE_HERO: return 16;
       case CharacterType::BLACK_HERO_WHITE_HORSE: return 9;
-      case CharacterType::COUNT: err::passCondOrAbort( false, "COUNT" ); std::unreachable();
     }
   }();
 
@@ -270,7 +264,6 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case CastleUnitType::MONK: return { 74, 113 };
       case CastleUnitType::CAVALIER: return { 165, 153 };
       case CastleUnitType::ANGEL: return { 108, 108 };  // x=153 for perfect swapping sprites without offset
-      case CastleUnitType::COUNT: std::unreachable();
     }
   }();
 
@@ -305,8 +298,7 @@ void SpriteFactory::flipSpriteHorizontally( sf::Sprite& sprite ) noexcept {
   return std::visit(
       [&]( const auto t ) {
         using T = std::decay_t<decltype( t )>;
-        err::passCondOrAbort( t != T::COUNT, "t == T::COUNT" );
-        static std::array<std::optional<int>, static_cast<size_t>( T::COUNT )> heights;
+        static std::array<std::optional<int>, magic_enum::enum_count<T>()> heights;
         auto index = static_cast<size_t>( t );
         if ( !heights[index].has_value() ) {
           heights[index] = [&] {
@@ -337,3 +329,23 @@ void SpriteFactory::flipSpriteHorizontally( sf::Sprite& sprite ) noexcept {
       },
       type );
 }
+
+/* ===== @CHECK ===== */
+
+namespace {
+
+template <typename Func, typename Variant>
+struct InvocableForAll : std::false_type {};
+
+template <typename Func, typename... Ts>
+struct InvocableForAll<Func, std::variant<Ts...>> : std::bool_constant<( std::is_invocable_v<Func, Ts&> && ... )> {};
+
+template <typename Func, typename Variant>
+concept visitor_for = InvocableForAll<Func, std::remove_cvref_t<Variant>>::value;
+
+inline constexpr auto checkGetSpriteFromBindingExistsForAllUnitTypes {
+  []( auto&& unit_type )
+  requires requires {}
+}
+
+}  // namespace

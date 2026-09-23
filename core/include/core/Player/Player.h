@@ -6,8 +6,8 @@
 */
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
+#include <magic_enum/magic_enum.hpp>
 #include <memory>
 #include <vector>
 
@@ -25,7 +25,7 @@ class Player {
  private:
   std::vector<std::shared_ptr<Character>> characters_on_map_;
   std::vector<std::weak_ptr<Castle>> owned_castles_;
-  std::array<std::unique_ptr<Resource>, static_cast<size_t>( ResourceType::COUNT )> resources_;
+  std::array<std::unique_ptr<Resource>, magic_enum::enum_count<ResourceType>()> resources_;
 
   PlayerColor color_;
 

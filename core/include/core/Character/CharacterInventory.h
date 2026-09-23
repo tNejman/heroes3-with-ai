@@ -2,15 +2,15 @@
 
 #include <array>
 #include <cstddef>
+#include <magic_enum/magic_enum.hpp>
 #include <optional>
 #include <type_traits>
-#include <utility>
 #include <vector>
 
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
 
-constexpr inline std::size_t EQUIPMENT_SLOTS_COUNT = std::to_underlying( EquipmentSlots::COUNT );
+constexpr inline std::size_t EQUIPMENT_SLOTS_COUNT = magic_enum::enum_count<EquipmentSlots>();
 
 using Equipment = std::array<std::optional<Artifact>, EQUIPMENT_SLOTS_COUNT>;
 using Backpack = std::vector<Artifact>;

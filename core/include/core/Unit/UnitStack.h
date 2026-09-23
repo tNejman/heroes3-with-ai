@@ -6,17 +6,15 @@
 
 #include <functional>
 
+#include "aux/Err.hpp"
 #include "core/Battle/TileObject.hpp"
 #include "core/Unit/UnitsLib.h"
 #include "engine/IGame/Coords.h"
-
-namespace {
-constexpr inline int DEFAULT_UNIT_STACK_MORALE = 0;
-constexpr inline int DEFAULT_UNIT_STACK_LUCK = 0;
-}  // namespace
-
 class UnitStack : public TileObject {
- private:
+ private: 
+  static constexpr int DEFAULT_UNIT_STACK_MORALE = 0;
+  static constexpr int DEFAULT_UNIT_STACK_LUCK = 0;
+
   std::reference_wrapper<const UnitData> data_;
   int morale_ = DEFAULT_UNIT_STACK_MORALE;
   int luck_ = DEFAULT_UNIT_STACK_LUCK;
