@@ -7,8 +7,7 @@
 #include "engine/Graphics/Renderers/IRenderer.hpp"
 #include "engine/IGame/Coords.h"
 
-
-class MapRenderer : public IRenderer<WorldMap> {
+class MapRenderer : public IRenderer<WorldMap> {  // NOLINT(cppcoreguidelines-special-member-functions)
  private:
   CoordPair center_coords_;
 
@@ -17,11 +16,7 @@ class MapRenderer : public IRenderer<WorldMap> {
   void renderBackgroundTile( int x, int y ) const noexcept;
   void renderObject( int x, int y ) const noexcept;
 
-  // void renderObjects();
-
  public:
-  //     IRenderer(const SpriteVisitor& sprite_visitor, const T& object) :
-  // sprite_visitor_(sprite_visitor), object_(object) {};
   MapRenderer( sf::RenderTexture& target_render_texture, const WorldMap& object, CoordPair center_coords );
   ~MapRenderer() override = default;
   void render() override;

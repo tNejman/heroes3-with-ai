@@ -1,8 +1,18 @@
 #pragma once
 
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <array>
+#include <cstddef>
+#include <functional>
+#include <optional>
+#include <string_view>
+#include <type_traits>
+#include <variant>
 
+#include "aux/EnumWithCount.hpp"
 #include "aux/Err.hpp"
+#include "core/Unit/UnitsLib.h"
 #include "engine/Graphics/SpriteFactory.h"
 
 /* ==== @PRIVATE ==== */
@@ -40,6 +50,20 @@ const sf::Texture& SpriteFactory::getTexture(
     }
   }
   return *lookup[index];
+}
+
+template <typename Binding>
+const sf::Texture& SpriteFactory::getTexture(
+    std::string_view path, const std::function<void( sf::Texture& )>& texutre_cleanup_func ) noexcept {
+  static const sf::Texture texture = [&] {
+    sf::Texture t;
+    t = loadTextureOrAbort( path );
+    if ( texutre_cleanup_func ) {
+      texutre_cleanup_func( t );
+    }
+    return t;
+  }();
+  return texture;
 }
 
 /* ==== @PUBLIC ==== */

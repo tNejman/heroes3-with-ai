@@ -23,6 +23,7 @@
 #include "aux/Err.hpp"
 #include "aux/ToLowerString.hpp"
 #include "core/Artifact/ArtifactLib.h"
+#include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
@@ -203,11 +204,10 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
   static constexpr int HERO_SPRITE_HEIGHT = 64;
 
   static const std::string heroes_sprites_file_path = SPRITE_ROOT_DIR + "/heroes_adventure.png";
-  static const sf::Texture heroes_sprite_texture = [] {
-    auto tex = loadTextureOrAbort( heroes_sprites_file_path );
-    eraseCharactersTextureCornerMarkers( tex, HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT );
-    return tex;
-  }();
+  static const sf::Texture& heroes_sprite_texture =
+      getTexture<Character>( heroes_sprites_file_path, [&]( sf::Texture& tex_to_cleanup ) -> void {
+        eraseCharactersTextureCornerMarkers( tex_to_cleanup, HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT );
+      } );
 
   enum horizontal_offset : int8_t {
     FACING_DOWN = 0,

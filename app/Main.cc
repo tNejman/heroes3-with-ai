@@ -14,8 +14,9 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Window.hpp>
 #include <SFML/Window/WindowEnums.hpp>
-#include <array>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 #include "engine/IGame/Coords.h"
-
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 
@@ -139,6 +139,8 @@ int main() {
         window_scale_mult = 2;
       } else if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Num3 ) ) {
         window_scale_mult = 3;
+      } else if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Key::Escape ) ) {
+        return 0;
       } else {
         command = InputHandler::processInput( *event, game, window_scale_mult );
       }

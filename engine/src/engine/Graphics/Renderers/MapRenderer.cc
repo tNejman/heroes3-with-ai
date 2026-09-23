@@ -27,10 +27,10 @@ void MapRenderer::renderGridWithFun( void ( MapRenderer::*fun )( int, int ) cons
   int max_right_visible_tile_x = std::min( WORLD_MAP_WIDTH, center_x + MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY );
 
   int max_bottom_visible_tile_y = std::max( 0, center_y - MAX_TILES_VISIBLE_FROM_CENTER_VERTICALLY );
-  int max_top_visible_tile_y = std::min( WORLD_MAP_HEIGHT, center_y + MAX_TILES_VISIBLE_FROM_CENTER_VERTICALLY );
+  int max_top_visible_tile_y = std::min( WORLD_MAP_HEIGHT - 1, center_y + MAX_TILES_VISIBLE_FROM_CENTER_VERTICALLY );
 
   for ( int x = max_left_visible_tile_x; x < max_right_visible_tile_x; ++x ) {
-    for ( int y = max_top_visible_tile_y; y > max_bottom_visible_tile_y;
+    for ( int y = max_top_visible_tile_y; y >= max_bottom_visible_tile_y;
           --y ) { /* render top down so higher sprites don't cover lower ones*/
       ( *this.*fun )( x, y );
     }
