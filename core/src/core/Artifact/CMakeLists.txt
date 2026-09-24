@@ -9,3 +9,7 @@ target_link_libraries(Artifact PRIVATE
     Coords
     MapObject
 )
+
+target_link_libraries(Artifact PUBLIC
+    magic_enum::magic_enum
+)

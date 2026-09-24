@@ -7,19 +7,18 @@
 
 #include "aux/Err.hpp"
 #include "core/Artifact/Artifact.h"
-#include "core/Character/CharacterArmy.h"
-#include "core/Character/CharacterInventory.h"
-#include "core/Character/CharacterStats.h"
-#include "core/Exceptions/EmptySlotException.hpp"
+#include "core/Character/Army.h"
+#include "core/Character/Inventory.h"
+#include "core/Character/Stats.h"
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
-#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
 
 /* ==== @PRIVATE ==== */
 
-Character::Character( int id, std::string name, CoordPair coords, CharacterStats stats, bool is_user ) noexcept
+Character::Character( int id, std::string name, CoordPair coords, character::Stats stats, bool is_user ) noexcept
     : MapObject( coords ),
       id_( id ),
       name_( std::move( name ) ),
@@ -62,27 +61,27 @@ void Character::setIfUser( bool is_user ) {
   is_user_character_ = is_user;
 }
 
-[[nodiscard]] const CharacterStats& Character::stats() const noexcept {
+[[nodiscard]] const character::Stats& Character::stats() const noexcept {
   return stats_;
 }
 
-[[nodiscard]] CharacterStats& Character::stats() noexcept {
+[[nodiscard]] character::Stats& Character::stats() noexcept {
   return stats_;
 }
 
-[[nodiscard]] const CharacterInventory& Character::inventory() const noexcept {
+[[nodiscard]] const character::Inventory& Character::inventory() const noexcept {
   return inventory_;
 }
 
-[[nodiscard]] CharacterInventory& Character::inventory() noexcept {
+[[nodiscard]] character::Inventory& Character::inventory() noexcept {
   return inventory_;
 }
 
-[[nodiscard]] const CharacterArmy& Character::army() const noexcept {
+[[nodiscard]] const character::Army& Character::army() const noexcept {
   return army_;
 }
 
-[[nodiscard]] CharacterArmy& Character::army() noexcept {
+[[nodiscard]] character::Army& Character::army() noexcept {
   return army_;
 }
 
@@ -102,7 +101,7 @@ void Character::setIfUser( bool is_user ) {
 //   backpack_.push_back( artifact );
 // }
 
-// void Character::equipArtifact( ArtifactType type, EquipmentSlots slot ) {
+// void Character::equipArtifact( artifact::Type type, EquipmentSlots slot ) {
 //   std::optional<EquipmentSlots> slot_if_empty = this->checkSlotIfEmpty( slot );
 //   EquipmentSlots slot_specific;
 //   if ( !slot_if_empty.has_value() ) {
@@ -123,7 +122,7 @@ void Character::setIfUser( bool is_user ) {
 //     break;
 //   }
 //   if ( !artifact_temp ) {
-//     err::raise<InvalidArtifactTypeException>( "No such artifact found in backpack" );
+//     err::raise<Invalidartifact::TypeException>( "No such artifact found in backpack" );
 //   }
 //   equipment_[slot_specific] = artifact_temp;
 // }

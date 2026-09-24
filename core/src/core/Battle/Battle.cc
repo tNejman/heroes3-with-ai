@@ -12,22 +12,22 @@
 #include <utility>
 #include <vector>
 
+#include "aux/Err.hpp"
+#include "aux/_NotImplementedException.hpp"
 #include "core/Battle/BattleField.h"
 #include "core/Battle/Tile.h"
+#include "core/Character/Army.h"
 #include "core/Character/Character.h"
-#include "core/Character/CharacterArmy.h"
-#include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
-#include "aux/_NotImplementedException.hpp"
 #include "core/Game/UserCommand.h"
-#include "engine/Graphics/Visitor.h"
-#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
+#include "engine/Graphics/Visitor.h"
+#include "engine/IGame/Coords.h"
 
 void Battle::setAttackingArmy() {
   auto& party = attacker_->army().getParty();
-  for ( int i = 0; i < MAX_PARTY_SIZE; ++i ) {
+  for ( int i = 0; i < character::MAX_PARTY_SIZE; ++i ) {
     auto& maybe_unit = party[static_cast<size_t>( i )];
     if ( !maybe_unit ) {
       continue;
@@ -43,7 +43,7 @@ void Battle::setAttackingArmy() {
 
 void Battle::setDefendingArmy() {
   auto& party = defender_->army().getParty();
-  for ( int i = 0; i < MAX_PARTY_SIZE; ++i ) {
+  for ( int i = 0; i < character::MAX_PARTY_SIZE; ++i ) {
     auto& maybe_unit = party[static_cast<size_t>( i )];
     if ( !maybe_unit ) {
       continue;
@@ -138,7 +138,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
       defender_( std::move( defender ) ),
       attacker_threw_spell_( false ),
       defender_threw_spell_( false ) {
-  round_queue_.reserve( static_cast<size_t>( MAX_PARTY_SIZE ) * 2 );
+  round_queue_.reserve( static_cast<size_t>( character::MAX_PARTY_SIZE ) * 2 );
   setAttackingArmy();
   setDefendingArmy();
   nextUnit();
@@ -346,7 +346,7 @@ std::vector<std::reference_wrapper<UnitStack>> Battle::getDefendingArmy() const 
 
 std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattle() const {
   std::vector<std::reference_wrapper<UnitStack>> units_in_battle;
-  units_in_battle.reserve( static_cast<size_t>( MAX_PARTY_SIZE ) * 2 );
+  units_in_battle.reserve( static_cast<size_t>( character::MAX_PARTY_SIZE ) * 2 );
   units_in_battle.append_range( getAttackingArmy() );
   units_in_battle.append_range( getDefendingArmy() );
   return units_in_battle;

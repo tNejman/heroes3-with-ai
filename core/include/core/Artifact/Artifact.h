@@ -18,16 +18,16 @@ class Visitor;
 // public Printable
 class Artifact {
  private:
-  std::reference_wrapper<const ArtifactData> data_;
+  std::reference_wrapper<const artifact::Data> data_;
 
-  Artifact( const ArtifactData& data );
+  Artifact( const artifact::Data& data );
 
  public:
   Artifact() = delete;
   void accept( Visitor& ) const;
 
-  [[nodiscard]] static Artifact create( ArtifactType type ) noexcept;
-  [[nodiscard]] const ArtifactData& getData() const noexcept;
+  [[nodiscard]] static Artifact create( artifact::Type type ) noexcept;
+  [[nodiscard]] const artifact::Data& getData() const noexcept;
   [[nodiscard]] Artifact copy() const noexcept;
 
   bool operator==( const Artifact& other ) const noexcept;

@@ -1,4 +1,4 @@
-#include "core/Character/CharacterBuilder.h"
+#include "core/Character/Builder.h"
 
 #include <memory>
 #include <optional>
@@ -6,14 +6,16 @@
 #include <utility>
 
 #include "core/Character/Character.h"
-#include "core/Character/CharacterStats.h"
+#include "core/Character/Stats.h"
 #include "engine/IGame/Coords.h"
 
 /* ==== @PRIVATE ==== */
 
-class CharacterBuilderCleanerGuard {
+namespace character {
+
+class BuilderCleanerGuard {
  private:
-  CharacterBuilder& character_builder_to_clean_;
+  character::Builder& character_builder_to_clean_;
   void resetCharacterBuilder() noexcept {
     character_builder_to_clean_.name_ = std::nullopt;
     character_builder_to_clean_.coords_ = std::nullopt;
@@ -22,20 +24,22 @@ class CharacterBuilderCleanerGuard {
   }
 
  public:
-  CharacterBuilderCleanerGuard( CharacterBuilder& character_builder_to_clean ) noexcept
+  BuilderCleanerGuard( character::Builder& character_builder_to_clean ) noexcept
       : character_builder_to_clean_( character_builder_to_clean ) {
   }
-  ~CharacterBuilderCleanerGuard() noexcept {
+  ~BuilderCleanerGuard() noexcept {
     resetCharacterBuilder();
   }
 };
 
-[[nodiscard]] int CharacterBuilder::generateId() noexcept {
+}  // namespace character
+
+[[nodiscard]] int character::Builder::generateId() noexcept {
   static int base_id = 0;
   return ++base_id;
 }
 
-void CharacterBuilder::generateDefaultsForUnsetParams() noexcept {
+void character::Builder::generateDefaultsForUnsetParams() noexcept {
   if ( !name_ ) {
     name_ = "John";
   }
@@ -43,7 +47,7 @@ void CharacterBuilder::generateDefaultsForUnsetParams() noexcept {
     coords_ = { 0, 0 };
   }
   if ( !stats_ ) {
-    stats_ = CharacterStats{};
+    stats_ = character::Stats{};
   }
   if ( !is_user_ ) {
     is_user_ = false;
@@ -52,36 +56,36 @@ void CharacterBuilder::generateDefaultsForUnsetParams() noexcept {
 
 /* ==== @PUBLIC ==== */
 
-[[nodiscard]] CharacterBuilder&& CharacterBuilder::setName( std::string name ) && noexcept {
+[[nodiscard]] character::Builder&& character::Builder::setName( std::string name ) && noexcept {
   name_ = std::move( name );
   return std::move( *this );
 }
 
-[[nodiscard]] CharacterBuilder&& CharacterBuilder::setCoords( CoordPair coords ) && noexcept {
+[[nodiscard]] character::Builder&& character::Builder::setCoords( CoordPair coords ) && noexcept {
   coords_ = coords;
   return std::move( *this );
 }
 
-[[nodiscard]] CharacterBuilder&& CharacterBuilder::setStats( CharacterStats stats ) && noexcept {
+[[nodiscard]] character::Builder&& character::Builder::setStats( character::Stats stats ) && noexcept {
   stats_ = std::move( stats );
   return std::move( *this );
 }
 
-[[nodiscard]] CharacterBuilder&& CharacterBuilder::setIsUser( bool is_user ) && noexcept {
+[[nodiscard]] character::Builder&& character::Builder::setIsUser( bool is_user ) && noexcept {
   is_user_ = is_user;
   return std::move( *this );
 }
 
-Character CharacterBuilder::build() && noexcept {
-  CharacterBuilderCleanerGuard guard{ *this };
+Character character::Builder::build() && noexcept {
+  character::BuilderCleanerGuard guard{ *this };
   int id = generateId();
   generateDefaultsForUnsetParams();
 
   return Character{ id, std::move( *name_ ), *coords_, std::move( *stats_ ), *is_user_ };
 }
 
-std::shared_ptr<Character> CharacterBuilder::buildSharedPtr() && noexcept {
-  CharacterBuilderCleanerGuard guard{ *this };
+std::shared_ptr<Character> character::Builder::buildSharedPtr() && noexcept {
+  character::BuilderCleanerGuard guard{ *this };
   int id = generateId();
   generateDefaultsForUnsetParams();
 

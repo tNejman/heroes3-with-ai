@@ -6,5 +6,8 @@ target_include_directories(Unit PRIVATE
 )
 
 target_link_libraries(Unit PRIVATE
+)
+
+target_link_libraries(Unit PUBLIC
     magic_enum::magic_enum
 )

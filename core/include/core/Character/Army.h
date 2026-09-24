@@ -13,6 +13,8 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 
+namespace character {
+
 constexpr inline int MAX_PARTY_SIZE = 7;
 constexpr inline int WAR_MACHINE_SLOT_COUNT = static_cast<size_t>( magic_enum::enum_count<WarMachineType>() );
 
@@ -26,21 +28,22 @@ enum class PartySlot : char {  // do not change numeration
   SEVEN
 };
 
-using Party = std::array<std::optional<UnitStack>, MAX_PARTY_SIZE>;
-using WarMachineArr = std::array<std::optional<UnitStack>, WAR_MACHINE_SLOT_COUNT>;
+class Army {
+ public:
+  using Party = std::array<std::optional<UnitStack>, MAX_PARTY_SIZE>;
+  using WarMachineArr = std::array<std::optional<UnitStack>, WAR_MACHINE_SLOT_COUNT>;
 
-class CharacterArmy {
  private:
   Party party_;
   WarMachineArr war_machines_;
 
  public:
-  CharacterArmy() = default;
-  CharacterArmy( const CharacterArmy& ) = delete;
-  CharacterArmy( CharacterArmy&& ) = default;
-  ~CharacterArmy() = default;
-  CharacterArmy& operator=( const CharacterArmy& ) = delete;
-  CharacterArmy& operator=( CharacterArmy&& ) = default;
+  Army() = default;
+  Army( const Army& ) = delete;
+  Army( Army&& ) = default;
+  ~Army() = default;
+  Army& operator=( const Army& ) = delete;
+  Army& operator=( Army&& ) = default;
 
   [[nodiscard]] int getCurrentPartySize() const noexcept;
   [[nodiscard]] const Party& getParty() const noexcept;
@@ -50,7 +53,7 @@ class CharacterArmy {
   UnitStack& recruitUnitStack( const UnitStack& stack, PartySlot slot );
   UnitStack& recruitUnitStack( const UnitStack& stack );
 
-  [[nodiscard]] CharacterArmy copy() const noexcept;
+  [[nodiscard]] Army copy() const noexcept;
 
   /* ideas @TODO
     - recruit and unrecruit war machines
@@ -59,3 +62,5 @@ class CharacterArmy {
     -
   */
 };
+
+}  // namespace character

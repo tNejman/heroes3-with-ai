@@ -1,5 +1,6 @@
 #include <engine/Graphics/GraphicsLib.h>
 #include <engine/Graphics/Renderers/GameRenderer.h>
+#include <engine/IGame/Coords.h>
 #include <engine/Input/InputHandler.h>
 
 #include <SFML/Graphics/Color.hpp>
@@ -21,16 +22,16 @@
 #include <vector>
 
 #include "aux/Err.hpp"
+#include "core/Character/Builder.h"
 #include "core/Character/Character.h"
-#include "core/Character/CharacterBuilder.h"
-#include "core/Character/CharacterStats.h"
+#include "core/Character/Stats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
-#include "engine/IGame/Coords.h"
+
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 
@@ -52,20 +53,21 @@ int main() {
 
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
-      CharacterBuilder{}
+      character::Builder{}
           .setName( "fire_hero_down_right" )
           .setCoords( { 0, 0 } )
-          .setStats( CharacterStats{
-              CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
-              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
+              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .buildSharedPtr() );
-  characters.push_back( CharacterBuilder{}
-                            .setName( "john" )
-                            .setCoords( { 5, 5 } )
-                            .setStats( CharacterStats{ CharacterStats::PrimarySkills{
-                                                           .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
-                                                       CharacterStats::Misc{ .morale_ = 1, .luck_ = 1 } } )
-                            .buildSharedPtr() );
+  characters.push_back(
+      character::Builder{}
+          .setName( "john" )
+          .setCoords( { 5, 5 } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
+              character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
+          .buildSharedPtr() );
 
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 10 } );
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 15 } );
@@ -73,21 +75,21 @@ int main() {
 
   std::vector<std::shared_ptr<Character>> characters_2;
   characters_2.push_back(
-      CharacterBuilder{}
+      character::Builder{}
           .setName( "black_hero_white_horse_down_right" )
           .setCoords( { 2, 2 } )
-          .setStats( CharacterStats{
-              CharacterStats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
-              CharacterStats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
+              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .setIsUser( false )
           .buildSharedPtr() );
   characters_2.push_back(
-      CharacterBuilder{}
+      character::Builder{}
           .setName( "black_hero_white_horse_down_right" )
           .setCoords( { 12, 12 } )
-          .setStats( CharacterStats{
-              CharacterStats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
-              CharacterStats::Misc{ .morale_ = 5, .luck_ = -2 } } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
+              character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } } )
           .setIsUser( false )
           .buildSharedPtr() );
 

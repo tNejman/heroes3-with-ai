@@ -1,26 +1,23 @@
 #include "core/Artifact/Artifact.h"
 
-#include <algorithm>
 #include <cassert>
+#include <cstddef>
 
 #include "core/Artifact/ArtifactLib.h"
 #include "engine/Graphics/Visitor.h"
 
-Artifact::Artifact( const ArtifactData& data ) : data_( data ) {
+Artifact::Artifact( const artifact::Data& data ) : data_( data ) {
 }
 
 void Artifact::accept( Visitor& vis ) const {
   vis.visit( *this );
 }
 
-[[nodiscard]] Artifact Artifact::create( const ArtifactType type ) noexcept {
-  const auto* it =
-      std::ranges::find_if( artifact_lib::ARTIFACTS_PRESET, [type]( const auto& data ) { return type == data.type_; } );
-  assert( it != artifact_lib::ARTIFACTS_PRESET.end() );
-  return *it;
+[[nodiscard]] Artifact Artifact::create( const artifact::Type type ) noexcept {
+  return Artifact{ artifact::PRESET[static_cast<size_t>( type )] };
 }
 
-[[nodiscard]] const ArtifactData& Artifact::getData() const noexcept {
+[[nodiscard]] const artifact::Data& Artifact::getData() const noexcept {
   return data_.get();
 }
 

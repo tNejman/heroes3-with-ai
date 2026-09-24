@@ -1,41 +1,41 @@
-#include "core/Character/CharacterStats.h"
+#include "core/Character/Stats.h"
 
-CharacterStats::CharacterStats() : primary_skills_(), level_(), mana_(), misc_(), movement_() {
+character::Stats::Stats() : primary_skills_(), level_(), mana_(), misc_(), movement_() {
 }
 
-CharacterStats::CharacterStats( PrimarySkills primary_skills )
+character::Stats::Stats( PrimarySkills primary_skills )
     : primary_skills_( primary_skills ), level_(), mana_(), misc_(), movement_() {
 }
 
-CharacterStats::CharacterStats( Misc misc ) : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
+character::Stats::Stats( Misc misc ) : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
 }
 
-CharacterStats::CharacterStats( PrimarySkills primary_skills, Misc misc )
+character::Stats::Stats( PrimarySkills primary_skills, Misc misc )
     : primary_skills_( primary_skills ), level_(), mana_(), misc_( misc ), movement_() {
 }
 
-[[nodiscard]] const CharacterStats::PrimarySkills& CharacterStats::getPrimarySkills() const noexcept {
+[[nodiscard]] const character::Stats::PrimarySkills& character::Stats::getPrimarySkills() const noexcept {
   return primary_skills_;
 }
 
-[[nodiscard]] const CharacterStats::Level& CharacterStats::getLevel() const noexcept {
+[[nodiscard]] const character::Stats::Level& character::Stats::getLevel() const noexcept {
   return level_;
 }
 
-[[nodiscard]] const CharacterStats::Mana& CharacterStats::getMana() const noexcept {
+[[nodiscard]] const character::Stats::Mana& character::Stats::getMana() const noexcept {
   return mana_;
 }
 
-[[nodiscard]] const CharacterStats::Misc& CharacterStats::getMisc() const noexcept {
+[[nodiscard]] const character::Stats::Misc& character::Stats::getMisc() const noexcept {
   return misc_;
 }
 
-[[nodiscard]] const CharacterStats::Movement& CharacterStats::getMovement() const noexcept {
+[[nodiscard]] const character::Stats::Movement& character::Stats::getMovement() const noexcept {
   return movement_;
 }
 
-[[nodiscard]] CharacterStats CharacterStats::copy() const noexcept {
-  CharacterStats copy{};
+[[nodiscard]] character::Stats character::Stats::copy() const noexcept {
+  character::Stats copy{};
   copy.primary_skills_ = this->primary_skills_;
   copy.level_ = this->level_;
   copy.mana_ = this->mana_;

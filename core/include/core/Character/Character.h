@@ -17,9 +17,9 @@
 #include <string>
 
 #include "core/Artifact/Artifact.h"
-#include "core/Character/CharacterArmy.h"
-#include "core/Character/CharacterInventory.h"
-#include "core/Character/CharacterStats.h"
+#include "core/Character/Army.h"
+#include "core/Character/Inventory.h"
+#include "core/Character/Stats.h"
 #include "core/Character/SecondarySkill.h"
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
@@ -39,9 +39,9 @@ class Character : public MapObject {
   const std::string name_;
   bool is_user_character_;  // TODO change to const
 
-  CharacterStats stats_;
-  CharacterInventory inventory_;
-  CharacterArmy army_;
+  character::Stats stats_;
+  character::Inventory inventory_;
+  character::Army army_;
 
   std::array<std::optional<SecondarySkill>, SECONDARY_SKILLS_SLOTS_COUNT> secondary_skills_;
   std::optional<SpellBook> spell_book_ = std::nullopt;
@@ -51,7 +51,7 @@ class Character : public MapObject {
   Character() = delete;
   Character( const Character& ) = delete;
   Character( Character&& ) = default;
-  Character( int id, std::string name, CoordPair coords, CharacterStats stats, bool is_user ) noexcept;
+  Character( int id, std::string name, CoordPair coords, character::Stats stats, bool is_user ) noexcept;
   ~Character() override = default;
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
@@ -71,19 +71,19 @@ class Character : public MapObject {
   [[nodiscard]] bool getIfUser() const;
   void setIfUser( bool is_user );
 
-  [[nodiscard]] const CharacterStats& stats() const noexcept;
-  [[nodiscard]] CharacterStats& stats() noexcept;
-  [[nodiscard]] const CharacterInventory& inventory() const noexcept;
-  [[nodiscard]] CharacterInventory& inventory() noexcept;
-  [[nodiscard]] const CharacterArmy& army() const noexcept;
-  [[nodiscard]] CharacterArmy& army() noexcept;
+  [[nodiscard]] const character::Stats& stats() const noexcept;
+  [[nodiscard]] character::Stats& stats() noexcept;
+  [[nodiscard]] const character::Inventory& inventory() const noexcept;
+  [[nodiscard]] character::Inventory& inventory() noexcept;
+  [[nodiscard]] const character::Army& army() const noexcept;
+  [[nodiscard]] character::Army& army() noexcept;
 
   // [[nodiscard]] uint32_t getEffectiveSpeed();
 
   // [[nodiscard]] bool getIfBackpackFull() const;
 
   // void pickUpArtifact( Artifact artifact );
-  // void equipArtifact( ArtifactType type, EquipmentSlots slot );
+  // void equipArtifact( artifact::Type type, EquipmentSlots slot );
   // void unequipArtifact( EquipmentSlots slot );
 
   // void recruitWarMachine( std::unique_ptr<const Ballista> war_machine );

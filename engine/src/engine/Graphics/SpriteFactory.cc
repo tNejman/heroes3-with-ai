@@ -92,7 +92,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
   return sf::Sprite{ getTexture( ht, filename ) };
 }
 
-[[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( ArtifactType at ) noexcept {
+[[nodiscard]] sf::Sprite SpriteFactory::getSpriteFromBinding( artifact::Type at ) noexcept {
   static const std::string artifact_sprite_file_location = SPRITE_ROOT_DIR + "/artifacts/artifacts.png";
 
   static constexpr int ARTIFACT_SPRITE_WIDTH = 58;
@@ -118,31 +118,31 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
 
   auto sprite_location = [&] -> sf::Vector2<int> {
     switch ( at ) {
-      case ArtifactType::CROWN_OF_THE_SUPREME_MAGI: return get_sprite_location_from_sprite_relative_pos( 17, 0 );
-      case ArtifactType::HELM_OF_THE_ALABASTER_UNICORN: return get_sprite_location_from_sprite_relative_pos( 14, 0 );
-      case ArtifactType::THUNDER_HELMET: return get_sprite_location_from_sprite_relative_pos( 19, 0 );
-      case ArtifactType::DRAGON_WING_TABARD: return get_sprite_location_from_sprite_relative_pos( 10, 1 );
-      case ArtifactType::CAPE_OF_VELOCITY: return get_sprite_location_from_sprite_relative_pos( 16, 3 );
-      case ArtifactType::NECKLACE_OF_DRAGONTEETH: return get_sprite_location_from_sprite_relative_pos( 11, 1 );
-      case ArtifactType::CELESTIAL_NECKLACE_OF_BLISS: return get_sprite_location_from_sprite_relative_pos( 1, 1 );
-      case ArtifactType::NECKLACE_OF_SWIFTNESS: return get_sprite_location_from_sprite_relative_pos( 14, 3 );
-      case ArtifactType::CENTAURS_AXE: return get_sprite_location_from_sprite_relative_pos( 2, 0 );
-      case ArtifactType::TITANS_GLADIUS: return get_sprite_location_from_sprite_relative_pos( 7, 0 );
-      case ArtifactType::SWORD_OF_JUDGEMENT: return get_sprite_location_from_sprite_relative_pos( 3, 1 );
-      case ArtifactType::SHIELD_OF_THE_DWARVEN_LORDS: return get_sprite_location_from_sprite_relative_pos( 8, 0 );
-      case ArtifactType::DRAGON_SCALE_SHIELD: return get_sprite_location_from_sprite_relative_pos( 7, 1 );
-      case ArtifactType::SENTINELS_SHIELD: return get_sprite_location_from_sprite_relative_pos( 13, 0 );
-      case ArtifactType::RIB_CAGE: return get_sprite_location_from_sprite_relative_pos( 21, 0 );
-      case ArtifactType::DRAGON_SCALE_ARMOR: return get_sprite_location_from_sprite_relative_pos( 8, 1 );
-      case ArtifactType::TITANS_CUIRASS: return get_sprite_location_from_sprite_relative_pos( 25, 0 );
-      case ArtifactType::QUIET_EYE_OF_THE_DRAGON: return get_sprite_location_from_sprite_relative_pos( 5, 1 );
-      case ArtifactType::EQUESTRIAN_GLOVES: return get_sprite_location_from_sprite_relative_pos( 13, 2 );
-      case ArtifactType::RING_OF_VITALITY: return get_sprite_location_from_sprite_relative_pos( 11, 3 );
-      case ArtifactType::RING_OF_WAYFARER: return get_sprite_location_from_sprite_relative_pos( 12, 2 );
-      case ArtifactType::RING_OF_LIFE: return get_sprite_location_from_sprite_relative_pos( 12, 3 );
-      case ArtifactType::DRAGONBONE_GREAVES: return get_sprite_location_from_sprite_relative_pos( 9, 1 );
-      case ArtifactType::SANDALS_OF_THE_SAINT: return get_sprite_location_from_sprite_relative_pos( 0, 1 );
-      case ArtifactType::BOOTS_OF_SPEED: return get_sprite_location_from_sprite_relative_pos( 15, 3 );
+      case artifact::Type::CROWN_OF_THE_SUPREME_MAGI: return get_sprite_location_from_sprite_relative_pos( 17, 0 );
+      case artifact::Type::HELM_OF_THE_ALABASTER_UNICORN: return get_sprite_location_from_sprite_relative_pos( 14, 0 );
+      case artifact::Type::THUNDER_HELMET: return get_sprite_location_from_sprite_relative_pos( 19, 0 );
+      case artifact::Type::DRAGON_WING_TABARD: return get_sprite_location_from_sprite_relative_pos( 10, 1 );
+      case artifact::Type::CAPE_OF_VELOCITY: return get_sprite_location_from_sprite_relative_pos( 16, 3 );
+      case artifact::Type::NECKLACE_OF_DRAGONTEETH: return get_sprite_location_from_sprite_relative_pos( 11, 1 );
+      case artifact::Type::CELESTIAL_NECKLACE_OF_BLISS: return get_sprite_location_from_sprite_relative_pos( 1, 1 );
+      case artifact::Type::NECKLACE_OF_SWIFTNESS: return get_sprite_location_from_sprite_relative_pos( 14, 3 );
+      case artifact::Type::CENTAURS_AXE: return get_sprite_location_from_sprite_relative_pos( 2, 0 );
+      case artifact::Type::TITANS_GLADIUS: return get_sprite_location_from_sprite_relative_pos( 7, 0 );
+      case artifact::Type::SWORD_OF_JUDGEMENT: return get_sprite_location_from_sprite_relative_pos( 3, 1 );
+      case artifact::Type::SHIELD_OF_THE_DWARVEN_LORDS: return get_sprite_location_from_sprite_relative_pos( 8, 0 );
+      case artifact::Type::DRAGON_SCALE_SHIELD: return get_sprite_location_from_sprite_relative_pos( 7, 1 );
+      case artifact::Type::SENTINELS_SHIELD: return get_sprite_location_from_sprite_relative_pos( 13, 0 );
+      case artifact::Type::RIB_CAGE: return get_sprite_location_from_sprite_relative_pos( 21, 0 );
+      case artifact::Type::DRAGON_SCALE_ARMOR: return get_sprite_location_from_sprite_relative_pos( 8, 1 );
+      case artifact::Type::TITANS_CUIRASS: return get_sprite_location_from_sprite_relative_pos( 25, 0 );
+      case artifact::Type::QUIET_EYE_OF_THE_DRAGON: return get_sprite_location_from_sprite_relative_pos( 5, 1 );
+      case artifact::Type::EQUESTRIAN_GLOVES: return get_sprite_location_from_sprite_relative_pos( 13, 2 );
+      case artifact::Type::RING_OF_VITALITY: return get_sprite_location_from_sprite_relative_pos( 11, 3 );
+      case artifact::Type::RING_OF_WAYFARER: return get_sprite_location_from_sprite_relative_pos( 12, 2 );
+      case artifact::Type::RING_OF_LIFE: return get_sprite_location_from_sprite_relative_pos( 12, 3 );
+      case artifact::Type::DRAGONBONE_GREAVES: return get_sprite_location_from_sprite_relative_pos( 9, 1 );
+      case artifact::Type::SANDALS_OF_THE_SAINT: return get_sprite_location_from_sprite_relative_pos( 0, 1 );
+      case artifact::Type::BOOTS_OF_SPEED: return get_sprite_location_from_sprite_relative_pos( 15, 3 );
     }
   }();
 
@@ -329,23 +329,3 @@ void SpriteFactory::flipSpriteHorizontally( sf::Sprite& sprite ) noexcept {
       },
       type );
 }
-
-/* ===== @CHECK ===== */
-
-namespace {
-
-template <typename Func, typename Variant>
-struct InvocableForAll : std::false_type {};
-
-template <typename Func, typename... Ts>
-struct InvocableForAll<Func, std::variant<Ts...>> : std::bool_constant<( std::is_invocable_v<Func, Ts&> && ... )> {};
-
-template <typename Func, typename Variant>
-concept visitor_for = InvocableForAll<Func, std::remove_cvref_t<Variant>>::value;
-
-inline constexpr auto checkGetSpriteFromBindingExistsForAllUnitTypes {
-  []( auto&& unit_type )
-  requires requires {}
-}
-
-}  // namespace

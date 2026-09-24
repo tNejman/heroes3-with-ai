@@ -47,7 +47,7 @@ class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
   static void cleanupRawMagentaAndCyanTexture( sf::Texture& ) noexcept;
 
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( HexagonType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( ArtifactType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( artifact::Type ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::BATTLE> ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( OverworldObstacleType ) noexcept;

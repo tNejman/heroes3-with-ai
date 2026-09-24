@@ -1,30 +1,28 @@
 #include <gtest/gtest.h>
 
-#include <memory>
-
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
+#include "core/Character/Builder.h"
 #include "core/Character/Character.h"
-#include "core/Character/CharacterBuilder.h"
-#include "core/Character/CharacterStats.h"
+#include "core/Character/Stats.h"
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
-#include "engine/IGame/Coords.h"
 #include "core/Unit/Faction.hpp"
-#include "core/Unit/UnitStack.h"
-#include "core/Unit/UnitsLib.h"
+#include "engine/IGame/Coords.h"
 
 TEST( CharacterTest, createValidCharacter ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>(
-  //     "John", { 0, 0 }, CharacterStats{ CharacterStats::PrimarySkills{ 1, 2, 3, 4 } }, CharacterStats::Misc{ 1, 2 }
+  //     "John", { 0, 0 }, character::Stats{ character::Stats::PrimarySkills{ 1, 2, 3, 4 } }, character::Stats::Misc{ 1,
+  //     2 }
   //     );
-  Character character1 = CharacterBuilder{}
-                             .setName( "John" )
-                             .setCoords( { 0, 0 } )
-                             .setStats( CharacterStats{ CharacterStats::PrimarySkills{
-                                                            .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-                                                        CharacterStats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-                             .build();
+  Character character1 =
+      character::Builder{}
+          .setName( "John" )
+          .setCoords( { 0, 0 } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
+              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
+          .build();
 
   ASSERT_EQ( character1.getName(), "John" );
   ASSERT_EQ( character1.getCoords(), CoordPair( 0, 0 ) );
@@ -46,80 +44,85 @@ TEST( CharacterTest, createValidCharacter ) {
 TEST( CharacterTest, moveArtifactsAround ) {
   // std::unique_ptr<Character> character1 =
   //     std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
-  Character character1 = CharacterBuilder{}
-                             .setName( "John" )
-                             .setCoords( { 0, 0 } )
-                             .setStats( CharacterStats{ CharacterStats::PrimarySkills{
-                                                            .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-                                                        CharacterStats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-                             .build();
-  Artifact crown_otsm = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
+  Character character1 =
+      character::Builder{}
+          .setName( "John" )
+          .setCoords( { 0, 0 } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
+              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
+          .build();
+  Artifact crown_otsm = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
 
   character1.inventory().pickUpArtifact( crown_otsm );
   ASSERT_EQ( character1.inventory().getBackpack().size(), 1 );
-  ASSERT_EQ( character1.inventory().getBackpack()[0].getData().type_, ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
+  ASSERT_EQ( character1.inventory().getBackpack()[0].getData().type_, artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
 
-  character1.inventory().equipArtifact( ArtifactType::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET );
+  character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET );
   ASSERT_EQ( character1.inventory().getBackpack().size(), 0 );
 }
 
 TEST( CharacterTest, equipUknownArtifact ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
   // );
-  Character character1 = CharacterBuilder{}
-                             .setName( "John" )
-                             .setCoords( { 0, 0 } )
-                             .setStats( CharacterStats{ CharacterStats::PrimarySkills{
-                                                            .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-                                                        CharacterStats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-                             .build();
+  Character character1 =
+      character::Builder{}
+          .setName( "John" )
+          .setCoords( { 0, 0 } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
+              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
+          .build();
 
-  ASSERT_THROW( character1.inventory().equipArtifact( ArtifactType::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
-                InvalidArtifactTypeException );
+  ASSERT_THROW(
+      character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
+      InvalidArtifactTypeException );
 }
 
 TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
   // );
-  Character character1 = CharacterBuilder{}
-                             .setName( "John" )
-                             .setCoords( { 0, 0 } )
-                             .setStats( CharacterStats{ CharacterStats::PrimarySkills{
-                                                            .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-                                                        CharacterStats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-                             .build();
+  Character character1 =
+      character::Builder{}
+          .setName( "John" )
+          .setCoords( { 0, 0 } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
+              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
+          .build();
 
-  Artifact crown_otsm1 = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
-  Artifact crown_otsm2 = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
+  Artifact crown_otsm1 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
+  Artifact crown_otsm2 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
 
   character1.inventory().pickUpArtifact( crown_otsm1 );
   character1.inventory().pickUpArtifact( crown_otsm2 );
 
   ASSERT_NO_THROW(
-      character1.inventory().equipArtifact( ArtifactType::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ) );
-  ASSERT_THROW( character1.inventory().equipArtifact( ArtifactType::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
-                NotEmptySlotException );
+      character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ) );
+  ASSERT_THROW(
+      character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
+      NotEmptySlotException );
 }
 
 TEST( CharacterTest, copyCharacter ) {
   // std::shared_ptr<Character> character_original =
   //     std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
   Character character_original =
-      CharacterBuilder{}
+      character::Builder{}
           .setName( "John" )
           .setCoords( { 0, 0 } )
-          .setStats( CharacterStats{
-              CharacterStats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-              CharacterStats::Misc{ .morale_ = 5, .luck_ = 6 } } )
+          .setStats( character::Stats{
+              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
+              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
           .build();
 
-  auto artifact_1 = Artifact::create( ArtifactType::CROWN_OF_THE_SUPREME_MAGI );
-  auto artifact_2 = Artifact::create( ArtifactType::THUNDER_HELMET );
+  auto artifact_1 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
+  auto artifact_2 = Artifact::create( artifact::Type::THUNDER_HELMET );
 
   character_original.inventory().pickUpArtifact( artifact_1 );
   character_original.inventory().pickUpArtifact( artifact_2 );
 
-  character_original.inventory().equipArtifact( ArtifactType::THUNDER_HELMET, EquipmentSlots::HELMET );
+  character_original.inventory().equipArtifact( artifact::Type::THUNDER_HELMET, EquipmentSlots::HELMET );
 
   // auto faction = std::make_shared<FactionCastle>();
   // auto pikeman = faction->getUnit( CastleUnitType::PIKEMAN );

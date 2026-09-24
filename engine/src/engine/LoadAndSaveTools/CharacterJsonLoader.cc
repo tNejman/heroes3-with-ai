@@ -67,7 +67,7 @@ std::shared_ptr<Character> CharacterJsonLoader::doGetObject() {
 
     for ( auto& artifact : artifacts_equipped ) {
       if ( artifact != nullptr ) {
-        ArtifactType type = artifact->getType();
+        artifact::Type type = artifact->getType();
         EquipmentSlots slot = artifact->getSlot();
         character->pickUpArtifact( std::move( artifact ) );
         character->equipArtifact( type, slot );
@@ -176,7 +176,7 @@ std::array<std::unique_ptr<const Artifact>, 14> CharacterJsonLoader::loadArtifac
     if ( artifact_type_int == -1 ) {
       artifacts[i] = nullptr;
     } else {
-      ArtifactType artifact_type = static_cast<ArtifactType>( artifact_type_int );
+      artifact::Type artifact_type = static_cast<artifact::Type>( artifact_type_int );
       artifacts[i] = Artifact::create( artifact_type );
     }
   }
@@ -236,7 +236,7 @@ std::unique_ptr<SpellBook> CharacterJsonLoader::loadSpells() const {
 std::vector<std::unique_ptr<const Artifact>> CharacterJsonLoader::loadArtifactsBackpack() const {
   std::vector<std::unique_ptr<const Artifact>> artifacts;
   for ( const int artifact_type_int : data_["artifacts_backpack"] ) {
-    ArtifactType artifact_type = static_cast<ArtifactType>( artifact_type_int );
+    artifact::Type artifact_type = static_cast<artifact::Type>( artifact_type_int );
     artifacts.push_back( Artifact::create( artifact_type ) );
   }
   return artifacts;

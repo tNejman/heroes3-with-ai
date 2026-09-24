@@ -43,7 +43,7 @@ int main() {
   // // err::passCondOrAbort( tex.loadFromFile( "sprites/units/castle/" + std::string{ argv[1] } + ".png" ) );
   // // err::passCondOrAbort( tex.loadFromFile( "sprites/artifacts/artifacts.png" ) );
 
-  // auto a = static_cast<ArtifactType>( 0 );
+  // auto a = static_cast<artifact::Type>( 0 );
 
   // // int vert_cut = 0;
   // while ( true ) {
