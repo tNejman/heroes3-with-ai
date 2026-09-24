@@ -1,16 +1,17 @@
 #include "core/Character/Stats.h"
 
-character::Stats::Stats() : primary_skills_(), level_(), mana_(), misc_(), movement_() {
+constexpr character::Stats::Stats() noexcept : primary_skills_(), level_(), mana_(), misc_(), movement_() {
 }
 
-character::Stats::Stats( PrimarySkills primary_skills )
+constexpr character::Stats::Stats( PrimarySkills primary_skills ) noexcept
     : primary_skills_( primary_skills ), level_(), mana_(), misc_(), movement_() {
 }
 
-character::Stats::Stats( Misc misc ) : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
+constexpr character::Stats::Stats( Misc misc ) noexcept
+    : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
 }
 
-character::Stats::Stats( PrimarySkills primary_skills, Misc misc )
+constexpr character::Stats::Stats( PrimarySkills primary_skills, Misc misc ) noexcept
     : primary_skills_( primary_skills ), level_(), mana_(), misc_( misc ), movement_() {
 }
 

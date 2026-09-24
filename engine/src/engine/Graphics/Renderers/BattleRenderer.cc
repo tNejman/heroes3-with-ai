@@ -54,12 +54,12 @@ void BattleRenderer::renderCharacters() noexcept {
   const auto defender = object_.get().getDefender();
 
   sf::Sprite attacker_sprite =
-      SpriteFactory::getSpriteFromBindingV( attacker->getCharacterType(), CharacterMoveDirection::DOWN_RIGHT );
+      SpriteFactory::getSpriteFromBindingV( attacker->getcharacter::Type(), CharacterMoveDirection::DOWN_RIGHT );
   attacker_sprite.setPosition( { 0, 0 } );
   target_render_texture_.get().draw( attacker_sprite );
 
   sf::Sprite defender_sprite =
-      SpriteFactory::getSpriteFromBindingV( attacker->getCharacterType(), CharacterMoveDirection::DOWN_LEFT );
+      SpriteFactory::getSpriteFromBindingV( attacker->getcharacter::Type(), CharacterMoveDirection::DOWN_LEFT );
   const sf::FloatRect defender_bounds{ defender_sprite.getGlobalBounds() };
   const float target_width{ static_cast<float>( target_render_texture_.get().getSize().x ) };
   defender_sprite.move(

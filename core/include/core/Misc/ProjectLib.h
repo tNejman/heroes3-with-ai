@@ -91,8 +91,6 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 ====== CHARACTER ======
 */
 
-enum class CharacterType : char { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
-
 constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0
     0,      // 1

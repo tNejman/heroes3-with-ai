@@ -32,10 +32,11 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 
-
 constexpr inline int FRAMES_PER_SECOND = 30;
 
 constexpr inline std::string WINDOW_NAME = "Heroes3App";
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 namespace {
 
@@ -44,13 +45,7 @@ int window_scale_mult = 3;  // NOLINT(cppcoreguidelines-avoid-non-const-global-v
 void preMain() {
 }
 
-}  // namespace
-
-// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-
-int main() {
-  preMain();
-
+std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
       character::Builder{}
@@ -103,7 +98,15 @@ int main() {
   players.push_back( std::make_shared<Player>( std::move( characters ) ) );
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
-  Game game{ std::move( players ) };
+  return players;
+}
+
+}  // namespace
+
+int main() {
+  preMain();
+
+  Game game{ producePresetPlayers() };
 
   sf::RenderWindow window{
       sf::VideoMode{ sf::Vector2u{ static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),

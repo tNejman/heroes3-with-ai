@@ -6,8 +6,8 @@
 
 #include "core/Misc/ProjectLib.h"
 
-const std::map<CharacterType, std::string> CHARACTER_TYPE_TO_STRING = {
-    { CharacterType::FIRE_HERO, "fire_hero" }, { CharacterType::BLACK_HERO_WHITE_HORSE, "black_her_white_horse" } };
+const std::map<character::Type, std::string> CHARACTER_TYPE_TO_STRING = {
+    { character::Type::FIRE_HERO, "fire_hero" }, { character::Type::BLACK_HERO_WHITE_HORSE, "black_her_white_horse" } };
 
 const std::map<CharacterMoveDirection, std::string> CHARACTER_ORIENTATION_TO_STRING = {
     { CharacterMoveDirection::UP, "_up" },       { CharacterMoveDirection::UP_RIGHT, "_up_right" },

@@ -24,7 +24,7 @@ void SpriteVisitor::visit( const Obstacle& ) {
 }
 
 void SpriteVisitor::visit( const Character& e ) {
-  sprite_ = SpriteFactory::getSpriteFromBindingV( e.getCharacterType(), e.getOrientation() );
+  sprite_ = SpriteFactory::getSpriteFromBindingV( e.getcharacter::Type(), e.getOrientation() );
 }
 
 void SpriteVisitor::visit( const Spell& ) {

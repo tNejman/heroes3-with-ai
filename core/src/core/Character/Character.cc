@@ -18,8 +18,10 @@
 
 /* ==== @PRIVATE ==== */
 
-Character::Character( int id, std::string name, CoordPair coords, character::Stats stats, bool is_user ) noexcept
+Character::Character( CoordPair coords, character::Type character_type, int id, std::string name, bool is_user,
+                      character::Stats stats ) noexcept
     : MapObject( coords ),
+      character_type_( character_type ),
       id_( id ),
       name_( std::move( name ) ),
       is_user_character_( is_user ),
@@ -45,7 +47,7 @@ void Character::setOrientation( CharacterMoveDirection new_orientation ) {
   this->orientation_ = new_orientation;
 }
 
-CharacterType Character::getCharacterType() const {
+character::Type Character::getcharacter::Type() const {
   return this->character_type_;
 }
 
@@ -212,11 +214,9 @@ void Character::equipSpellBook( SpellBook spell_book ) {
 //   }
 // }
 [[nodiscard]] std::shared_ptr<Character> Character::copy() const noexcept {
-  auto character_copy =
-      std::make_shared<Character>( this->id_, this->name_, this->coords_, this->stats_.copy(), is_user_character_ );
+  auto character_copy = std::make_shared<Character>( this->coords_, this->character_type_, this->id_, this->name_,
+                                                     this->is_user_character_, this->stats_.copy() );
   character_copy->orientation_ = this->orientation_;
-  // character_copy->character_type_ = this->character_type_; // TODO
-  character_copy->is_user_character_ = this->is_user_character_;
   character_copy->inventory_ = this->inventory_.copy();
   character_copy->army_ = this->army_.copy();
   character_copy->secondary_skills_ = this->secondary_skills_;

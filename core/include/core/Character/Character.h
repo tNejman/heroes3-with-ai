@@ -19,25 +19,31 @@
 #include "core/Artifact/Artifact.h"
 #include "core/Character/Army.h"
 #include "core/Character/Inventory.h"
-#include "core/Character/Stats.h"
 #include "core/Character/SecondarySkill.h"
+#include "core/Character/Stats.h"
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
 #include "engine/IGame/Coords.h"
 
-
 constexpr inline int SECONDARY_SKILLS_SLOTS_COUNT = 8;
+
+namespace character {
+
+enum class Type : char { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
+
+};
 
 class Character : public MapObject {
  private:
   CharacterMoveDirection orientation_ = CharacterMoveDirection::RIGHT;
-  const CharacterType character_type_ = CharacterType::FIRE_HERO;
 
+  // NOLINTBEGIN(cppcoreguidelines-avoid-const-or-ref-data-members)
+  const character::Type character_type_ = character::Type::FIRE_HERO;
   const int id_;
-
   const std::string name_;
-  bool is_user_character_;  // TODO change to const
+  const bool is_user_character_;
+  // NOLINTEND(cppcoreguidelines-avoid-const-or-ref-data-members)
 
   character::Stats stats_;
   character::Inventory inventory_;
@@ -51,21 +57,19 @@ class Character : public MapObject {
   Character() = delete;
   Character( const Character& ) = delete;
   Character( Character&& ) = default;
-  Character( int id, std::string name, CoordPair coords, character::Stats stats, bool is_user ) noexcept;
+  Character( CoordPair coords, character::Type character_type, int id, std::string name, bool is_user,
+             character::Stats stats ) noexcept;
   ~Character() override = default;
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
+
   void accept( Visitor& v ) const override;
-
-  [[nodiscard]] int getId() const noexcept;
-
   [[nodiscard]] Character* asCharacter() noexcept override;
 
+  [[nodiscard]] int getId() const noexcept;
   [[nodiscard]] CharacterMoveDirection getOrientation() const;
   void setOrientation( CharacterMoveDirection new_orientation );
-
-  [[nodiscard]] CharacterType getCharacterType() const;
-
+  [[nodiscard]] character::Type getcharacter::Type() const;
   [[nodiscard]] const std::string& getName() const;
 
   [[nodiscard]] bool getIfUser() const;

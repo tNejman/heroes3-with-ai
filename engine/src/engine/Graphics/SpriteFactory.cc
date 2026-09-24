@@ -194,7 +194,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
   return sf::Sprite{ getTexture<OverworldObstacleType>( obt, tex_filename, cleanupRawMagentaAndCyanTexture ) };
 }
 
-[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( CharacterType ct, CharacterMoveDirection cmd ) noexcept {
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( character::Type ct, CharacterMoveDirection cmd ) noexcept {
   static constexpr int HERO_SPRITE_WIDTH = 96;
   static constexpr int HERO_SPRITE_HEIGHT = 64;
 
@@ -229,8 +229,8 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
   }();
   const int vertical_multiplier = [&] {
     switch ( ct ) {
-      case CharacterType::FIRE_HERO: return 16;
-      case CharacterType::BLACK_HERO_WHITE_HORSE: return 9;
+      case character::Type::FIRE_HERO: return 16;
+      case character::Type::BLACK_HERO_WHITE_HORSE: return 9;
     }
   }();
 
