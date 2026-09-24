@@ -1,9 +1,10 @@
+#include "core/Character/Army.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <optional>
 
 #include "aux/Err.hpp"
-#include "core/Character/Army.h"
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Unit/UnitStack.h"
 
@@ -38,6 +39,14 @@ UnitStack& character::Army::recruitUnitStack( const UnitStack& stack ) {
   }
   *ptr = stack;
   return ptr->value();
+}
+
+[[nodiscard]] bool character::Army::containsInParty( const UnitStack& stack ) const noexcept {
+  return std::ranges::find_if( party_,
+                               [&]( const std::optional<UnitStack>& maybe_unit_in_party ) {
+                                 return maybe_unit_in_party.has_value() && &*maybe_unit_in_party == &stack;
+                               } )
+         != party_.end();
 }
 
 [[nodiscard]] character::Army character::Army::copy() const noexcept {

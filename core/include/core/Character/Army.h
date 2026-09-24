@@ -53,6 +53,8 @@ class Army {
   UnitStack& recruitUnitStack( const UnitStack& stack, PartySlot slot );
   UnitStack& recruitUnitStack( const UnitStack& stack );
 
+  [[nodiscard]] bool containsInParty( const UnitStack& stack ) const noexcept;
+
   [[nodiscard]] Army copy() const noexcept;
 
   /* ideas @TODO

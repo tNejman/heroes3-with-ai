@@ -6,13 +6,14 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <engine/Graphics/Renderers/IRenderer.hpp>
 #include <memory>
@@ -59,13 +60,14 @@ void BattleRenderer::renderCharacters() noexcept {
 
   sf::Sprite defender_sprite =
       SpriteFactory::getSpriteFromBindingV( attacker->getCharacterType(), CharacterMoveDirection::DOWN_LEFT );
-  defender_sprite.setPosition( { static_cast<float>( static_cast<int>( target_render_texture_.get().getSize().x )
-                                                     - defender_sprite.getTextureRect().size.x ),
-                                 0 } );
-  target_render_texture_.get().draw( defender_sprite );
+  const sf::FloatRect defender_bounds{ defender_sprite.getGlobalBounds() };
+  const float target_width{ static_cast<float>( target_render_texture_.get().getSize().x ) };
+  defender_sprite.move(
+      { target_width - ( defender_bounds.position.x + defender_bounds.size.x ), -defender_bounds.position.y } );
 
-  // TODO finish
+  target_render_texture_.get().draw( defender_sprite );
 }
+
 void BattleRenderer::renderGrid() noexcept {
   const static sf::Texture combined_hexagons_texture = [] {
     sf::RenderTexture combined_hexagons{ sf::Vector2u{ graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } };
@@ -112,13 +114,27 @@ void BattleRenderer::renderMoves() noexcept {
 void BattleRenderer::renderObjects() noexcept {
   static constexpr int FEET_FROM_TOP_OFFSET = 40;
 
+  static const sf::Texture health_box_tex = [] {
+    sf::Texture tex;
+    err::passCondOrAbort( tex.loadFromFile( "assets/sprites/battle/aux/unit_health_template.png" ) );
+    return tex;
+  }();
+  static const sf::Font health_num_font = [] {
+    sf::Font font;
+    err::passCondOrAbort( font.openFromFile( "assets/fonts/DejaVuSans.ttf" ) );
+    return font;
+  }();
+
   for ( size_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( size_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
-      if ( object_.get().getBattlefield()->getGrid()[x][y]->getObject() == nullptr
-           || object_.get().getBattlefield()->getGrid()[x][y]->getObject()->asUnit() == nullptr ) {
+    for ( int y = MAP_HEIGHT_BF - 1; y >= 0;
+          --y /* has to be int so ">= 0" is ever true; also render from top down, same as in world map */ ) {
+      if ( object_.get().getBattlefield()->getGrid()[x][static_cast<size_t>( y )]->getObject() == nullptr
+           || object_.get().getBattlefield()->getGrid()[x][static_cast<size_t>( y )]->getObject()->asUnit()
+                  == nullptr ) {
         continue;
       }
-      const UnitStack* unit = object_.get().getBattlefield()->getGrid()[x][y]->getObject()->asUnit();
+      const UnitStack* unit =
+          object_.get().getBattlefield()->getGrid()[x][static_cast<size_t>( y )]->getObject()->asUnit();
 
       sf::Sprite unit_sprite = SpriteFactory::getSpriteFromBindingV( unit->getData().type_ );
       auto [tile_offset_x, tile_offset_y] = getHexagonOffset( unit->getCoordsInBattle() );
@@ -129,30 +145,28 @@ void BattleRenderer::renderObjects() noexcept {
                                              - SpriteFactory::getFootHeightForUnit( unit->getData().type_ ) );
       unit_sprite.setPosition( sf::Vector2f{ unit_draw_x, unit_draw_y } );
 
-      if ( std::ranges::find_if(
-               object_.get().getDefender()->army().getParty(),
-               [&]( const std::optional<UnitStack>& u ) { return u.has_value() && unit == std::addressof( *u ); } )
-           != object_.get().getDefender()->army().getParty().end() ) {
+      if ( object_.get().getDefender()->army().containsInParty( *unit ) ) {
         SpriteFactory::flipSpriteHorizontally( unit_sprite );
       }
 
       target_render_texture_.get().draw( unit_sprite );
 
       /* === draw health === */
-      static const sf::Texture health_box_tex = [] {
-        sf::Texture tex;
-        err::passCondOrAbort( tex.loadFromFile( "assets/sprites/battle/aux/unit_health_template.png" ) );
-        return tex;
-      }();
       sf::Sprite health_box_sprite{ health_box_tex };
-      health_box_sprite.setPosition( sf::Vector2f{ unit_draw_x, unit_draw_y } );
+      const float health_box_draw_x = unit_draw_x + ( unit_sprite.getLocalBounds().size.x / 2 );
+
+      health_box_sprite.setPosition( sf::Vector2f{ health_box_draw_x, unit_draw_y } );
       target_render_texture_.get().draw( health_box_sprite );
 
-      sf::Font font;
-      err::passCondOrAbort( font.openFromFile( "assets/fonts/DejaVuSans.ttf" ) );
-      sf::Text health_num( font, std::to_string( unit->getSize() ), 20 );
+      sf::Text health_num( health_num_font, std::to_string( unit->getSize() ), 9 );
       health_num.setFillColor( sf::Color::White );
-      health_num.setPosition( sf::Vector2f{ unit_draw_x, unit_draw_y } );
+
+      const sf::Vector2f text_center{ health_num.getLocalBounds().getCenter() };
+      health_num.setOrigin( sf::Vector2f{ std::round( text_center.x ), std::round( text_center.y ) } );
+
+      const sf::Vector2f box_center{ health_box_sprite.getGlobalBounds().getCenter() };
+      health_num.setPosition( sf::Vector2f{ std::round( box_center.x ), std::round( box_center.y ) } );
+
       target_render_texture_.get().draw( health_num );
     }
   }
