@@ -18,6 +18,8 @@
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 
+constexpr inline double INF_SCORE = 1e9;
+
 std::shared_ptr<Move> MinimaxAI::getBestMove( std::shared_ptr<Battle> battle, uint32_t depth, bool maximizing_player ) {
   std::shared_ptr<WaitMove> move = std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() );
   return doMinimax( battle, depth, -INF_SCORE, INF_SCORE, maximizing_player, move ).first;

@@ -5,6 +5,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <magic_enum/magic_enum.hpp>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -18,7 +19,7 @@
 constexpr inline int WORLD_MAP_WIDTH = 100;   // 20
 constexpr inline int WORLD_MAP_HEIGHT = 100;  // 20
 
-constexpr double INF_SCORE = 1e9;
+enum class CharacterMoveDirection : uint8_t { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT };
 
 constexpr std::array<ShiftPair, 8> WORLD_MAP_DIRECTIONS = { { ShiftPair{ -1, 1 },      // UL
                                                               ShiftPair{ 0, 1 },       // U
@@ -29,7 +30,7 @@ constexpr std::array<ShiftPair, 8> WORLD_MAP_DIRECTIONS = { { ShiftPair{ -1, 1 }
                                                               ShiftPair{ 0, -1 },      // DL
                                                               ShiftPair{ 1, -1 } } };  // L
 
-enum class CharacterMoveDirection : uint8_t { UP_LEFT, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, NONE };
+static_assert( WORLD_MAP_DIRECTIONS.size() == static_cast<size_t>( magic_enum::enum_count<CharacterMoveDirection>() ) );
 
 /*
 ====== BATTLE ======
@@ -90,8 +91,6 @@ const std::unordered_map<Terrain, double> TERRAIN_MOVEMENT_PENALTY = { { Terrain
 /*
 ====== CHARACTER ======
 */
-
-enum class CharacterType : char { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
 
 constexpr std::array<int, 11> EXPERIENCE_THRESHHOLDS = {
     0,      // 0

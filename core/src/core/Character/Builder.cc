@@ -13,38 +13,36 @@
 
 namespace character {
 
-class BuilderCleanerGuard {
- private:
-  character::Builder& character_builder_to_clean_;
-  void resetCharacterBuilder() noexcept {
-    character_builder_to_clean_.name_ = std::nullopt;
-    character_builder_to_clean_.coords_ = std::nullopt;
-    character_builder_to_clean_.stats_ = std::nullopt;
-    character_builder_to_clean_.is_user_ = std::nullopt;
-  }
+// class BuilderCleanerGuard {
+//  private:
+//   character::Builder& character_builder_to_clean_;
+//   void resetCharacterBuilder() noexcept {
+//     character_builder_to_clean_.name_ = std::nullopt;
+//     character_builder_to_clean_.coords_ = std::nullopt;
+//     character_builder_to_clean_.stats_ = std::nullopt;
+//     character_builder_to_clean_.is_user_ = std::nullopt;
+//   }
 
- public:
-  BuilderCleanerGuard( character::Builder& character_builder_to_clean ) noexcept
-      : character_builder_to_clean_( character_builder_to_clean ) {
-  }
-  ~BuilderCleanerGuard() noexcept {
-    resetCharacterBuilder();
-  }
-};
+//  public:
+//   BuilderCleanerGuard( character::Builder& character_builder_to_clean ) noexcept
+//       : character_builder_to_clean_( character_builder_to_clean ) {
+//   }
+//   ~BuilderCleanerGuard() noexcept {
+//     resetCharacterBuilder();
+//   }
+// };
 
 }  // namespace character
 
-[[nodiscard]] int character::Builder::generateId() noexcept {
-  static int base_id = 0;
-  return ++base_id;
-}
-
 void character::Builder::generateDefaultsForUnsetParams() noexcept {
-  if ( !name_ ) {
-    name_ = "John";
-  }
   if ( !coords_ ) {
     coords_ = { 0, 0 };
+  }
+  if ( !type_ ) {
+    type_ = character::Type::FIRE_HERO;
+  }
+  if ( !name_ ) {
+    name_ = "John";
   }
   if ( !stats_ ) {
     stats_ = character::Stats{};
@@ -54,20 +52,25 @@ void character::Builder::generateDefaultsForUnsetParams() noexcept {
   }
 }
 
-/* ==== @PUBLIC ==== */
-
-[[nodiscard]] character::Builder&& character::Builder::setName( std::string name ) && noexcept {
-  name_ = std::move( name );
-  return std::move( *this );
+[[nodiscard]] int character::Builder::generateId() noexcept {
+  static int base_id = 0;
+  return ++base_id;
 }
+
+/* ==== @PUBLIC ==== */
 
 [[nodiscard]] character::Builder&& character::Builder::setCoords( CoordPair coords ) && noexcept {
   coords_ = coords;
   return std::move( *this );
 }
 
-[[nodiscard]] character::Builder&& character::Builder::setStats( character::Stats stats ) && noexcept {
-  stats_ = std::move( stats );
+[[nodiscard]] character::Builder&& character::Builder::setCharacterType( character::Type type ) && noexcept {
+  type_ = type;
+  return std::move( *this );
+}
+
+[[nodiscard]] character::Builder&& character::Builder::setName( std::string name ) && noexcept {
+  name_ = std::move( name );
   return std::move( *this );
 }
 
@@ -76,18 +79,23 @@ void character::Builder::generateDefaultsForUnsetParams() noexcept {
   return std::move( *this );
 }
 
-Character character::Builder::build() && noexcept {
-  character::BuilderCleanerGuard guard{ *this };
-  int id = generateId();
-  generateDefaultsForUnsetParams();
-
-  return Character{ id, std::move( *name_ ), *coords_, std::move( *stats_ ), *is_user_ };
+[[nodiscard]] character::Builder&& character::Builder::setStats( character::Stats stats ) && noexcept {
+  stats_ = std::move( stats );
+  return std::move( *this );
 }
 
-std::shared_ptr<Character> character::Builder::buildSharedPtr() && noexcept {
-  character::BuilderCleanerGuard guard{ *this };
-  int id = generateId();
-  generateDefaultsForUnsetParams();
+// Character character::Builder::build() && noexcept {
+//   character::BuilderCleanerGuard guard{ *this };
+//   int id = generateId();
+//   generateDefaultsForUnsetParams();
 
-  return std::make_shared<Character>( id, std::move( *name_ ), *coords_, std::move( *stats_ ), *is_user_ );
-}
+//   return Character{ id, std::move( *name_ ), *coords_, std::move( *stats_ ), *is_user_ };
+// }
+
+// std::shared_ptr<Character> character::Builder::buildSharedPtr() && noexcept {
+//   character::BuilderCleanerGuard guard{ *this };
+//   int id = generateId();
+//   generateDefaultsForUnsetParams();
+
+//   return std::make_shared<Character>( id, std::move( *name_ ), *coords_, std::move( *stats_ ), *is_user_ );
+// }

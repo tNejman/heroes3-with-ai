@@ -2,19 +2,19 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <cassert>
-#include <cstddef>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 
 #include "aux/Err.hpp"
-#include "core/Exceptions/UnknownStateException.hpp"
-#include "engine/Input/KeyboardHandler.h"
-#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
+#include "engine/Input/KeyboardHandler.h"
+#include "engine/Input/KeyboardLib.h"
 
 // void KeyHandler::processBufferedInput() {
 //   removeEmptyFramesFromFront();
@@ -104,7 +104,7 @@ void KeyHandler::processBufferedInput() {
   key_press_history_.pop_front();
 }
 
-CharacterMoveDirection KeyHandler::getMoveFromKeys( const std::vector<sf::Keyboard::Key> &key_vec ) {
+std::optional<CharacterMoveDirection> KeyHandler::getMoveFromKeys( const std::vector<sf::Keyboard::Key> &key_vec ) {
   int dx = 0;
   int dy = 0;
   for ( const auto &key : key_vec ) {
@@ -123,7 +123,7 @@ CharacterMoveDirection KeyHandler::getMoveFromKeys( const std::vector<sf::Keyboa
   const auto *itr = std::ranges::find( WORLD_MAP_DIRECTIONS.begin(), WORLD_MAP_DIRECTIONS.end(), shift );
 
   if ( itr == WORLD_MAP_DIRECTIONS.end() ) {
-    return CharacterMoveDirection::NONE;
+    return std::nullopt;
   }
   auto dist = std::distance( WORLD_MAP_DIRECTIONS.begin(), itr );
   assert( dist <= 7U );
@@ -132,7 +132,9 @@ CharacterMoveDirection KeyHandler::getMoveFromKeys( const std::vector<sf::Keyboa
 
 bool KeyHandler::isValidDiagonalPair( sf::Keyboard::Key first, sf::Keyboard::Key second ) const {
   auto it = VALID_DIAGONAL_MOVE_COMP.find( first );
-  if ( it == VALID_DIAGONAL_MOVE_COMP.end() ) return false;
+  if ( it == VALID_DIAGONAL_MOVE_COMP.end() ) {
+    return false;
+  }
 
   return second == it->second[0] || second == it->second[1];
 }
@@ -193,12 +195,12 @@ void KeyHandler::monitorKeyPresses() {
   key_press_history_.push_back( keys_this_frame );
 }
 
-CharacterMoveDirection KeyHandler::getMove() {
+std::optional<CharacterMoveDirection> KeyHandler::getMove() {
   // convertKeyPressesToMoves();
   processBufferedInput();
 
   if ( pending_moves_.empty() ) {
-    return CharacterMoveDirection::NONE;
+    return std::nullopt;
   }
   auto ret_move = pending_moves_.front();
   pending_moves_.erase( pending_moves_.begin() );

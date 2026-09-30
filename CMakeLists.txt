@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25.0)
 project(Heroes3App LANGUAGES CXX)
 set(APP_NAME Heroes3App)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
@@ -53,7 +53,7 @@ set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 execute_process(
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/fetch_sprites.py ${CMAKE_SOURCE_DIR}
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_sprites.py ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE rc
 )
 if(NOT rc EQUAL 0)
@@ -61,7 +61,7 @@ if(NOT rc EQUAL 0)
 endif()
 
 execute_process(
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/fetch_fonts.py ${CMAKE_SOURCE_DIR}
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_fonts.py ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE rc
 )
 if(NOT rc EQUAL 0)
@@ -90,6 +90,8 @@ set(CORE_MODULES
     Unit
     WorldMap
 )
+
+add_compile_options(-freflection -fdiagnostics-all-candidates)
 
 function(apply_compiler_flags target)
     target_compile_options(${target} PRIVATE
