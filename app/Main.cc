@@ -32,25 +32,18 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 
-
 constexpr inline int FRAMES_PER_SECOND = 30;
 
 constexpr inline std::string WINDOW_NAME = "Heroes3App";
 
-namespace {
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-int window_scale_mult = 3;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+namespace {
 
 void preMain() {
 }
 
-}  // namespace
-
-// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-
-int main() {
-  preMain();
-
+std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
       character::Builder{}
@@ -59,7 +52,7 @@ int main() {
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
-          .buildSharedPtr() );
+          .build<std::shared_ptr>() );
   characters.push_back(
       character::Builder{}
           .setName( "john" )
@@ -67,7 +60,7 @@ int main() {
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
               character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
-          .buildSharedPtr() );
+          .build<std::shared_ptr>() );
 
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 10 } );
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 15 } );
@@ -82,7 +75,7 @@ int main() {
               character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .setIsUser( false )
-          .buildSharedPtr() );
+          .build<std::shared_ptr>() );
   characters_2.push_back(
       character::Builder{}
           .setName( "black_hero_white_horse_down_right" )
@@ -91,7 +84,7 @@ int main() {
               character::Stats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } } )
           .setIsUser( false )
-          .buildSharedPtr() );
+          .build<std::shared_ptr>() );
 
   characters_2[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 5 } );
   characters_2[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::ARCHER, 10 } );
@@ -103,8 +96,17 @@ int main() {
   players.push_back( std::make_shared<Player>( std::move( characters ) ) );
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
-  Game game{ std::move( players ) };
+  return players;
+}
 
+}  // namespace
+
+int main() {
+  preMain();
+
+  Game game{ producePresetPlayers() };
+
+  int window_scale_mult = 3;
   sf::RenderWindow window{
       sf::VideoMode{ sf::Vector2u{ static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
                                    static_cast<unsigned int>( graphics::WINDOW_HEIGHT * window_scale_mult ) } },

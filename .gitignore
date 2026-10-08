@@ -21,3 +21,5 @@ assets/sprites/battle/*
 !assets/sprites/battle/aux/
 
 assets/fonts/
+
+.clangd-stubs/
