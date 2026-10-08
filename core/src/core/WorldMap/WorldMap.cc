@@ -28,10 +28,11 @@ void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   }
 }
 
-void WorldMap::loadObstacles( std::vector<std::shared_ptr<OverworldObstacle>> obstacles ) noexcept {
+void WorldMap::loadObstacles( const std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) noexcept {
   // SINGLE_CALL_GUARD()
-  for ( auto& obstacle : obstacles ) {
-    setMapObject( obstacle->getCoords(), std::move( obstacle ) );
+  for ( const auto& obstacle : obstacles ) {
+    err::passCondOrAbort( obstacle != nullptr );
+    setMapObject( obstacle->getCoords(), obstacle );
   }
 }
 
@@ -44,9 +45,9 @@ WorldMap::WorldMap( const WorldMapGrid<int>& new_grid ) noexcept {
 }
 
 WorldMap::WorldMap( const WorldMapGrid<int>& new_grid,
-                    std::vector<std::shared_ptr<OverworldObstacle>> new_obstacles ) noexcept
+                    const std::vector<std::shared_ptr<OverworldObstacle>>& new_obstacles ) noexcept
     : WorldMap( new_grid ) {
-  loadObstacles( std::move( new_obstacles ) );
+  loadObstacles( new_obstacles );
 }
 
 bool WorldMap::areCoordsInBounds( CoordPair coords ) noexcept {

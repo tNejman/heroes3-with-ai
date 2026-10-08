@@ -10,6 +10,7 @@
 
 #include "aux/Enum.hpp"
 #include "core/Artifact/ArtifactLib.h"
+#include "core/Character/Character.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
@@ -51,7 +52,7 @@ class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::BATTLE> ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( OverworldObstacleType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( CharacterType, CharacterMoveDirection ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( character::Type, CharacterMoveDirection ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( CastleUnitType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ConfluxUnitType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ForgeUnitType ) noexcept;

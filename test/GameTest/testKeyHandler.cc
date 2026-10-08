@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <SFML/Window/Keyboard.hpp>
-#include <memory>
+#include <optional>
 
 #include "core/Game/KeyHandler.h"
 #include "core/Misc/ProjectLib.h"
@@ -15,7 +15,7 @@ TEST( KeyHandlerTest, mockInput ) {
   key_handler->debugMockInput( mock_input );
   key_handler->monitorKeyPresses();
   auto move_direction_frame1 = key_handler->getMove();
-  ASSERT_EQ( CharacterMoveDirection::NONE, move_direction_frame1 );
+  ASSERT_EQ( std::nullopt, move_direction_frame1 );
 
   // for frames 2,3,4...
   mock_input->set( {} );
@@ -24,22 +24,22 @@ TEST( KeyHandlerTest, mockInput ) {
   // frame 2 (buffer 1/5)
   key_handler->monitorKeyPresses();
   auto move_direction_frame2 = key_handler->getMove();
-  ASSERT_EQ( CharacterMoveDirection::NONE, move_direction_frame2 );
+  ASSERT_EQ( std::nullopt, move_direction_frame2 );
 
   // frame 3 (buffer 2/5)
   key_handler->monitorKeyPresses();
   auto move_direction_frame3 = key_handler->getMove();
-  ASSERT_EQ( CharacterMoveDirection::NONE, move_direction_frame3 );
+  ASSERT_EQ( std::nullopt, move_direction_frame3 );
 
   // frame 4 (buffer 3/5)
   key_handler->monitorKeyPresses();
   auto move_direction_frame4 = key_handler->getMove();
-  ASSERT_EQ( CharacterMoveDirection::NONE, move_direction_frame4 );
+  ASSERT_EQ( std::nullopt, move_direction_frame4 );
 
   // frame 5 (buffer 4/5)
   key_handler->monitorKeyPresses();
   auto move_direction_frame5 = key_handler->getMove();
-  ASSERT_EQ( CharacterMoveDirection::NONE, move_direction_frame5 );
+  ASSERT_EQ( std::nullopt, move_direction_frame5 );
 
   // frame 6 (buffer 5/5)
   key_handler->monitorKeyPresses();

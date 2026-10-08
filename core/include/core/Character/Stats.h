@@ -52,15 +52,15 @@ class Stats {
   Movement movement_;
 
  public:
-  Stats();
-  Stats( PrimarySkills primary_skills );
-  Stats( Misc misc );
-  Stats( PrimarySkills primary_skills, Misc misc );
+  constexpr Stats() noexcept;
+  constexpr Stats( PrimarySkills primary_skills ) noexcept;
+  constexpr Stats( Misc misc ) noexcept;
+  constexpr Stats( PrimarySkills primary_skills, Misc misc ) noexcept;
   Stats( const Stats& ) = delete;
-  Stats( Stats&& ) = default;
+  constexpr Stats( Stats&& ) = default;
   ~Stats() = default;
   Stats& operator=( const Stats& ) = delete;
-  Stats& operator=( Stats&& ) = default;
+  constexpr Stats& operator=( Stats&& ) = default;
 
   [[nodiscard]] const PrimarySkills& getPrimarySkills() const noexcept;
   [[nodiscard]] const Level& getLevel() const noexcept;
@@ -112,3 +112,21 @@ class Stats {
 };
 
 }  // namespace character
+
+/* ==== @IMPL ==== */
+// obviously constexpr in header
+
+constexpr character::Stats::Stats() noexcept : primary_skills_(), level_(), mana_(), misc_(), movement_() {
+}
+
+constexpr character::Stats::Stats( PrimarySkills primary_skills ) noexcept
+    : primary_skills_( primary_skills ), level_(), mana_(), misc_(), movement_() {
+}
+
+constexpr character::Stats::Stats( Misc misc ) noexcept
+    : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
+}
+
+constexpr character::Stats::Stats( PrimarySkills primary_skills, Misc misc ) noexcept
+    : primary_skills_( primary_skills ), level_(), mana_(), misc_( misc ), movement_() {
+}

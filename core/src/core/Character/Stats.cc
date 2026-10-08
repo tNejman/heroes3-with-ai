@@ -1,19 +1,5 @@
 #include "core/Character/Stats.h"
 
-character::Stats::Stats() : primary_skills_(), level_(), mana_(), misc_(), movement_() {
-}
-
-character::Stats::Stats( PrimarySkills primary_skills )
-    : primary_skills_( primary_skills ), level_(), mana_(), misc_(), movement_() {
-}
-
-character::Stats::Stats( Misc misc ) : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
-}
-
-character::Stats::Stats( PrimarySkills primary_skills, Misc misc )
-    : primary_skills_( primary_skills ), level_(), mana_(), misc_( misc ), movement_() {
-}
-
 [[nodiscard]] const character::Stats::PrimarySkills& character::Stats::getPrimarySkills() const noexcept {
   return primary_skills_;
 }

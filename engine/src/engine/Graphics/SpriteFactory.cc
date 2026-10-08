@@ -23,6 +23,7 @@
 #include "aux/Err.hpp"
 #include "aux/ToLowerString.hpp"
 #include "core/Artifact/ArtifactLib.h"
+#include "core/Character/Character.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
@@ -88,6 +89,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case HexagonType::MOVE: return "Hexagon_Movement";
       case HexagonType::IN_ACTION: return "Hexagon_Unit_In_Action";
     }
+    err::abort( "unknown hexagon type requested to render" );
   }() + ".png";
   return sf::Sprite{ getTexture( ht, filename ) };
 }
@@ -144,6 +146,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case artifact::Type::SANDALS_OF_THE_SAINT: return get_sprite_location_from_sprite_relative_pos( 0, 1 );
       case artifact::Type::BOOTS_OF_SPEED: return get_sprite_location_from_sprite_relative_pos( 15, 3 );
     }
+    err::abort( "requested rendering an artifact with no preset texture" );
   }();
 
   return sf::Sprite{ getTexture( at, artifact_sprite_file_location ),
@@ -161,6 +164,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case Terrain::ROCKS_CRUSHED: return "trob024";
       case Terrain::SAND: return "tsub000";
     }
+    err::abort( "unknown terrain type requested to render" );
   }() + ".png";
   err::passCondOrAbort( getTexture<Terrain, SpriteDomain::WORLD>( t.val, tex_filename ).getSize()
                         == sf::Vector2u{ 32, 32 } );
@@ -179,6 +183,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case Terrain::ROCKS_CRUSHED:
       case Terrain::SAND: return "CmBkDrTr";
     }
+    err::abort( "unknown terrain type requested to render" );
   }() + ".png";
   return sf::Sprite{ getTexture<Terrain, SpriteDomain::BATTLE>( t.val, tex_filename ) };
 }
@@ -190,11 +195,13 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case OverworldObstacleType::DRIED_TREE: return "AVLtRo06";
       case OverworldObstacleType::GREEN_TREE: return "AVLswt15";
     }
+    err::abort( "unknown overworld obstacle type requested to render" );
   }() + ".png";
   return sf::Sprite{ getTexture<OverworldObstacleType>( obt, tex_filename, cleanupRawMagentaAndCyanTexture ) };
 }
 
-[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( CharacterType ct, CharacterMoveDirection cmd ) noexcept {
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( character::Type ct,
+                                                               CharacterMoveDirection cmd ) noexcept {
   static constexpr int HERO_SPRITE_WIDTH = 96;
   static constexpr int HERO_SPRITE_HEIGHT = 64;
 
@@ -224,14 +231,15 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case CharacterMoveDirection::DOWN: return horizontal_offset::FACING_DOWN;
       case CharacterMoveDirection::DOWN_LEFT: return horizontal_offset::FACING_DOWN_RIGHT;
       case CharacterMoveDirection::LEFT: return horizontal_offset::FACING_RIGHT;
-      case CharacterMoveDirection::NONE: std::unreachable();
     }
+    err::abort( "unknown CharacerMoveDirection type requested to render" );
   }();
   const int vertical_multiplier = [&] {
     switch ( ct ) {
-      case CharacterType::FIRE_HERO: return 16;
-      case CharacterType::BLACK_HERO_WHITE_HORSE: return 9;
+      case character::Type::FIRE_HERO: return 16;
+      case character::Type::BLACK_HERO_WHITE_HORSE: return 9;
     }
+  err::abort( "requested rendering an unknown character::Type" );
   }();
 
   sf::Vector2<int> sprite_local_position{ HERO_SPRITE_WIDTH * horizontal_multiplier,
@@ -243,7 +251,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
     case CharacterMoveDirection::UP_LEFT:
     case CharacterMoveDirection::LEFT:
     case CharacterMoveDirection::DOWN_LEFT: flipSpriteHorizontally( cropped_sprite );
-    default:  // other directions have dedicated textures
+    default: break;  // other directions have dedicated textures
   }
   sf::Sprite s2 = cropped_sprite;
 
@@ -265,6 +273,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case CastleUnitType::CAVALIER: return { 165, 153 };
       case CastleUnitType::ANGEL: return { 108, 108 };  // x=153 for perfect swapping sprites without offset
     }
+    err::abort( "unknown Castle Unit type requested to render" );
   }();
 
   return sf::Sprite{ getTexture( cut, tex_filename ), sf::IntRect{ { 0, 0 }, crop } };

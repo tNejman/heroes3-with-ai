@@ -4,6 +4,8 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <cstddef>
+#include <optional>
 
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
@@ -35,12 +37,12 @@ CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
 [[nodiscard]] UserCommand InputHandler::processKeyboardInput( const sf::Event&, const Game& game ) noexcept {
   KeyHandler key_handler{ false };
   key_handler.monitorKeyPresses();
-  CharacterMoveDirection move_direction = key_handler.getMove();
-  if ( move_direction == CharacterMoveDirection::NONE ) {
+  std::optional<CharacterMoveDirection> move_direction = key_handler.getMove();
+  if ( !move_direction.has_value() ) {
     return None{};
   }
   CoordPair source = game.getContext().getCurrentCharacter().getCoords();
-  CoordPair destination = calculateNewCharacterPosition( source, move_direction );
+  CoordPair destination = calculateNewCharacterPosition( source, *move_direction );
   return MoveCharacter{ .source_ = source, .destination_ = destination };
 }
 
