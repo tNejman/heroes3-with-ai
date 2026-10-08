@@ -45,7 +45,7 @@ jobs:
           sudo apt-get install -y libstdc++-15-dev
 
       - name: Configure CMake
-        run: cmake --preset=gcc-ninja-lld -DFETCH_ASSETS=OFF
+        run: cmake --preset=CI-gcc-ninja-lld -DFETCH_ASSETS=OFF
 
       - name: Build
         run: cmake --build build
