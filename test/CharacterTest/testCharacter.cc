@@ -2,7 +2,8 @@
 
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
-#include "core/Character/Builder.h"
+#include "aux/Builder.hpp"
+#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
@@ -16,9 +17,9 @@ TEST( CharacterTest, createValidCharacter ) {
   //     2 }
   //     );
   Character character1 =
-      character::Builder{}
+      Builder<Character>{}
           .setName( "John" )
-          .setCoords( { 0, 0 } )
+          .setCoords( CoordPair{ 0, 0 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
@@ -45,9 +46,9 @@ TEST( CharacterTest, moveArtifactsAround ) {
   // std::unique_ptr<Character> character1 =
   //     std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
   Character character1 =
-      character::Builder{}
+      Builder<Character>{}
           .setName( "John" )
-          .setCoords( { 0, 0 } )
+          .setCoords( CoordPair{ 0, 0 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
@@ -66,9 +67,9 @@ TEST( CharacterTest, equipUknownArtifact ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
   // );
   Character character1 =
-      character::Builder{}
+      Builder<Character>{}
           .setName( "John" )
-          .setCoords( { 0, 0 } )
+          .setCoords( CoordPair{ 0, 0 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
@@ -83,9 +84,9 @@ TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
   // );
   Character character1 =
-      character::Builder{}
+      Builder<Character>{}
           .setName( "John" )
-          .setCoords( { 0, 0 } )
+          .setCoords( CoordPair{ 0, 0 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
@@ -108,9 +109,9 @@ TEST( CharacterTest, copyCharacter ) {
   // std::shared_ptr<Character> character_original =
   //     std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
   Character character_original =
-      character::Builder{}
+      Builder<Character>{}
           .setName( "John" )
-          .setCoords( { 0, 0 } )
+          .setCoords( CoordPair{ 0, 0 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )

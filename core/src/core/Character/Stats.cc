@@ -20,15 +20,6 @@
   return movement_;
 }
 
-[[nodiscard]] character::Stats character::Stats::copy() const noexcept {
-  character::Stats copy{};
-  copy.primary_skills_ = this->primary_skills_;
-  copy.level_ = this->level_;
-  copy.mana_ = this->mana_;
-  copy.movement_ = this->movement_;
-  return copy;
-}
-
 // uint32_t Character::getAttack() const {
 //   return this->attack_;
 // }

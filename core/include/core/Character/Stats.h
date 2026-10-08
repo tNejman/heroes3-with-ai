@@ -56,20 +56,12 @@ class Stats {
   constexpr Stats( PrimarySkills primary_skills ) noexcept;
   constexpr Stats( Misc misc ) noexcept;
   constexpr Stats( PrimarySkills primary_skills, Misc misc ) noexcept;
-  Stats( const Stats& ) = delete;
-  constexpr Stats( Stats&& ) = default;
-  ~Stats() = default;
-  Stats& operator=( const Stats& ) = delete;
-  constexpr Stats& operator=( Stats&& ) = default;
 
   [[nodiscard]] const PrimarySkills& getPrimarySkills() const noexcept;
   [[nodiscard]] const Level& getLevel() const noexcept;
   [[nodiscard]] const Mana& getMana() const noexcept;
   [[nodiscard]] const Misc& getMisc() const noexcept;
   [[nodiscard]] const Movement& getMovement() const noexcept;
-
-  [[nodiscard]] Stats copy() const noexcept;
-
   //   [[nodiscard]] uint32_t getAttack() const;
   //   void setAttack( const uint32_t new_attack );
   //   void modifyAttack( const uint32_t attack_diff );

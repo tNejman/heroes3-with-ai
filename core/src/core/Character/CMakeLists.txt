@@ -1,7 +1,6 @@
 add_library(Character SHARED
   Character.cc
   Army.cc
-  Builder.cc
   Inventory.cc
   Stats.cc
 )

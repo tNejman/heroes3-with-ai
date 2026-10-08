@@ -210,8 +210,8 @@ void Character::equipSpellBook( SpellBook spell_book ) {
 //   }
 // }
 [[nodiscard]] std::shared_ptr<Character> Character::copy() const noexcept {
-  auto character_copy = std::make_shared<Character>( this->id_, this->coords_, this->type_, this->name_, this->is_user_,
-                                                     this->stats_.copy() );
+  auto character_copy =
+      std::make_shared<Character>( this->id_, this->coords_, this->type_, this->name_, this->is_user_, this->stats_ );
   character_copy->orientation_ = this->orientation_;
   character_copy->inventory_ = this->inventory_.copy();
   character_copy->army_ = this->army_.copy();

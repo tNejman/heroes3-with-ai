@@ -21,12 +21,14 @@
 #include <utility>
 #include <vector>
 
+#include "aux/Builder.hpp"
+#include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
 #include "aux/Err.hpp"
-#include "core/Character/Builder.h"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
+#include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
@@ -46,21 +48,30 @@ void preMain() {
 std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
-      character::Builder{}
+      Builder<Character>{}
           .setName( "fire_hero_down_right" )
-          .setCoords( { 0, 0 } )
+          .setCoords( CoordPair{ 0, 0 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .build<std::shared_ptr>() );
   characters.push_back(
-      character::Builder{}
+      Builder<Character>{}
           .setName( "john" )
-          .setCoords( { 5, 5 } )
+          .setCoords( CoordPair{ 5, 5 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
               character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
           .build<std::shared_ptr>() );
+
+  // characters.push_back(
+  //     Builder<Character>{}
+  //         .setName( "john" )
+  //         .setCoords( CoordPair{ 5, 5 } )
+  //         .setStats( character::Stats{
+  //             character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
+  //             character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
+  //         .build<std::shared_ptr>() );
 
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 10 } );
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 15 } );
@@ -68,18 +79,18 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
 
   std::vector<std::shared_ptr<Character>> characters_2;
   characters_2.push_back(
-      character::Builder{}
+      Builder<Character>{}
           .setName( "black_hero_white_horse_down_right" )
-          .setCoords( { 2, 2 } )
+          .setCoords( CoordPair{ 2, 2 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
           .setIsUser( false )
           .build<std::shared_ptr>() );
   characters_2.push_back(
-      character::Builder{}
+      Builder<Character>{}
           .setName( "black_hero_white_horse_down_right" )
-          .setCoords( { 12, 12 } )
+          .setCoords( CoordPair{ 12, 12 } )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
               character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } } )
@@ -103,6 +114,8 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
 
 int main() {
   preMain();
+
+  // Engine engine = Builder<Engine>{}.setMaxRpm(7000).setName("V8").setDisplacement(5.0).build();
 
   Game game{ producePresetPlayers() };
 
