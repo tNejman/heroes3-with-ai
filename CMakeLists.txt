@@ -51,23 +51,26 @@ FetchContent_MakeAvailable(json)
 FetchContent_MakeAvailable(magic_enum)
 set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-execute_process(
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_sprites.py ${CMAKE_SOURCE_DIR}
-    RESULT_VARIABLE rc
-)
-if(NOT rc EQUAL 0)
-    message(FATAL_ERROR "sprite fetch failed")
-endif()
+option(FETCH_ASSETS "Download sprites at configure time" ON)
+if(FETCH_ASSETS)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter) 
+  
+    execute_process(
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_sprites.py ${CMAKE_SOURCE_DIR}
+        RESULT_VARIABLE rc
+    )
+    if(NOT rc EQUAL 0)
+        message(FATAL_ERROR "sprite fetch failed")
+    endif()
 
-execute_process(
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_fonts.py ${CMAKE_SOURCE_DIR}
-    RESULT_VARIABLE rc
-)
-if(NOT rc EQUAL 0)
-    message(FATAL_ERROR "font fetch failed")
+    execute_process(
+      COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_fonts.py ${CMAKE_SOURCE_DIR}
+      RESULT_VARIABLE rc
+  )
+  if(NOT rc EQUAL 0)
+      message(FATAL_ERROR "font fetch failed")
+  endif()
 endif()
-
 
 set(ENGINE_MODULES
     Graphics
