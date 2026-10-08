@@ -33,14 +33,15 @@ void UnitStack::setLuck( int new_luck ) noexcept {
 }
 
 void UnitStack::modifyCurrentHealth( int health_diff ) noexcept {
-  int health_pool = current_health_ + ( data_.get().health_ * ( size_ - 1 ) );
-  int health_remaining = health_pool - health_diff;
+  const int unit_health = data_.get().health_;
+  const int health_pool = current_health_ + ( unit_health * ( size_ - 1 ) );
+  const int health_remaining = health_pool - health_diff;
   if ( health_remaining <= 0 ) {
     size_ = 0;
     current_health_ = 0;
     return;
   }
-  size_ = ( ( health_remaining ) / data_.get().health_ ) + 1;
+  size_ = ( health_remaining + unit_health - 1 ) / data_.get().health_;
   current_health_ = health_remaining - ( ( size_ - 1 ) * data_.get().health_ );
 }
 

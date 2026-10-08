@@ -33,12 +33,12 @@ UnitStack& character::Army::recruitUnitStack( const UnitStack& stack, PartySlot 
 }
 
 UnitStack& character::Army::recruitUnitStack( const UnitStack& stack ) {
-  auto* ptr = std::ranges::find_if( party_, []( const auto& pos ) { return pos == std::nullopt; } );
-  if ( ptr == party_.end() ) {
+  // NOLINTNEXTLINE(readability-qualified-auto)
+  auto it = std::ranges::find_if( party_, []( const auto& pos ) { return pos == std::nullopt; } );
+  if ( it == party_.end() ) {
     err::raise<NotEmptySlotException>();
   }
-  *ptr = stack;
-  return ptr->value();
+  return it->emplace( stack );
 }
 
 [[nodiscard]] bool character::Army::containsInParty( const UnitStack& stack ) const noexcept {
