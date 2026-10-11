@@ -15,13 +15,13 @@
 #include "aux/Overload.hpp"
 #include "aux/_NotImplementedException.hpp"
 #include "core/Game/Context.h"
-#include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
 #include "engine/Graphics/IRVisitor.h"
+#include "engine/IGame/IState.h"
 #include "engine/LoadAndSaveTools/MapLoader.h"
 
 /* ==== @PUBLIC ==== */

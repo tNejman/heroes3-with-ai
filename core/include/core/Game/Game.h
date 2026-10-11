@@ -10,11 +10,12 @@
 
 #include "core/Algorithms/MinimaxAI.h"
 #include "core/Game/Context.h"
-#include "core/Game/IState.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/StateTransition.hpp"
+#include "core/Game/UserCommand.hpp"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "engine/IGame/IGame.h"
+#include "engine/IGame/IState.h"
 
 class Game : public game::IGame {
  private:
@@ -28,7 +29,7 @@ class Game : public game::IGame {
   void removeCharactersWithNoUnits();
 
   void placeCharactersOnWorldMap() noexcept;
-  void startBattle( const game::RequestBattle& request );
+  void startBattle( const game::state_transition::RequestBattle& request );
 
  public:
   Game( std::vector<std::shared_ptr<Player>>&& players ) noexcept;

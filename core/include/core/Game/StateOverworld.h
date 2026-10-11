@@ -4,16 +4,17 @@
 #include <vector>
 
 #include "core/Game/Context.h"
-#include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/WorldMap/WorldMap.h"
 #include "engine/Graphics/IRVisitor.h"
 #include "engine/Graphics/Visitor.h"
+#include "engine/IGame/IState.h"
 
 namespace game {
 
-class StateOverworld : public game::StateOf<WorldMapCommand, WorldMapSystemCommand> {
+// class StateOverworld : public game::StateOf<WorldMapCommand, WorldMapSystemCommand> {
+class StateOverworld : public IState {
  private:
   WorldMap map_;
 
@@ -28,11 +29,14 @@ class StateOverworld : public game::StateOf<WorldMapCommand, WorldMapSystemComma
    */
   explicit StateOverworld( CtorKey, WorldMap&& world_map ) noexcept;
 
+  [[nodiscard]] bool isCommandForThisState( const game::UserCommand& command ) const noexcept override;
+  [[nodiscard]] bool isCommandForThisState( const game::SystemCommand& command ) const noexcept override;
+
   [[nodiscard]] static game::StateOverworld create() noexcept;
   [[nodiscard]] static std::unique_ptr<game::IState> createUniqueptr() noexcept;
 
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept override;
-  [[nodiscard]] game::StateTransition applyCommand( const UserCommand& command,
+  [[nodiscard]] game::StateTransition applyCommand( const game::UserCommand& command,
                                                     game::Context& context ) noexcept override;
   [[nodiscard]] bool isLegalCommand( const UserCommand& command ) const noexcept override;
 

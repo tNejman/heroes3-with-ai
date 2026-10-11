@@ -19,12 +19,12 @@
 #include "core/Character/CharacterBuilder.h"
 #include "core/Character/CharacterStats.h"
 #include "core/Game/Game.h"
-#include "core/Game/UserCommand.h"
-#include "engine/IGame/Coords.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
+#include "engine/IGame/Coords.h"
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 
@@ -105,7 +105,7 @@ int main() {
     }
     // sf::Time start_time = clock.getElapsedTime();
 
-    UserCommand command = None{};
+    game::UserCommandcommand = None{};
 
     while ( std::optional event = window->pollEvent() ) {
       if ( event->is<sf::Event::Closed>() ) {

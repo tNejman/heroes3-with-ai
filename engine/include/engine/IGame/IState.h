@@ -6,23 +6,12 @@
 #include "aux/IsVariantMember.hpp"
 #include "core/Game/Context.h"
 #include "core/Game/SystemCommand.h"
-#include "core/Game/UserCommand.h"
-#include "core/Misc/ProjectLib.h"
 #include "engine/Graphics/IRVisitor.h"
-#include "engine/IGame/Coords.h"
 
 namespace game {
 
-using NoTransition = std::monostate;
-struct PopState {};
-struct RequestBattle {
-  int attacker_id_;
-  int defender_id_;
-  CoordPair at_;
-  Terrain terrain_;
-};
-
-using StateTransition = std::variant<NoTransition, PopState, RequestBattle>;
+struct StateTransition;  // user must implement
+struct UserCommand;      // user must implement
 
 class IState {  // NOLINT(cppcoreguidelines-special-member-functions)
  public:
@@ -41,18 +30,18 @@ class IState {  // NOLINT(cppcoreguidelines-special-member-functions)
 
 /* ==== ==== */
 
-template <typename RequiredUserCommandType, typename RequiredSystemCommandType>
-requires( IS_VARIANT_MEMBER_V<RequiredUserCommandType, UserCommand> )
-        && (IS_VARIANT_MEMBER_V<RequiredSystemCommandType, SystemCommand>)
-class StateOf : public IState {
- public:
-  [[nodiscard]] bool isCommandForThisState( const UserCommand& command ) const noexcept final {
-    return std::holds_alternative<RequiredUserCommandType>( command );
-  }
+// template <typename RequiredUserCommandType, typename RequiredSystemCommandType>
+// // requires( IS_VARIANT_MEMBER_V<RequiredUserCommandType, UserCommand> )
+// //         && (IS_VARIANT_MEMBER_V<RequiredSystemCommandType, SystemCommand>)
+// class StateOf : public IState {
+//  public:
+//   [[nodiscard]] bool isCommandForThisState( const UserCommand& command ) const noexcept final {
+//     return std::holds_alternative<RequiredUserCommandType>( command );
+//   }
 
-  [[nodiscard]] bool isCommandForThisState( const SystemCommand& command ) const noexcept final {
-    return std::holds_alternative<RequiredSystemCommandType>( command );
-  }
-};
+//   [[nodiscard]] bool isCommandForThisState( const SystemCommand& command ) const noexcept final {
+//     return std::holds_alternative<RequiredSystemCommandType>( command );
+//   }
+// };
 
 }  // namespace game

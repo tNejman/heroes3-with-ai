@@ -14,15 +14,15 @@
 #include "core/Character/Character.h"
 #include "core/Exceptions/UnknownStateException.hpp"
 #include "core/Game/Context.h"
-#include "core/Game/IState.h"
 #include "core/Game/StateBattle.h"  // IWYU pragma: keep
 #include "core/Game/StateOverworld.h"
 #include "core/Game/SystemCommand.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/WorldMap/WorldMap.h"
 #include "engine/Graphics/IRVisitor.h"
+#include "engine/IGame/IState.h"
 
 game::StateTransition Game::handleStateIndependentCommand( const StateIndependentCommand& command ) noexcept {
   return std::visit( Overload{ [&]( const SwitchCharacter& ) -> game::StateTransition {

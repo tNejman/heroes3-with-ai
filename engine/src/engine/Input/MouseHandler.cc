@@ -16,7 +16,7 @@
 #include "core/Battle/Moves/MoveMove.h"
 #include "core/Battle/Moves/WaitMove.h"
 #include "core/Game/StateBattle.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "engine/IGame/Coords.h"
 
@@ -68,8 +68,8 @@ void MouseHandler::updateMouseCoords( MouseCoords new_coords ) noexcept {
   mouse_coords_ = new_coords;
 }
 
-UserCommand MouseHandler::getCommand() noexcept {
-  UserCommand moved_command = command_;
+game::UserCommandMouseHandler::getCommand() noexcept {
+  game::UserCommandmoved_command = command_;
   command_ = None{};
   return moved_command;
 }

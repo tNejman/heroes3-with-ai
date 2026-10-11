@@ -5,15 +5,16 @@
 
 #include "core/Battle/Battle.h"
 #include "core/Game/Context.h"
-#include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "engine/Graphics/IRVisitor.h"
+#include "engine/IGame/IState.h"
 
 namespace game {
 
-class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
+// class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
+class StateBattle : public IState {
  private:
   Battle battle_;
 
@@ -25,9 +26,12 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
  public:
   StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
 
+  [[nodiscard]] bool isCommandForThisState( const game::UserCommand &command ) const noexcept override;
+  [[nodiscard]] bool isCommandForThisState( const SystemCommand &command ) const noexcept override;
+
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept override;
-  [[nodiscard]] game::StateTransition applyCommand( const UserCommand &, game::Context & ) noexcept override;
-  [[nodiscard]] bool isLegalCommand( const UserCommand & ) const noexcept override;
+  [[nodiscard]] game::StateTransition applyCommand( const game::UserCommand &, game::Context & ) noexcept override;
+  [[nodiscard]] bool isLegalCommand( const game::UserCommand & ) const noexcept override;
 
   void applySystemCommand( const SystemCommand &, game::Context & ) noexcept override;
 

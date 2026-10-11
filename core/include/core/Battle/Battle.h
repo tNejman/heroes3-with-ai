@@ -11,7 +11,7 @@
 
 #include "core/Battle/BattleField.h"
 #include "core/Battle/TileObject.hpp"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 #include "engine/IGame/Coords.h"

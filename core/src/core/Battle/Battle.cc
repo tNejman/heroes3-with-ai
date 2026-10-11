@@ -12,18 +12,18 @@
 #include <utility>
 #include <vector>
 
+#include "aux/Err.hpp"
+#include "aux/_NotImplementedException.hpp"
 #include "core/Battle/BattleField.h"
 #include "core/Battle/Tile.h"
 #include "core/Character/Character.h"
 #include "core/Character/CharacterArmy.h"
-#include "aux/Err.hpp"
 #include "core/Exceptions/UnknownStateException.hpp"
-#include "aux/_NotImplementedException.hpp"
-#include "core/Game/UserCommand.h"
-#include "engine/Graphics/Visitor.h"
-#include "engine/IGame/Coords.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
+#include "engine/Graphics/Visitor.h"
+#include "engine/IGame/Coords.h"
 
 void Battle::setAttackingArmy() {
   auto& party = attacker_->army().getParty();

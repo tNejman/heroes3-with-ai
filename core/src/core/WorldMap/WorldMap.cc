@@ -10,12 +10,12 @@
 #include "aux/Err.hpp"
 #include "core/Exceptions/CoordinateOutOfBoundsException.hpp"  // IWYU pragma: keep
 #include "core/Exceptions/InvalidMapMoveException.hpp"
-#include "core/Game/IState.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "engine/IGame/Coords.h"
+#include "engine/IGame/IState.h"
 
 void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   // SINGLE_CALL_GUARD();

@@ -7,18 +7,18 @@
 #include <chrono>
 
 #include "core/Game/Game.h"
-#include "core/Game/UserCommand.h"
+#include "core/Game/UserCommand.hpp"
+#include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
 #include "engine/Input/KeyboardHandler.h"
 #include "engine/Input/MouseHandler.h"
-#include "engine/IGame/Coords.h"
-#include "core/Misc/ProjectLib.h"
 
 CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
                                                        CharacterMoveDirection direction ) noexcept {
   return old_coords + WORLD_MAP_DIRECTIONS[static_cast<size_t>( direction )];
 }
 
-[[nodiscard]] UserCommand InputHandler::processMouseInput( const sf::Event& event, const Game& game ) noexcept {
+[[nodiscard]] game::UserCommandInputHandler::processMouseInput( const sf::Event& event, const Game& game ) noexcept {
   if ( event.getIf<sf::Event::MouseButtonPressed>()->button != sf::Mouse::Button::Left ) {
     return None{};
   }
@@ -29,7 +29,7 @@ CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
   return mouse_handler.getCommand();
 }
 
-[[nodiscard]] UserCommand InputHandler::processKeyboardInput( const sf::Event&, const Game& game ) noexcept {
+[[nodiscard]] game::UserCommandInputHandler::processKeyboardInput( const sf::Event&, const Game& game ) noexcept {
   KeyHandler key_handler{ false };
   key_handler.monitorKeyPresses();
   CharacterMoveDirection move_direction = key_handler.getMove();
@@ -41,7 +41,7 @@ CoordPair InputHandler::calculateNewCharacterPosition( CoordPair old_coords,
   return MoveCharacter{ .source_ = source, .destination_ = destination };
 }
 
-UserCommand InputHandler::processInput( const sf::Event& event, const Game& game ) noexcept {
+game::UserCommandInputHandler::processInput( const sf::Event& event, const Game& game ) noexcept {
   if ( event.is<sf::Event::MouseButtonPressed>() ) {
     return processMouseInput( event, game );
   }

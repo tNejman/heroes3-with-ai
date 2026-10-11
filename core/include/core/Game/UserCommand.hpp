@@ -2,7 +2,10 @@
 
 #include <variant>
 
+#include "aux/IsVariantMember.hpp"
 #include "engine/IGame/Coords.h"
+
+namespace game {
 
 /* === WORLD MAP === */
 struct MoveCharacter {
@@ -47,4 +50,14 @@ using StateIndependentCommand = std::variant<SwitchCharacter>;
 
 using None = std::monostate;
 
-using UserCommand = std::variant<WorldMapCommand, TownCommand, BattleCommand, StateIndependentCommand, None>;
+struct UserCommand {
+  using V = std::variant<WorldMapCommand, TownCommand, BattleCommand, StateIndependentCommand, None>;
+  V command_;
+
+  template <typename T>
+  requires IS_VARIANT_MEMBER_V<T, V>
+  UserCommand( T opt ) : command_( opt ) {
+  }
+};
+
+};  // namespace game

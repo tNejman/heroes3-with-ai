@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "aux/Err.hpp"
@@ -13,12 +14,12 @@
 #include "core/Battle/Moves/MoveFactory.h"
 #include "core/Character/Character.h"
 #include "core/Game/Context.h"
-#include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
-#include "core/Game/UserCommand.h"
-#include "engine/IGame/Coords.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "engine/Graphics/IRVisitor.h"
+#include "engine/IGame/Coords.h"
+#include "engine/IGame/IState.h"
 
 game::StateTransition game::StateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
   battle_.move( *battle_.getUnitInAction(), ms.destination );
@@ -59,11 +60,18 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
     : battle_( std::move( attacker ), std::move( defender ), background ) {
 }
 
+[[nodiscard]] bool game::StateBattle::isCommandForThisState( const game::UserCommand &command ) const noexcept {
+  return std::holds_alternative<BattleCommand>( command.command_ );
+}
+[[nodiscard]] bool game::StateBattle::isCommandForThisState( const SystemCommand &command ) const noexcept {
+  return std::holds_alternative<>();
+}
+
 [[nodiscard]] std::vector<UserCommand> game::StateBattle::legalCommands() const noexcept {
   err::raise<NotImplementedException>();
 }
 
-[[nodiscard]] game::StateTransition game::StateBattle::applyCommand( const UserCommand &command,
+[[nodiscard]] game::StateTransition game::StateBattle::applyCommand( const game::UserCommand &command,
                                                                      game::Context & ) noexcept {
   MoveFactory::generateMoves( battle_ );  // updates graphics
 
@@ -89,7 +97,7 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
   //                              [&]( const Defend &d ) -> StateTransition { return handleDefend( d ); } },
   //                    std::get<BattleCommand>( command ) );
 }
-[[nodiscard]] bool game::StateBattle::isLegalCommand( const UserCommand &command ) const noexcept {
+[[nodiscard]] bool game::StateBattle::isLegalCommand( const game::UserCommand &command ) const noexcept {
   if ( !isCommandForThisState( command ) ) {
     return false;
   }

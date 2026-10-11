@@ -14,11 +14,12 @@
 #include <vector>
 
 #include "core/Character/Character.h"
-#include "core/Game/IState.h"
 #include "core/MapObject/MapObject.h"
-#include "engine/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/IGame/Coords.h"
+#include "engine/IGame/IState.h"
+
 
 #define COORDS_IN_BOUNDS_OR_THROW( coords, ... )        \
   err::passCondOrThrow<CoordinateOutOfBoundsException>( \

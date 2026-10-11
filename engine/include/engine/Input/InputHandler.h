@@ -3,9 +3,9 @@
 #include <SFML/Window/Event.hpp>
 
 #include "core/Game/Game.h"
-#include "core/Game/UserCommand.h"
-#include "engine/IGame/Coords.h"
+#include "core/Game/UserCommand.hpp"
 #include "core/Misc/ProjectLib.h"
+#include "engine/IGame/Coords.h"
 
 class InputHandler {
  private:
@@ -13,9 +13,9 @@ class InputHandler {
 
   static CoordPair calculateNewCharacterPosition( CoordPair old_coords, CharacterMoveDirection direction ) noexcept;
 
-  [[nodiscard]] static UserCommand processMouseInput( const sf::Event&, const Game& ) noexcept;
-  [[nodiscard]] static UserCommand processKeyboardInput( const sf::Event&, const Game& ) noexcept;
+  [[nodiscard]] static game::UserCommandprocessMouseInput( const sf::Event&, const Game& ) noexcept;
+  [[nodiscard]] static game::UserCommandprocessKeyboardInput( const sf::Event&, const Game& ) noexcept;
 
  public:
-  [[nodiscard]] static UserCommand processInput( const sf::Event&, const Game& ) noexcept;
+  [[nodiscard]] static game::UserCommandprocessInput( const sf::Event&, const Game& ) noexcept;
 };
