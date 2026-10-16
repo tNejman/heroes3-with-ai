@@ -81,7 +81,7 @@ set(ENGINE_MODULES
 )
 
 set(CORE_MODULES
-    # Algorithms
+    Algorithms
     Artifact
     Battle
     Character

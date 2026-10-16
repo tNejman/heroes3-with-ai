@@ -20,6 +20,13 @@
 
 constexpr inline double INF_SCORE = 1e9;
 
+MinimaxAI::MinimaxAI(uint16_t depth) : depth_(depth){};
+
+
+std::shared_ptr<Move> MinimaxAI::getBestMove(std::shared_ptr<Battle> battle){
+  std::shared_ptr<WaitMove> move = std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() );
+  return doMinimax( battle, depth_, -INF_SCORE, INF_SCORE, battle->isSameArmy( *(battle->getUnitInAction()), battle->getAttackingArmy()[0] ), move ).first;
+}
 std::shared_ptr<Move> MinimaxAI::getBestMove( std::shared_ptr<Battle> battle, uint32_t depth, bool maximizing_player ) {
   std::shared_ptr<WaitMove> move = std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() );
   return doMinimax( battle, depth, -INF_SCORE, INF_SCORE, maximizing_player, move ).first;
@@ -27,7 +34,7 @@ std::shared_ptr<Move> MinimaxAI::getBestMove( std::shared_ptr<Battle> battle, ui
 std::shared_ptr<Move> MinimaxAI::getBestMove( std::shared_ptr<Battle> battle, uint32_t depth ) {
   std::shared_ptr<WaitMove> move = std::make_shared<WaitMove>( battle->getUnitInAction()->getCoordsInBattle() );
   return doMinimax( battle, depth, -INF_SCORE, INF_SCORE,
-                    battle->isSameArmy( battle->getUnitInAction(), battle->getAttackingArmy()[0] ), move )
+                    battle->isSameArmy( *(battle->getUnitInAction()), battle->getAttackingArmy()[0] ), move )
       .first;
 }
 std::pair<std::shared_ptr<Move>, double> MinimaxAI::doMinimax( std::shared_ptr<Battle> battle, uint32_t depth,
@@ -53,7 +60,7 @@ std::pair<std::shared_ptr<Move>, double> MinimaxAI::doMinimax( std::shared_ptr<B
     return std::make_pair( move, evaluate( battle ) );
   }
   std::shared_ptr<Battle> battle_copied;
-  std::vector<std::shared_ptr<Move>> moves = MoveFactory::generateMoves( battle );
+  std::vector<std::shared_ptr<Move>> moves = MoveFactory::generateMoves( *battle );
   std::pair<std::shared_ptr<Move>, double> evaluation;
   std::shared_ptr<Move> best_move;
 
@@ -126,7 +133,7 @@ std::pair<std::shared_ptr<Move>, double> MinimaxAI::doMultiMinimax( std::shared_
     return std::make_pair( move, evaluate( battle ) );
   }
   std::shared_ptr<Battle> battle_copied;
-  std::vector<std::shared_ptr<Move>> moves = MoveFactory::generateMoves( battle );
+  std::vector<std::shared_ptr<Move>> moves = MoveFactory::generateMoves( *battle );
   std::mutex eval_mut;
   std::pair<std::shared_ptr<Move>, double> evaluation;
   std::shared_ptr<Move> best_move;
@@ -207,11 +214,11 @@ double MinimaxAI::evaluate( const std::shared_ptr<Battle> battle_state ) {
 
   double fight_value_diff = 0;
   for ( const auto& unit_stack : attacking_army ) {
-    fight_value_diff += unit_stack->getEffectiveFightValue();
+    fight_value_diff += unit_stack.get().getEffectiveFightValue();
   }
 
   for ( const auto& unit_stack : defending_army ) {
-    fight_value_diff -= unit_stack->getEffectiveFightValue();
+    fight_value_diff -= unit_stack.get().getEffectiveFightValue();
   }
 
   /*
@@ -224,13 +231,13 @@ double MinimaxAI::evaluate( const std::shared_ptr<Battle> battle_state ) {
   // throw NotImplementedException( "MinimaxAI::evaluate does not implement a heuristic for win/lose state" );
   return fight_value_diff;
 }
-CoordPair MinimaxAI::centerOfPowerOfArmy( const std::vector<std::shared_ptr<UnitStack>> army ) {
+CoordPair MinimaxAI::centerOfPowerOfArmy( const std::vector<std::reference_wrapper<UnitStack>> army ) {
   double x_nominal = 0, y_nominal = 0, weights = 0;  // NOLINT(readability-isolate-declaration)
   double x_weighted = 0.0, y_weighted = 0.0;         // NOLINT(readability-isolate-declaration)
-  std::ranges::for_each( army, [&]( const std::shared_ptr<UnitStack>& unit ) {
-    weights += unit->getEffectiveFightValue();
-    x_nominal += ( unit->getCoordsInBattle().x_ + 1 ) * unit->getEffectiveFightValue();
-    y_nominal += ( unit->getCoordsInBattle().y_ + 1 ) * unit->getEffectiveFightValue();
+  std::for_each( army.begin(), army.end(), [&]( const std::reference_wrapper<UnitStack>& unit ) {
+    weights += unit.get().getEffectiveFightValue();
+    x_nominal += ( unit.get().getCoordsInBattle().x_ + 1 ) * unit.get().getEffectiveFightValue();
+    y_nominal += ( unit.get().getCoordsInBattle().y_ + 1 ) * unit.get().getEffectiveFightValue();
   } );
   x_weighted = ( x_nominal / weights ) - 1;
   y_weighted = ( y_nominal / weights ) - 1;
@@ -238,9 +245,9 @@ CoordPair MinimaxAI::centerOfPowerOfArmy( const std::vector<std::shared_ptr<Unit
 }
 
 double MinimaxAI::seekEnemy( std::shared_ptr<Battle> battle, std::shared_ptr<Move> move ) {
-  std::shared_ptr<UnitStack> seeker = battle->getUnitInAction();
-  std::vector<std::shared_ptr<UnitStack>> enemy_army;
-  if ( battle->isSameArmy( seeker, battle->getAttackingArmy()[0] ) ) {
+  std::shared_ptr<UnitStack> seeker( battle->getUnitInAction() );
+  std::vector<std::reference_wrapper<UnitStack>> enemy_army;
+  if ( battle->isSameArmy( *seeker.get()->asUnit(), battle->getAttackingArmy()[0] ) ) {
     enemy_army = battle->getDefendingArmy();
   } else {
     enemy_army = battle->getAttackingArmy();

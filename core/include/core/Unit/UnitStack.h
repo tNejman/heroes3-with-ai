@@ -41,6 +41,8 @@ class UnitStack : public TileObject {
   [[nodiscard]] CoordPair getCoordsInBattle() const noexcept;
 
   [[nodiscard]] UnitStack* asUnit() noexcept override;
+
+  [[nodiscard]] double getEffectiveFightValue() noexcept;
 };
 
 /* ===== @IMPL ===== */

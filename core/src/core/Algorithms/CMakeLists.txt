@@ -1,4 +1,5 @@
 add_library(Algorithms SHARED
+    IAlgorithm.cc
     MinimaxAI.cc
 )
 
