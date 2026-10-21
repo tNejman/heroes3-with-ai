@@ -35,7 +35,7 @@ class IState {  // NOLINT(cppcoreguidelines-special-member-functions)
   [[nodiscard]] virtual bool isLegalCommand( const UserCommand& ) const noexcept = 0;
 
   virtual void applySystemCommand( const SystemCommand&, Context& ) noexcept = 0;
-
+  virtual Battle* getBattle() noexcept { return nullptr; }
   virtual void accept( IRVisitor& v ) const noexcept = 0;
 };
 
