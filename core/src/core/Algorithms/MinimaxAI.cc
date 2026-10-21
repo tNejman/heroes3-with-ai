@@ -245,9 +245,9 @@ CoordPair MinimaxAI::centerOfPowerOfArmy( const std::vector<std::reference_wrapp
 }
 
 double MinimaxAI::seekEnemy( std::shared_ptr<Battle> battle, std::shared_ptr<Move> move ) {
-  std::shared_ptr<UnitStack> seeker( battle->getUnitInAction() );
+  UnitStack* seeker( battle->getUnitInAction() );
   std::vector<std::reference_wrapper<UnitStack>> enemy_army;
-  if ( battle->isSameArmy( *seeker.get()->asUnit(), battle->getAttackingArmy()[0] ) ) {
+  if ( battle->isSameArmy( *seeker->asUnit(), battle->getAttackingArmy()[0] ) ) {
     enemy_army = battle->getDefendingArmy();
   } else {
     enemy_army = battle->getAttackingArmy();

@@ -1,9 +1,6 @@
 #pragma once
 
-#include <cstdint>
 #include <memory>
-#include <utility>
-#include <vector>
 #include "core/Game/UserCommand.h"
 
 class Move;
@@ -18,6 +15,10 @@ class IAlgorithm {
 
  public:
   IAlgorithm() = default;
+  IAlgorithm(const IAlgorithm&) = default;
+  IAlgorithm& operator=(const IAlgorithm&) = default;
+  IAlgorithm(IAlgorithm&&) noexcept = default;
+  IAlgorithm& operator=(IAlgorithm&&) noexcept = default;
   virtual ~IAlgorithm() = default;
-  [[nodiscard]] std::shared_ptr<UserCommand> getBestMove( std::shared_ptr<Battle> battle);
+  [[nodiscard]] virtual std::shared_ptr<Move> getBestMove( std::shared_ptr<Battle> battle) = 0;
 };
