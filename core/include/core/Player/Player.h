@@ -34,9 +34,8 @@ class Player {
   }
   ~Player() = default;
 
-  std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
-  const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;
-
+  [[nodiscard]] const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;
+  [[nodiscard]] std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
   // below are not implemented
   bool addCharacter( std::shared_ptr<Character> character );
   void addCastle( std::shared_ptr<Castle> castle );

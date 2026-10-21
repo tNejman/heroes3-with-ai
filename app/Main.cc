@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "aux/Builder.hpp"
+#include "core/Battle/Moves/Move.hpp"
 #include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
 #include "aux/Err.hpp"
 #include "core/Character/Character.h"
@@ -53,6 +54,7 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
       Builder<Character>{}
           .setName( "fire_hero_down_right" )
           .setCoords( CoordPair{ 0, 0 } )
+          .setIsUser( true )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
@@ -61,6 +63,7 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
       Builder<Character>{}
           .setName( "john" )
           .setCoords( CoordPair{ 5, 5 } )
+          .setIsUser( true )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
               character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
@@ -120,7 +123,7 @@ int main() {
   // Engine engine = Builder<Engine>{}.setMaxRpm(7000).setName("V8").setDisplacement(5.0).build();
 
   Game game{ producePresetPlayers() };
-  std::shared_ptr<MinimaxAI> AIPlayerEngine = Builder<MinimaxAI>{}
+  std::shared_ptr<IAlgorithm> AIPlayerEngine = Builder<MinimaxAI>{}
           .setDepth(uint16_t{4})
           .build<std::shared_ptr>() ;
   int window_scale_mult = 3;
@@ -167,12 +170,13 @@ int main() {
       }
     }
     game.applyCommand( command );
-    // auto c = game.getContext().getCurrentCharacter();
-    // while (! c.getIfUser()) {
-    //   auto bestMove = AIPlayerEngine.getBestMove();
-
-    //   game.applyCommand(command);
-    // }
+   
+    auto* battle = game.getState().getBattle();
+    if ( battle != nullptr && battle->isAIMove()) {
+      auto battle_copy = battle->copy();
+      std::shared_ptr<Move> move = AIPlayerEngine->getBestMove( battle_copy );
+      std::cout << move->getInfo( battle_copy ) << "\n";
+    }
     GameRenderer{ window, target, game }.render();
   }
 };
