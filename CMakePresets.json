@@ -11,6 +11,15 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld"
+      },
+      "warnings": {
+        "uninitialized": true,
+        "deprecated": true,
+        "dev": true
+      },
+      "errors": {
+        "deprecated": true,
+        "dev": true
       }
     },
     {
@@ -26,14 +35,27 @@
       }
     },
     {
-      "name": "RELEASE-clang-ninja-lld",
-      "displayName": "RELEASE-clang-ninja-lld",
+      "name": "clang-ninja-lld-no-asset-fetch",
+      "displayName": "clang-ninja-lld",
+      "description": "",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
+        "FETCH_ASSETS": "OFF"
+      }
+    },
+    {
+      "name": "RELEASE-gcc-ninja-lld",
+      "displayName": "RELEASE-gcc-ninja-lld",
       "description": "",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld"
       }
     },

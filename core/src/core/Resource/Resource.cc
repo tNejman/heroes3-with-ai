@@ -1,6 +1,6 @@
 #include "core/Resource/Resource.h"
 
-#include "engine/Graphics/Visitor.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 Resource::Resource( ResourceType type, int amount ) : type_( type ), amount_( amount ) {};
 

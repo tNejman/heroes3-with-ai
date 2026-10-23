@@ -9,16 +9,15 @@
 #include "aux/Err.hpp"
 #include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
-#include "core/Battle/Moves/Move.hpp"
 #include "core/Battle/Moves/MoveFactory.h"
 #include "core/Character/Character.h"
 #include "core/Game/Context.h"
 #include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/Graphics/IRVisitor.h"
+#include "engine/model/IGraphics/IRVisitor.h"
 
 game::StateTransition game::StateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
   battle_.move( *battle_.getUnitInAction(), ms.destination );

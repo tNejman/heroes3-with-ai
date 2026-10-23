@@ -16,7 +16,7 @@
 #include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   // SINGLE_CALL_GUARD();

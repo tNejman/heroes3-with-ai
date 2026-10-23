@@ -9,7 +9,7 @@
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Unit/Faction.hpp"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 TEST( CharacterTest, createValidCharacter ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>(

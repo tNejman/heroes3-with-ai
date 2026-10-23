@@ -10,7 +10,7 @@
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 // TEST( WorldMapTests, constructorWithGrid ) {
 //   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};

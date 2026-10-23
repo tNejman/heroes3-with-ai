@@ -2,7 +2,7 @@
 
 #include "core/Battle/TileObject.hpp"
 #include "core/Unit/UnitsLib.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 [[nodiscard]] const UnitData& UnitStack::getData() const noexcept {
   return data_;

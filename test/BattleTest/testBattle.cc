@@ -12,8 +12,8 @@
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitsLib.h"
-#include "engine/Graphics/Visitor.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
+#include "engine/model/IGame/Coords.h"
 
 // Easy factory constructor
 // const std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();

@@ -14,7 +14,9 @@
 #include "core/Game/UserCommand.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
-#include "engine/IGame/IGame.h"
+#include "core/WorldMap/WorldMap.h"
+#include "engine/model/IGame/IGame.h"
+
 
 class Game : public game::IGame {
  private:
@@ -31,7 +33,7 @@ class Game : public game::IGame {
   void startBattle( const game::RequestBattle& request );
 
  public:
-  Game( std::vector<std::shared_ptr<Player>>&& players ) noexcept;
+  Game( std::vector<std::shared_ptr<Player>>&& players, WorldMap&& ) noexcept;
   // TODO add to constructor functionality which initializes preset players
 
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept;

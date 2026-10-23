@@ -44,12 +44,24 @@ FetchContent_Declare(
     SYSTEM
 )
 
-set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
-set(CMAKE_CXX_CLANG_TIDY "")
+set(_prev_dev_err "${CMAKE_SUPPRESS_DEVELOPER_ERRORS}")
+set(_prev_dev_warn "${CMAKE_SUPPRESS_DEVELOPER_WARNINGS}")
+set(CMAKE_SUPPRESS_DEVELOPER_ERRORS ON CACHE BOOL "" FORCE)
+set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "" FORCE)
+
+if (DEFINED CMAKE_CXX_CLANG_TIDY)
+  set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
+  set(CMAKE_CXX_CLANG_TIDY "")
+endif()
 FetchContent_MakeAvailable(SFML)
 FetchContent_MakeAvailable(json)
 FetchContent_MakeAvailable(magic_enum)
-set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
+if (DEFINED CMAKE_CXX_CLANG_TIDY)
+  set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
+endif()
+
+set(CMAKE_SUPPRESS_DEVELOPER_ERRORS "${_prev_dev_err}" CACHE BOOL "" FORCE)
+set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS "${_prev_dev_warn}" CACHE BOOL "" FORCE)
 
 option(FETCH_ASSETS "Download sprites at configure time" ON)
 if(FETCH_ASSETS)
@@ -72,10 +84,13 @@ if(FETCH_ASSETS)
   endif()
 endif()
 
-set(ENGINE_MODULES
-    Graphics
+set(ENGINE_MODEL_MODULES
     IGame
     Coords
+)
+
+set(ENGINE_PLATFORM_MODULES
+    Graphics
     Input
     LoadAndSaveTools
 )
@@ -124,28 +139,47 @@ function(apply_compiler_flags target)
     )
 endfunction()
 
-foreach(module ${ENGINE_MODULES})
-    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/src/engine/${module})
-        add_subdirectory(engine/src/engine/${module})
+foreach(module ${ENGINE_MODEL_MODULES})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/model/src/engine/model/${module})
+        add_subdirectory(${CMAKE_SOURCE_DIR}/engine/model/src/engine/model/${module})
     else()
-        MESSAGE("skipping nonexistent dir: ./engine/src/engine/${module}")
+        MESSAGE("skipping nonexistent dir: ./engine/model/src/engine/model/${module}")
     endif()
 
     target_include_directories(${module} PUBLIC
-        ${CMAKE_SOURCE_DIR}/engine/include/
         ${CMAKE_SOURCE_DIR}/aux/include/
-        ${CMAKE_SOURCE_DIR}/core/include # @TODO!!! REMOVE
+        ${CMAKE_SOURCE_DIR}/engine/model/include/
     )
+
     apply_compiler_flags(${module})
 endforeach()
 
 foreach(module ${CORE_MODULES})
     add_subdirectory(core/src/core/${module})
     target_include_directories(${module} PUBLIC
+        ${CMAKE_SOURCE_DIR}/aux/include/ 
+        ${CMAKE_SOURCE_DIR}/engine/model/include/
         ${CMAKE_SOURCE_DIR}/core/include/
-        ${CMAKE_SOURCE_DIR}/engine/include/
-        ${CMAKE_SOURCE_DIR}/aux/include/
+      # ${CMAKE_SOURCE_DIR}/engine/model/include/ #### @TODO REMOVE ASAP
+        
     )
+    apply_compiler_flags(${module})
+endforeach()
+
+foreach(module ${ENGINE_PLATFORM_MODULES})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/platform/src/engine/platform/${module})
+        add_subdirectory(${CMAKE_SOURCE_DIR}/engine/platform/src/engine/platform/${module})
+    else()
+        MESSAGE("skipping nonexistent dir: ./engine/platform/src/engine/platform/${module}")
+    endif()
+
+    target_include_directories(${module} PUBLIC
+        ${CMAKE_SOURCE_DIR}/aux/include/ 
+        ${CMAKE_SOURCE_DIR}/engine/model/include/   
+        ${CMAKE_SOURCE_DIR}/core/include/
+        ${CMAKE_SOURCE_DIR}/engine/platform/include/
+    )
+
     apply_compiler_flags(${module})
 endforeach()
 

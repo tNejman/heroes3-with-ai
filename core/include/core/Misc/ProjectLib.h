@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 /*
 ====== WORLD MAP ======

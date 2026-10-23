@@ -12,9 +12,6 @@
 #include <vector>
 
 #include "core/Battle/Battle.h"
-#include "core/Battle/Moves/Move.hpp"
-#include "core/Battle/Moves/MoveFactory.h"
-#include "core/Battle/Moves/WaitMove.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 

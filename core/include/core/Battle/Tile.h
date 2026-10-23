@@ -6,7 +6,7 @@
 */
 
 #include "core/Battle/TileObject.hpp"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 class TileObject;
 

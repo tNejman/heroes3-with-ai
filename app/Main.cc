@@ -1,7 +1,7 @@
-#include <engine/Graphics/GraphicsLib.h>
-#include <engine/Graphics/Renderers/GameRenderer.h>
-#include <engine/IGame/Coords.h>
-#include <engine/Input/InputHandler.h>
+#include <engine/model/IGame/Coords.h>
+#include <engine/platform/Graphics/GraphicsLib.h>
+#include <engine/platform/Graphics/Renderers/GameRenderer.h>
+#include <engine/platform/Input/InputHandler.h>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -21,18 +21,18 @@
 #include <utility>
 #include <vector>
 
-#include "aux/Builder.hpp"
-#include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
 #include "aux/Err.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
+#include "core/Misc/ProjectLib.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
+#include "engine/platform/LoadAndSaveTools/MapLoader.h"
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 
@@ -115,9 +115,7 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
 int main() {
   preMain();
 
-  // Engine engine = Builder<Engine>{}.setMaxRpm(7000).setName("V8").setDisplacement(5.0).build();
-
-  Game game{ producePresetPlayers() };
+  Game game{ producePresetPlayers(), MapLoader{}.load( WORLD_MAP_INPUT_PATH ) };
 
   int window_scale_mult = 3;
   sf::RenderWindow window{

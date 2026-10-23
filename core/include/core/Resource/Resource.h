@@ -4,8 +4,8 @@
 
 #include <cstdint>
 
-#include "engine/Graphics/IPrintable.h"
-#include "engine/Graphics/Visitor.h"
+#include "engine/model/IGraphics/IPrintable.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 enum class ResourceType : char { TIMBER, MERCURY, STONE, SULFUR, CRYSTAL, GEMSTONE, MONEY, COUNT };
 

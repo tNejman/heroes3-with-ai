@@ -1,11 +1,12 @@
 add_library(Battle SHARED
+    Moves/AttackMove.cc
+    Moves/MoveFactory.cc
+    Moves/MoveMove.cc
+    Moves/WaitMove.cc
+
     Battle.cc
     Battlefield.cc
     Tile.cc
-    Moves/AttackMove.cc
-    Moves/MoveMove.cc
-    Moves/MoveFactory.cc
-    Moves/WaitMove.cc
 )
 
 target_include_directories(Battle PRIVATE

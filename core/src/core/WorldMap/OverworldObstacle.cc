@@ -3,9 +3,9 @@
 #include <string>
 #include <utility>
 
-#include "engine/Graphics/Visitor.h"
+#include "engine/model/IGraphics/Visitor.h"
 #include "core/MapObject/MapObject.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 OverworldObstacle::OverworldObstacle( OverworldObstacleType type, CoordPair coords )
     : MapObject( coords ), type_( type ) {

@@ -3,6 +3,7 @@
 #include "core/Game/StateOverworld.h"
 
 #include <cassert>
+#include <cstddef>
 #include <exception>
 #include <iostream>
 #include <memory>
@@ -19,10 +20,8 @@
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/Graphics/IRVisitor.h"
-#include "engine/LoadAndSaveTools/MapLoader.h"
+#include "engine/model/IGraphics/IRVisitor.h"
 
 /* ==== @PUBLIC ==== */
 
@@ -30,12 +29,12 @@
 game::StateOverworld::StateOverworld( CtorKey, WorldMap&& world_map ) noexcept : map_( std::move( world_map ) ) {
 }
 
-[[nodiscard]] game::StateOverworld game::StateOverworld::create() noexcept {
-  return game::StateOverworld{ CtorKey{}, MapLoader{}.load( WORLD_MAP_INPUT_PATH ) };
+[[nodiscard]] game::StateOverworld game::StateOverworld::create( WorldMap&& world_map ) noexcept {
+  return game::StateOverworld{ CtorKey{}, std::move( world_map ) };
 }
 
-[[nodiscard]] std::unique_ptr<game::IState> game::StateOverworld::createUniqueptr() noexcept {
-  return std::make_unique<game::StateOverworld>( CtorKey{}, MapLoader{}.load( WORLD_MAP_INPUT_PATH ) );
+[[nodiscard]] std::unique_ptr<game::IState> game::StateOverworld::createUniqueptr( WorldMap&& world_map ) noexcept {
+  return std::make_unique<game::StateOverworld>( CtorKey{}, std::move( world_map ) );
 }
 
 [[nodiscard]] std::vector<UserCommand> game::StateOverworld::legalCommands() const noexcept {

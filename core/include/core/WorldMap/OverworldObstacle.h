@@ -1,8 +1,8 @@
 #pragma once
 
 #include "core/MapObject/MapObject.h"
-#include "engine/Graphics/Visitor.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
+#include "engine/model/IGame/Coords.h"
 
 enum class OverworldObstacleType : char { DRIED_TREE, GREEN_TREE };
 

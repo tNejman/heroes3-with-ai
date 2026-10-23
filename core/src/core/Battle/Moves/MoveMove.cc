@@ -6,7 +6,7 @@
 
 #include "core/Battle/Battle.h"
 #include "core/Unit/UnitStack.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 MoveMove::MoveMove( CoordPair old_coords, CoordPair new_coords )
     : Move(), old_coords_( old_coords ), new_coords_( new_coords ) {};

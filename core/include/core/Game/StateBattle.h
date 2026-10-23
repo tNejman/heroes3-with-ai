@@ -9,7 +9,7 @@
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/Graphics/IRVisitor.h"
+#include "engine/model/IGraphics/IRVisitor.h"
 
 namespace game {
 

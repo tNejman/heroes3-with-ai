@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "core/Battle/BattleField.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 
 TEST( LayoutTest, check_up_right_neighbour_even ) {
