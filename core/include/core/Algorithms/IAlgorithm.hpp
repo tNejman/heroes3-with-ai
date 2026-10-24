@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "core/Game/UserCommand.h"
 
 class Move;
 struct CoordPair;
