@@ -2,7 +2,6 @@
 
 #include <memory>
 
-class Move;
 struct CoordPair;
 class Battle;
 class UnitStack;

@@ -22,9 +22,9 @@
 #include <vector>
 
 #include "aux/Builder.hpp"
-#include "core/Battle/Moves/Move.hpp"
-#include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
 #include "aux/Err.hpp"
+// #include "core/Algorithms/IAlgorithm.hpp"
+// #include "core/Algorithms/MinimaxAI.h"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Game/Game.h"
@@ -35,8 +35,6 @@
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
-#include "core/Algorithms/IAlgorithm.hpp"
-#include "core/Algorithms/MinimaxAI.h"
 #include "engine/platform/LoadAndSaveTools/MapLoader.h"
 
 constexpr inline int FRAMES_PER_SECOND = 30;
@@ -123,9 +121,9 @@ int main() {
   preMain();
 
   Game game{ producePresetPlayers(), MapLoader{}.load( WORLD_MAP_INPUT_PATH ) };
-  std::shared_ptr<IAlgorithm> AIPlayerEngine = Builder<MinimaxAI>{}
-          .setDepth(uint16_t{4})
-          .build<std::shared_ptr>() ;
+  // std::shared_ptr<IAlgorithm> AIPlayerEngine = Builder<MinimaxAI>{}
+  //         .setDepth(uint16_t{4})
+  //         .build<std::shared_ptr>() ;
   int window_scale_mult = 3;
   sf::RenderWindow window{
       sf::VideoMode{ sf::Vector2u{ static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
@@ -170,12 +168,12 @@ int main() {
       }
     }
     game.applyCommand( command );
-   
+
     auto* battle = game.getState().getBattle();
-    if ( battle != nullptr && battle->isAIMove()) {
+    if ( battle != nullptr && battle->isAIMove() ) {
       auto battle_copy = battle->copy();
-      std::shared_ptr<Move> move = AIPlayerEngine->getBestMove( battle_copy );
-      std::cout << move->getInfo( battle_copy ) << "\n";
+      // std::shared_ptr<Move> move = AIPlayerEngine->getBestMove( battle_copy );
+      // std::cout << move->getInfo( battle_copy ) << "\n";
     }
     GameRenderer{ window, target, game }.render();
   }

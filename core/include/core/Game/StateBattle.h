@@ -36,8 +36,7 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
   void applySystemCommand( const SystemCommand &, game::Context & ) noexcept override;
 
   void accept( IRVisitor &v ) const noexcept override;
-  Battle *getBattle() noexcept override {
-    return &battle_;}
+  Battle *getBattle() noexcept override;
   const Battle &viewBattle() const noexcept;
 };
 

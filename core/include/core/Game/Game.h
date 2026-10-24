@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "core/Algorithms/MinimaxAI.h"
+// #include "core/Algorithms/MinimaxAI.h"
 #include "core/Game/Context.h"
 #include "core/Game/IState.h"
 #include "core/Game/UserCommand.h"
@@ -17,6 +17,7 @@
 #include "core/WorldMap/WorldMap.h"
 #include "engine/model/IGame/IGame.h"
 
+class MinimaxAI;
 
 class Game : public game::IGame {
  private:
