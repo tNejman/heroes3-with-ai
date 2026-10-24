@@ -12,7 +12,7 @@ template <class T>
 class IRenderer {
  protected:
   std::reference_wrapper<sf::RenderTexture> target_render_texture_;
-  static inline std::shared_ptr<SpriteVisitor> sprite_visitor = std::make_shared<SpriteVisitor>();
+  static inline std::shared_ptr<SpriteVisitor> sprite_visitor_ = std::make_shared<SpriteVisitor>();
   std::reference_wrapper<const T> object_;
 
  public:

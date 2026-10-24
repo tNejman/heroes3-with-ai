@@ -16,17 +16,19 @@
 #include <cmath>
 #include <cstddef>
 #include <engine/platform/Graphics/Renderers/IRenderer.hpp>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "aux/Err.hpp"
+#include "aux/Overload.hpp"
+#include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
-#include "core/Battle/Moves/AttackMove.h"
-#include "core/Battle/Moves/MoveMove.h"
-#include "core/Battle/Moves/WaitMove.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
+#include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 #include "engine/model/IGame/Coords.h"
@@ -90,22 +92,36 @@ void BattleRenderer::renderGrid() noexcept {
 
 void BattleRenderer::renderMoves() noexcept {
   for ( const auto& move : object_.get().getPossibleMoves() ) {
-    // TODO change moves to new ones with std::variant rather than use dynamic cast here
     std::pair<int, int> offset;
-    std::optional<sf::Sprite> hex_sprite;
-    if ( const auto* m_move = dynamic_cast<MoveMove*>( move.get() ) ) {
-      offset = getHexagonOffset( m_move->destinationCoords() );
-      hex_sprite = SpriteFactory::getSpriteFromBindingV( HexagonType::MOVE );
-    } else if ( const auto* a_move = dynamic_cast<AttackMove*>( move.get() ) ) {
-      offset = getHexagonOffset( a_move->destinationCoords() );
-      hex_sprite = SpriteFactory::getSpriteFromBindingV( HexagonType::ATTACK );
-    } else if ( nullptr != dynamic_cast<WaitMove*>( move.get() ) ) {
-      offset = getHexagonOffset( object_.get().getUnitInAction()->getCoordsInBattle() );
-      hex_sprite = SpriteFactory::getSpriteFromBindingV( HexagonType::IN_ACTION );
-    }
-    err::passCondOrAbort( hex_sprite.has_value(), "unknown move" );
+    sf::Sprite hex_sprite = [&] {
+      err::passCondOrAbort( std::holds_alternative<BattleCommand>( move ),
+                            "Battle::getPossibleMoves ought to return BattleCommand wrappers only" );
+      BattleCommand command = std::get<BattleCommand>( move );
+      switch ( command.action ) {
+        case BattleCommand::Action::MOVE: {
+          offset = getHexagonOffset( command.destination );
+          return SpriteFactory::getSpriteFromBindingV( HexagonType::MOVE );
+          break;
+        }
+        case BattleCommand::Action::ATTACK: {
+          offset = getHexagonOffset( command.destination );
+          return SpriteFactory::getSpriteFromBindingV( HexagonType::ATTACK );
+          break;
+        }
+        case BattleCommand::Action::WAIT: {
+          offset = getHexagonOffset( object_.get().getUnitInAction()->getCoordsInBattle() );
+          return SpriteFactory::getSpriteFromBindingV( HexagonType::IN_ACTION );
+          break;
+        }
+        case BattleCommand::Action::DEFEND: {
+          err::raise<NotImplementedException>();
+          break;
+        }
+      }
+      std::unreachable();
+    }();
 
-    sf::Sprite& actual_sprite = hex_sprite.value();
+    sf::Sprite& actual_sprite = hex_sprite;
     actual_sprite.setPosition(
         sf::Vector2f{ static_cast<float>( offset.first ), static_cast<float>( offset.second ) } );
     target_render_texture_.get().draw( actual_sprite );

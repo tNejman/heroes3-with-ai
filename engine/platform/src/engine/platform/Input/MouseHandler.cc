@@ -1,8 +1,8 @@
 
 #include "engine/platform/Input/MouseHandler.h"
 
-#include <engine/platform/Graphics/GraphicsLib.h>
 #include <engine/model/IGraphics/IRVisitor.h>
+#include <engine/platform/Graphics/GraphicsLib.h>
 
 #include <algorithm>
 #include <cmath>
@@ -11,10 +11,6 @@
 
 #include "aux/Err.hpp"
 #include "core/Battle/Battle.h"
-#include "core/Battle/Moves/AttackMove.h"
-#include "core/Battle/Moves/Move.hpp"
-#include "core/Battle/Moves/MoveMove.h"
-#include "core/Battle/Moves/WaitMove.h"
 #include "core/Game/StateBattle.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
@@ -83,23 +79,14 @@ void MouseHandler::visit( const game::StateBattle& gbs ) noexcept {
     return;
   }
   const auto possible_moves = gbs.viewBattle().getPossibleMoves();
-  auto it = std::ranges::find_if(
-      possible_moves, [&]( const std::shared_ptr<Move>& move ) { return move->destinationCoords() == *maybe_coords; } );
+
+  auto it = std::ranges::find_if( possible_moves, [&]( const UserCommand& user_command ) {
+    return std::get<BattleCommand>( user_command ).destination == *maybe_coords;
+  } );
+
   if ( it == possible_moves.end() ) {
     return;
   }
-  BattleCommand::Action action = [&]() -> BattleCommand::Action {  // TODO rewrite without dyn cas
-    if ( dynamic_cast<MoveMove*>( ( *it ).get() ) != nullptr ) {
-      return BattleCommand::Action::MOVE;
-    }
-    if ( dynamic_cast<AttackMove*>( ( *it ).get() ) != nullptr ) {
-      return BattleCommand::Action::ATTACK;
-    }
-    if ( dynamic_cast<WaitMove*>( ( *it ).get() ) != nullptr ) {
-      return BattleCommand::Action::WAIT;
-    }
-    err::abort( "unknown move type" );
-  }();
 
-  command_ = BattleCommand{ .action = action, .destination = *maybe_coords };
+  command_ =  std::get<BattleCommand>( *it );
 }

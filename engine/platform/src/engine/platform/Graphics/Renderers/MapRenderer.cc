@@ -56,8 +56,8 @@ void MapRenderer::renderObject( int x, int y ) const noexcept {
   if ( map_obj == nullptr ) {
     return;
   }
-  map_obj->accept( *sprite_visitor );
-  sf::Sprite sprite_map_obj = sprite_visitor->extractSprite();
+  map_obj->accept( *sprite_visitor_ );
+  sf::Sprite sprite_map_obj = sprite_visitor_->extractSprite();
 
   double screen_x = ( ( x - center_coords_.x_ ) * graphics::TERRAIN_SPRITE_WIDTH )
                     + ( static_cast<double>( target_render_texture_.get().getSize().x ) / 2.0 );

@@ -17,6 +17,10 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
  private:
   Battle battle_;
 
+  [[nodiscard]] std::vector<BattleCommand> createMoveCommands() const noexcept;
+  [[nodiscard]] std::vector<BattleCommand> createAttackCommands() const noexcept;
+  [[nodiscard]] std::vector<BattleCommand> createWaitCommands() const noexcept;
+
   [[nodiscard]] game::StateTransition handleMoveStack( const BattleCommand & ) noexcept;
   [[nodiscard]] game::StateTransition handleAttackStack( const BattleCommand & ) noexcept;
   [[nodiscard]] game::StateTransition handleWait() noexcept;

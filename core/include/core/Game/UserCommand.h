@@ -37,6 +37,11 @@ struct BattleCommand {
   CoordPair destination;
 };
 
+constexpr bool operator==( const BattleCommand& one, const BattleCommand& other ) noexcept {
+  // operator defined outside of struct to keep it's aggregate property
+  return one.action == other.action && one.destination == other.destination;
+}
+
 /* === GAME === */
 
 struct SwitchCharacter {};

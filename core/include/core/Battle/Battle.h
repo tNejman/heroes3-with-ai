@@ -17,7 +17,6 @@
 #include "engine/model/IGame/Coords.h"
 
 class MoveFactory;
-class Move;
 class Character;
 class UnitStack;
 class GridTile;
@@ -52,7 +51,7 @@ class Battle : public std::enable_shared_from_this<Battle> {
   void createObstacles();
   void nextRound();
   UnitStack* unit_in_action_ = nullptr;
-  std::vector<std::shared_ptr<Move>> possible_moves_;
+  std::vector<UserCommand> possible_moves_;
 
   bool is_minimax_ = false;
 
@@ -95,8 +94,8 @@ class Battle : public std::enable_shared_from_this<Battle> {
   // [[nodiscard]] const std::vector<std::reference_wrapper<UnitStack>> getRoundQueue() const;
   [[nodiscard]] const UnitStack* getUnitInAction() const noexcept;
   [[nodiscard]] UnitStack* getUnitInAction() noexcept;
-  [[nodiscard]] std::vector<std::shared_ptr<Move>> getPossibleMoves() const;
-  [[nodiscard]] BattleState getBattleState() const;
+  [[nodiscard]] std::vector<UserCommand> getPossibleMoves() const noexcept;
+  void setPossibleMoves( std::vector<UserCommand> ) noexcept;
   [[nodiscard]] bool isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const;
   [[nodiscard]] bool isAIMove() const;
   void forceUnplaceUnitStacks();

@@ -1,9 +1,4 @@
 add_library(Battle SHARED
-    Moves/AttackMove.cc
-    Moves/MoveFactory.cc
-    Moves/MoveMove.cc
-    Moves/WaitMove.cc
-
     Battle.cc
     Battlefield.cc
     Tile.cc

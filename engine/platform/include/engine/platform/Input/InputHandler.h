@@ -9,7 +9,7 @@
 
 class InputHandler {
  private:
-  static inline bool was_input_just_processed = false;
+  static inline bool was_input_just_processed_ = false;
 
   static CoordPair calculateNewCharacterPosition( CoordPair old_coords, CharacterMoveDirection direction ) noexcept;
 
