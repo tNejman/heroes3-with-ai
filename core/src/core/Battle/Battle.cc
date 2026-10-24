@@ -439,6 +439,8 @@ void Battle::forcePlaceUnitStack( UnitStack& unit_stack, CoordPair new_coords ) 
 }
 
 std::shared_ptr<Battle> Battle::copy() {
+  assert(this->attacker_ != nullptr);
+  assert(this->defender_ != nullptr);
   auto attacker_copy = this->attacker_->copy();
   auto defender_copy = this->defender_->copy();
   std::shared_ptr<Battle> copy =

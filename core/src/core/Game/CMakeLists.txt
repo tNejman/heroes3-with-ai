@@ -12,4 +12,5 @@ target_link_libraries(Game PUBLIC
     Coords
     IGame
     magic_enum::magic_enum
+    # Algorithms
 )

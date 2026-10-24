@@ -16,7 +16,7 @@ class IGame {  // NOLINT(cppcoreguidelines-special-member-functions)
 
   [[nodiscard]] StateStack& getStateStack() noexcept;
   [[nodiscard]] const StateStack& getStateStack() const noexcept;
-  [[nodiscard]] IState& getState() noexcept;
+  
 
   void incrementActionsSinceStart() noexcept;
   void incrementTickSinceStart() noexcept;
@@ -25,7 +25,7 @@ class IGame {  // NOLINT(cppcoreguidelines-special-member-functions)
   virtual ~IGame() = default;
 
   [[nodiscard]] const IState& getState() const noexcept;
-
+  [[nodiscard]] IState& getState() noexcept;
   [[nodiscard]] int getActionsSinceStart() const noexcept;
   [[nodiscard]] int getTicksSinceStart() const noexcept;
 };

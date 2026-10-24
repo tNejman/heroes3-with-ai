@@ -92,7 +92,8 @@ void Game::startBattle( const game::RequestBattle& request ) {
 /* === @PUBLIC === */
 
 Game::Game( std::vector<std::shared_ptr<Player>>&& players, WorldMap&& world_map ) noexcept
-    : context_( std::move( players ) ), minimax_( std::make_shared<MinimaxAI>() ) {
+    // : context_( std::move( players ) ), minimax_( std::make_shared<MinimaxAI>() ) {
+    : context_( std::move( players ) ), minimax_( nullptr ) {
   err::passCondOrAbort( context_.getPlayers().size() >= 2, "at least 2 players needed to play" );
   this->getStateStack().push( game::StateOverworld::createUniqueptr( std::move( world_map ) ) );
   this->placeCharactersOnWorldMap();

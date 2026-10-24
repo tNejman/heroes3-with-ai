@@ -29,7 +29,7 @@ void UnitStack::setLuck( int new_luck ) noexcept {
 }
 
 [[nodiscard]] int UnitStack::getHealthPool() const noexcept {
-  return current_health_ + ( data_.get().health_ * size_ );
+  return current_health_ + ( data_.get().health_ * (size_-1) );
 }
 
 void UnitStack::modifyCurrentHealth( int health_diff ) noexcept {
@@ -65,10 +65,10 @@ void UnitStack::setCoordsInBattle( CoordPair new_coords ) noexcept {
 //   return unit_->getFaction().lock()->getFactionType();
 // };
 
-// double UnitStack::getEffectiveFightValue() const {
-//   return unit_->getFightValue() * ( ( ( size_ - 1 ) * unit_->getHealth() + current_health_ ) / ( unit_->getHealth() )
-//   );
-// }
+[[nodiscard]] double UnitStack::getEffectiveFightValue() noexcept {
+  return data_.get().fight_value_ * ( ( ( size_ - 1 ) * data_.get().health_ + current_health_ ) / ( size_ * data_.get().health_ )
+  );
+}
 
 // std::shared_ptr<UnitStack> UnitStack::copy() const {
 //   std::shared_ptr<UnitStack> copy = std::make_shared<UnitStack>( this->unit_, this->size_ );
