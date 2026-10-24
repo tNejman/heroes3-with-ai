@@ -15,7 +15,7 @@
 #include <thread>
 
 #include "core/Artifact/ArtifactLib.h"
-#include "engine/Graphics/SpriteFactory.h"
+#include "engine/platform/Graphics/SpriteFactory.h"
 #include "aux/CycleEnumVal.hpp"
 
 // int main( int, char* argv[] ) {

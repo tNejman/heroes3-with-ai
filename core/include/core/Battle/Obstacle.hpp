@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "core/Battle/TileObject.hpp"
-#include "engine/Graphics/IPrintable.h"
+#include "engine/model/IGraphics/IPrintable.h"
 
 class Visitor;
 

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "aux/Err.hpp"
@@ -22,8 +23,8 @@
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
-#include "engine/Graphics/Visitor.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 void Battle::setAttackingArmy() {
   auto& party = attacker_->army().getParty();
@@ -95,13 +96,10 @@ void Battle::nextRound() {
   defender_threw_spell_ = false;
 }
 
-[[nodiscard]] bool Battle::isMoveLegal( const BattleCommand& command ) const noexcept {
-  // TODO account for obstacles
-  const auto is_free_destination = battlefield_->getTileByProxy( command.destination )->getObject() == nullptr;
-  const auto is_distance_in_speed_range =
-      command.destination.distanceFrom( unit_in_action_->getCoordsInBattle() ) <= unit_in_action_->getData().speed_;
-  return is_free_destination && is_distance_in_speed_range;
-  // err::raise<NotImplementedException>();
+[[nodiscard]] bool Battle::isMoveLegal( const BattleCommand& command_in_question ) const noexcept {
+  return std::ranges::any_of( possible_moves_, [&]( const UserCommand& available_command ) {
+    return std::get<BattleCommand>( available_command ) == command_in_question;
+  } );
 }
 [[nodiscard]] bool Battle::isAttackLegal( const BattleCommand& bc ) const noexcept {
   /**
@@ -387,12 +385,15 @@ UnitStack* Battle::getUnitInAction() noexcept {
   return unit_in_action_;
 }
 
-std::vector<std::shared_ptr<Move>> Battle::getPossibleMoves() const {
+std::vector<UserCommand> Battle::getPossibleMoves() const noexcept {
   return possible_moves_;
 }
 
-BattleState Battle::getBattleState() const {
-  return state_;
+void Battle::setPossibleMoves( std::vector<UserCommand> possible_moves ) noexcept {
+  std::ranges::for_each( possible_moves, []( const UserCommand& uc ) {
+    err::passCondOrAbort( std::holds_alternative<BattleCommand>( uc ) );
+  } );
+  possible_moves_ = std::move( possible_moves );
 }
 
 bool Battle::isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const {

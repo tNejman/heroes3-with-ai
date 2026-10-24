@@ -6,7 +6,7 @@
 #include "core/Misc/BuilderDefaults.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 #include "core/Algorithms/MinimaxAI.h"
 
 // NOLINTBEGIN(readability-identifier-naming)

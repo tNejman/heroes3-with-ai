@@ -18,7 +18,7 @@
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 #define COORDS_IN_BOUNDS_OR_THROW( coords, ... )        \
   err::passCondOrThrow<CoordinateOutOfBoundsException>( \

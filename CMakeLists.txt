@@ -12,14 +12,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
-message("Build type is: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type is: ${CMAKE_BUILD_TYPE}")
 
 option(CODE_COVERAGE "code coverage" ON)
 
-# find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+# @TODO uncomment when clang-tidy is ready
+# find_program(CLANG_TIDY_EXE NAMES clang-tidy) 
 # set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" --use-color) #  --fix-errors
 
 include(FetchContent)
+include(CMakePrintHelpers)
 
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
@@ -44,38 +46,62 @@ FetchContent_Declare(
     SYSTEM
 )
 
-set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
-set(CMAKE_CXX_CLANG_TIDY "")
-FetchContent_MakeAvailable(SFML)
-FetchContent_MakeAvailable(json)
-FetchContent_MakeAvailable(magic_enum)
-set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
+set(DEPENDENCIES
+    SFML
+    json
+    magic_enum
+)
+
+set(_prev_dev_err "${CMAKE_SUPPRESS_DEVELOPER_ERRORS}")
+set(_prev_dev_warn "${CMAKE_SUPPRESS_DEVELOPER_WARNINGS}")
+set(CMAKE_SUPPRESS_DEVELOPER_ERRORS ON CACHE BOOL "" FORCE)
+set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "" FORCE)
+
+if (DEFINED CMAKE_CXX_CLANG_TIDY)
+  set(_saved_clang_tidy "${CMAKE_CXX_CLANG_TIDY}")
+  set(CMAKE_CXX_CLANG_TIDY "")
+endif()
+foreach(dependency ${DEPENDENCIES})
+    message(STATUS "Fetching ${dependency} dependency")
+    FetchContent_MakeAvailable(${dependency})
+endforeach()
+if (DEFINED CMAKE_CXX_CLANG_TIDY)
+  set(CMAKE_CXX_CLANG_TIDY "${_saved_clang_tidy}")
+endif()
+
+set(CMAKE_SUPPRESS_DEVELOPER_ERRORS "${_prev_dev_err}" CACHE BOOL "" FORCE)
+set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS "${_prev_dev_warn}" CACHE BOOL "" FORCE)
+
+set(TOOLS
+  fetch_sprites.py
+  fetch_fonts.py
+)
 
 option(FETCH_ASSETS "Download sprites at configure time" ON)
 if(FETCH_ASSETS)
     find_package(Python3 REQUIRED COMPONENTS Interpreter) 
-  
-    execute_process(
-        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_sprites.py ${CMAKE_SOURCE_DIR}
-        RESULT_VARIABLE rc
-    )
-    if(NOT rc EQUAL 0)
-        message(FATAL_ERROR "sprite fetch failed")
-    endif()
+    foreach(tool ${TOOLS})
+        message(STATUS "Fetching ${tool}")
 
-    execute_process(
-      COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/fetch_fonts.py ${CMAKE_SOURCE_DIR}
-      RESULT_VARIABLE rc
-  )
-  if(NOT rc EQUAL 0)
-      message(FATAL_ERROR "font fetch failed")
-  endif()
+        execute_process(
+            COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/${tool} ${CMAKE_SOURCE_DIR}
+            RESULT_VARIABLE rc
+        )
+
+        if(NOT rc EQUAL 0)
+            message(FATAL_ERROR "sprite fetch failed")
+        endif()
+    endforeach()
+    
 endif()
 
-set(ENGINE_MODULES
-    Graphics
+set(ENGINE_MODEL_MODULES
     IGame
     Coords
+)
+
+set(ENGINE_PLATFORM_MODULES
+    Graphics
     Input
     LoadAndSaveTools
 )
@@ -124,28 +150,47 @@ function(apply_compiler_flags target)
     )
 endfunction()
 
-foreach(module ${ENGINE_MODULES})
-    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/src/engine/${module})
-        add_subdirectory(engine/src/engine/${module})
+foreach(module ${ENGINE_MODEL_MODULES})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/model/src/engine/model/${module})
+        add_subdirectory(${CMAKE_SOURCE_DIR}/engine/model/src/engine/model/${module})
     else()
-        MESSAGE("skipping nonexistent dir: ./engine/src/engine/${module}")
+        MESSAGE("skipping nonexistent dir: ./engine/model/src/engine/model/${module}")
     endif()
 
     target_include_directories(${module} PUBLIC
-        ${CMAKE_SOURCE_DIR}/engine/include/
         ${CMAKE_SOURCE_DIR}/aux/include/
-        ${CMAKE_SOURCE_DIR}/core/include # @TODO!!! REMOVE
+        ${CMAKE_SOURCE_DIR}/engine/model/include/
     )
+
     apply_compiler_flags(${module})
 endforeach()
 
 foreach(module ${CORE_MODULES})
     add_subdirectory(core/src/core/${module})
     target_include_directories(${module} PUBLIC
+        ${CMAKE_SOURCE_DIR}/aux/include/ 
+        ${CMAKE_SOURCE_DIR}/engine/model/include/
         ${CMAKE_SOURCE_DIR}/core/include/
-        ${CMAKE_SOURCE_DIR}/engine/include/
-        ${CMAKE_SOURCE_DIR}/aux/include/
+      # ${CMAKE_SOURCE_DIR}/engine/model/include/ #### @TODO REMOVE ASAP
+        
     )
+    apply_compiler_flags(${module})
+endforeach()
+
+foreach(module ${ENGINE_PLATFORM_MODULES})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/engine/platform/src/engine/platform/${module})
+        add_subdirectory(${CMAKE_SOURCE_DIR}/engine/platform/src/engine/platform/${module})
+    else()
+        MESSAGE("skipping nonexistent dir: ./engine/platform/src/engine/platform/${module}")
+    endif()
+
+    target_include_directories(${module} PUBLIC
+        ${CMAKE_SOURCE_DIR}/aux/include/ 
+        ${CMAKE_SOURCE_DIR}/engine/model/include/   
+        ${CMAKE_SOURCE_DIR}/core/include/
+        ${CMAKE_SOURCE_DIR}/engine/platform/include/
+    )
+
     apply_compiler_flags(${module})
 endforeach()
 

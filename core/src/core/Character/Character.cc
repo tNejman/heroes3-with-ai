@@ -14,7 +14,7 @@
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 /* ==== @PRIVATE ==== */
 

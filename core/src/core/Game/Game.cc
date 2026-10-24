@@ -4,6 +4,7 @@
 #include <format>
 #include <iostream>
 #include <memory>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -22,7 +23,7 @@
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/Graphics/IRVisitor.h"
+#include "engine/model/IGraphics/IRVisitor.h"
 
 game::StateTransition Game::handleStateIndependentCommand( const StateIndependentCommand& command ) noexcept {
   return std::visit( Overload{ [&]( const SwitchCharacter& ) -> game::StateTransition {
@@ -90,10 +91,10 @@ void Game::startBattle( const game::RequestBattle& request ) {
 
 /* === @PUBLIC === */
 
-Game::Game( std::vector<std::shared_ptr<Player>>&& players ) noexcept
+Game::Game( std::vector<std::shared_ptr<Player>>&& players, WorldMap&& world_map ) noexcept
     : context_( std::move( players ) ), minimax_( std::make_shared<MinimaxAI>() ) {
   err::passCondOrAbort( context_.getPlayers().size() >= 2, "at least 2 players needed to play" );
-  this->getStateStack().push( game::StateOverworld::createUniqueptr() );
+  this->getStateStack().push( game::StateOverworld::createUniqueptr( std::move( world_map ) ) );
   this->placeCharactersOnWorldMap();
 }
 

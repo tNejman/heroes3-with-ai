@@ -4,7 +4,7 @@
 #include <cstddef>
 
 #include "core/Artifact/ArtifactLib.h"
-#include "engine/Graphics/Visitor.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 Artifact::Artifact( const artifact::Data& data ) : data_( data ) {
 }

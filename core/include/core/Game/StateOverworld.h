@@ -8,8 +8,8 @@
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/Graphics/IRVisitor.h"
-#include "engine/Graphics/Visitor.h"
+#include "engine/model/IGraphics/IRVisitor.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 namespace game {
 
@@ -28,8 +28,8 @@ class StateOverworld : public game::StateOf<WorldMapCommand, WorldMapSystemComma
    */
   explicit StateOverworld( CtorKey, WorldMap&& world_map ) noexcept;
 
-  [[nodiscard]] static game::StateOverworld create() noexcept;
-  [[nodiscard]] static std::unique_ptr<game::IState> createUniqueptr() noexcept;
+  [[nodiscard]] static game::StateOverworld create( WorldMap&& ) noexcept;
+  [[nodiscard]] static std::unique_ptr<game::IState> createUniqueptr( WorldMap&& ) noexcept;
 
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept override;
   [[nodiscard]] game::StateTransition applyCommand( const UserCommand& command,

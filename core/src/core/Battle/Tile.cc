@@ -3,7 +3,7 @@
 #include <memory>
 #include <utility>
 
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 CoordPair Tile::getCoords() const {
   return this->coords_;

@@ -2,7 +2,7 @@
 
 #include <format>
 
-#include "engine/IGame/Coords.h"
+#include "engine/model/IGame/Coords.h"
 
 template <>
 struct std::formatter<CoordPair> {

@@ -9,13 +9,17 @@
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/Graphics/IRVisitor.h"
+#include "engine/model/IGraphics/IRVisitor.h"
 
 namespace game {
 
 class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
  private:
   Battle battle_;
+
+  [[nodiscard]] std::vector<BattleCommand> createMoveCommands() const noexcept;
+  [[nodiscard]] std::vector<BattleCommand> createAttackCommands() const noexcept;
+  [[nodiscard]] std::vector<BattleCommand> createWaitCommands() const noexcept;
 
   [[nodiscard]] game::StateTransition handleMoveStack( const BattleCommand & ) noexcept;
   [[nodiscard]] game::StateTransition handleAttackStack( const BattleCommand & ) noexcept;
