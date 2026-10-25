@@ -22,12 +22,16 @@ class MCTSAlgorithm : public IAlgorithm {
     MCTSNode* parent_ = nullptr;
     int visits_ = 0;
     double score_ = 0.0;
-    UserCommand moves_;
+    UserCommand move_;
     std::vector<MCTSNode> children_;
     void populateNodeWithMoves( std::reference_wrapper<Battle> battle );
 
    public:
     MCTSNode( MCTSNode& parent, const UserCommand& move );
+    [[nodiscard]] std::vector<MCTSAlgorithm::MCTSNode> getChildren() const noexcept;
+    [[nodiscard]] UserCommand getMove() const noexcept; 
+    [[nodiscard]] MCTSAlgorithm::MCTSNode& getBestChild() noexcept;
+
     void setMoves( const std::vector<UserCommand>& moves );
     [[nodiscard]] MCTSNode* selection() noexcept;
     void backPropagate( double value ) noexcept;

@@ -28,8 +28,29 @@ constexpr inline double CP_CONSTANT = 2 * ( 1 / std::numbers::sqrt2 );
 MCTSAlgorithm::MCTSAlgorithm( uint16_t time_limit, MCTSNode base_node )
     : time_limit_( time_limit ), base_node_( std::move( base_node ) ) {};
 
-MCTSAlgorithm::MCTSNode::MCTSNode( MCTSNode& parent, const UserCommand& move ) : parent_( &parent ), moves_( move ) {};
+MCTSAlgorithm::MCTSNode::MCTSNode( MCTSNode& parent, const UserCommand& move ) : parent_( &parent ), move_( move ) {};
 
+std::vector<MCTSAlgorithm::MCTSNode> MCTSAlgorithm::MCTSNode::getChildren() const noexcept {
+  return children_;
+}
+UserCommand MCTSAlgorithm::MCTSNode::getMove() const noexcept {
+  return move_;
+}
+MCTSAlgorithm::MCTSNode& MCTSAlgorithm::MCTSNode::getBestChild() noexcept {
+  double best_uct = NAN;
+  double tmp_uct = NAN;
+  MCTSNode* best_child = &children_.front();
+  best_uct = 0.0;
+
+  for ( auto& child : children_ ) {
+    tmp_uct = child.uctValue();
+    if ( tmp_uct > best_uct ) {
+      best_child = &child;
+      best_uct = tmp_uct;
+    }
+  }
+  return *best_child;
+}
 void MCTSAlgorithm::MCTSNode::setMoves( const std::vector<UserCommand>& moves ) {
   for ( const auto& move : moves ) {
     this->children_.emplace_back( *this, move );
@@ -48,7 +69,7 @@ double MCTSAlgorithm::MCTSNode::uctValue() const noexcept {
 
 MCTSAlgorithm::MCTSNode* MCTSAlgorithm::MCTSNode::selection() noexcept {
   MCTSNode* current = this;
-  double best_uct = 0.0;
+  double best_uct = NAN;
   double tmp_uct = NAN;
   while ( !current->children_.empty() ) {
     MCTSNode* best_child = &current->children_.front();
@@ -98,10 +119,6 @@ void MCTSAlgorithm::MCTSNode::backPropagate( double value ) noexcept {
 }
 
 UserCommand MCTSAlgorithm::getBestMove( std::reference_wrapper<game::StateBattle> state_battle ) {
-  auto move = BattleCommand{
-      .action = BattleCommand::Action::WAIT,
-      .destination = state_battle.get().viewBattle().getUnitInAction()->getCoordsInBattle(),
-  };
   base_node_.setMoves( state_battle.get().legalCommands() );
   // start timer
   int iterations = 0;
@@ -117,5 +134,5 @@ UserCommand MCTSAlgorithm::getBestMove( std::reference_wrapper<game::StateBattle
     value = current->rollout();
     current->backPropagate( value );
   }
-  return move;
+  return base_node_.getBestChild().getMove();
 }
