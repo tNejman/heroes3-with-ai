@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "core/Algorithms/IAlgorithm.hpp"
+#include "core/Game/StateBattle.h"
 
 class Move;
 struct CoordPair;
@@ -32,7 +33,7 @@ class MinimaxAI : public IAlgorithm{
  public:
   //MinimaxAI() = default;
   MinimaxAI(uint16_t depth);
-  [[nodiscard]] std::shared_ptr<Move> getBestMove( std::shared_ptr<Battle> battle ) override;
+  [[nodiscard]] UserCommand getBestMove( std::reference_wrapper<game::StateBattle> state_battle ) override;
   [[nodiscard]] static std::shared_ptr<Move> getBestMove( std::reference_wrapper<Battle> battle, uint32_t depth );
   [[nodiscard]] static std::shared_ptr<Move> getBestMove( std::reference_wrapper<Battle> battle, uint32_t depth, bool maximizing_player );
   [[nodiscard]] static double evaluate( std::reference_wrapper<Battle> battle_state );
