@@ -41,6 +41,10 @@ CheckOptions:
     value: lower_case
   - key: readability-identifier-naming.ClassMemberSuffix
     value: _
+  - key: readability-identifier-naming.MemberSuffix
+    value: _
+  - key: readability-identifier-naming.MemberCase
+    value: lower_case
 
   - key: misc-assert-side-effect.CheckFunctionCalls
     value: true
