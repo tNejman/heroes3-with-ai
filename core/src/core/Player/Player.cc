@@ -5,6 +5,10 @@
 
 #include "core/Character/Character.h"
 
+const std::vector<std::shared_ptr<Character>>& Player::getCharacters() const noexcept {
+  return this->characters_on_map_;
+}
+
 std::vector<std::shared_ptr<Character>>& Player::getCharacters() noexcept {
   return this->characters_on_map_;
 }

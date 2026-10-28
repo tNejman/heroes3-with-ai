@@ -207,7 +207,6 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
 
 [[nodiscard]] game::StateTransition game::StateBattle::applyCommand( const UserCommand &command,
                                                                      game::Context & ) noexcept {
-  // MoveFactory::generateMoves( battle_ );  // updates graphics
   battle_.setPossibleMoves( this->legalCommands() );
 
   if ( !isLegalCommand( command ) ) {
@@ -245,6 +244,10 @@ void game::StateBattle::applySystemCommand( const SystemCommand &, game::Context
 
 void game::StateBattle::accept( IRVisitor &v ) const noexcept {
   v.visit( *this );
+}
+
+Battle *game::StateBattle::getBattle() noexcept {
+  return &battle_;
 }
 
 const Battle &game::StateBattle::viewBattle() const noexcept {

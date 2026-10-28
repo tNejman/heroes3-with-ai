@@ -7,6 +7,7 @@
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "engine/model/IGame/Coords.h"
+// #include "core/Algorithms/MinimaxAI.h"
 
 // NOLINTBEGIN(readability-identifier-naming)
 
@@ -18,6 +19,11 @@ struct BuilderDefaults<Character> {
   static constexpr bool is_user = false;
   static constexpr character::Stats stats{};
 };
+
+// template <>
+// struct BuilderDefaults<MinimaxAI> {
+//   static constexpr short unsigned int depth = 0;
+// };
 
 template <>
 struct BuilderIdGenerator<Character> {

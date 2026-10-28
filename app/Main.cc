@@ -21,7 +21,10 @@
 #include <utility>
 #include <vector>
 
+#include "aux/Builder.hpp"
 #include "aux/Err.hpp"
+// #include "core/Algorithms/IAlgorithm.hpp"
+// #include "core/Algorithms/MinimaxAI.h"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Game/Game.h"
@@ -51,6 +54,7 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
       Builder<Character>{}
           .setName( "fire_hero_down_right" )
           .setCoords( CoordPair{ 0, 0 } )
+          .setIsUser( true )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
               character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
@@ -59,6 +63,7 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
       Builder<Character>{}
           .setName( "john" )
           .setCoords( CoordPair{ 5, 5 } )
+          .setIsUser( true )
           .setStats( character::Stats{
               character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
               character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
@@ -116,7 +121,9 @@ int main() {
   preMain();
 
   Game game{ producePresetPlayers(), MapLoader{}.load( WORLD_MAP_INPUT_PATH ) };
-
+  // std::shared_ptr<IAlgorithm> AIPlayerEngine = Builder<MinimaxAI>{}
+  //         .setDepth(uint16_t{4})
+  //         .build<std::shared_ptr>() ;
   int window_scale_mult = 3;
   sf::RenderWindow window{
       sf::VideoMode{ sf::Vector2u{ static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
@@ -161,6 +168,13 @@ int main() {
       }
     }
     game.applyCommand( command );
+
+    auto* battle = game.getState().getBattle();
+    if ( battle != nullptr && battle->isAIMove() ) {
+      auto battle_copy = battle->copy();
+      // std::shared_ptr<Move> move = AIPlayerEngine->getBestMove( battle_copy );
+      // std::cout << move->getInfo( battle_copy ) << "\n";
+    }
     GameRenderer{ window, target, game }.render();
   }
 };
