@@ -8,7 +8,9 @@
 */
 
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <optional>
+#include <string>
 
 #include "core/Artifact/Artifact.h"
 #include "core/Battle/Battle.h"
@@ -17,12 +19,16 @@
 #include "core/Magic/Spell.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/model/IGraphics/Visitor.h"
-
 
 class SpriteVisitor : public Visitor {
  private:
   std::optional<sf::Sprite> sprite_;
+
+  [[nodiscard]] static sf::Texture loadTextureOrAbort( const std::string& path ) noexcept;
+  [[nodiscard]] static const sf::Texture& getTexture( const TextureSource& texture_source ) noexcept;
+  [[nodiscard]] static sf::Sprite getSprite( const sf::Texture& texture, const TextureSource& texture_source ) noexcept;
 
  public:
   void visit( const Artifact& e ) override;

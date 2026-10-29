@@ -105,7 +105,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
 
   static constexpr std::array<int, 6> VERTICAL_PADDING_PRE_NTH_ROW = { 6, 5, 10, 15, 8, 4 };
 
-  auto get_sprite_location_from_sprite_relative_pos = [&]( int column, int row ) {
+  auto get_sprite_location_from_sprite_relative_pos = [&]( int column, int row ) -> sf::Vector2<int> {
     err::passCondOrAbort( column >= 0 && column <= 26, "column" );
     err::passCondOrAbort( row >= 0 && row <= 5, "row" );
     int horizontal_location =
@@ -115,7 +115,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
         std::accumulate( VERTICAL_PADDING_PRE_NTH_ROW.begin(), VERTICAL_PADDING_PRE_NTH_ROW.begin() + row + 1, 0 )
         + ( row * ARTIFACT_SRPITE_HEIGHT );
 
-    return sf::Vector2<int>( horizontal_location, vertical_location );
+    return { horizontal_location, vertical_location };
   };
 
   auto sprite_location = [&] -> sf::Vector2<int> {
@@ -239,7 +239,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case character::Type::FIRE_HERO: return 16;
       case character::Type::BLACK_HERO_WHITE_HORSE: return 9;
     }
-  err::abort( "requested rendering an unknown character::Type" );
+    err::abort( "requested rendering an unknown character::Type" );
   }();
 
   sf::Vector2<int> sprite_local_position{ HERO_SPRITE_WIDTH * horizontal_multiplier,

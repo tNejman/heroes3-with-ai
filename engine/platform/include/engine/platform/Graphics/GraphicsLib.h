@@ -1,6 +1,8 @@
 #pragma once
 
+#include <SFML/System/Vector2.hpp>
 #include <string>
+
 namespace graphics {
 
 constexpr inline int WINDOW_WIDTH = 800;
@@ -10,6 +12,11 @@ constexpr inline int WORLD_MAP_MAX_TILES_SEEN_LEFT = 12U;
 constexpr inline int WORLD_MAP_MAX_TILES_SEEN_RIGHT = 12U;
 constexpr inline int WORLD_MAP_MAX_TILES_SEEN_UP = 9U;
 constexpr inline int WORLD_MAP_MAX_TILES_SEEN_DOWN = 9U;
+
+constexpr inline sf::Vector2<int> DEFAULT_CROP_LOCATION{ 0, 0 };
+
+constexpr inline int HERO_SPRITE_WIDTH = 96;
+constexpr inline int HERO_SPRITE_HEIGHT = 64;
 
 constexpr inline int TERRAIN_SPRITE_HEIGHT = 32;
 constexpr inline int TERRAIN_SPRITE_WIDTH = 32;
