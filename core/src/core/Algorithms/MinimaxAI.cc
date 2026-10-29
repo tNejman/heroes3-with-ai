@@ -40,10 +40,10 @@ std::pair<std::shared_ptr<Move>, double> MinimaxAI::doMinimax( std::shared_ptr<B
    *
    */
 
-  BattleState state = battle->getState();
+  battle::State state = battle->getState();
   switch ( state ) {
-    case ( BattleState::WIN_ATTACKER ): return std::make_pair( move, INF_SCORE );
-    case ( BattleState::WIN_DEFENDER ): return std::make_pair( move, -INF_SCORE );
+    case ( battle::State::WIN_ATTACKER ): return std::make_pair( move, INF_SCORE );
+    case ( battle::State::WIN_DEFENDER ): return std::make_pair( move, -INF_SCORE );
     default: break;
   }
   if ( depth == 0 ) {
@@ -113,10 +113,10 @@ std::pair<std::shared_ptr<Move>, double> MinimaxAI::doMultiMinimax( std::shared_
    *
    */
 
-  BattleState state = battle->getState();
+  battle::State state = battle->getState();
   switch ( state ) {
-    case ( BattleState::WIN_ATTACKER ): return std::make_pair( move, INF_SCORE );
-    case ( BattleState::WIN_DEFENDER ): return std::make_pair( move, -INF_SCORE );
+    case ( battle::State::WIN_ATTACKER ): return std::make_pair( move, INF_SCORE );
+    case ( battle::State::WIN_DEFENDER ): return std::make_pair( move, -INF_SCORE );
     default: break;
   }
   if ( depth == 0 ) {
@@ -193,10 +193,10 @@ std::pair<std::shared_ptr<Move>, double> MinimaxAI::doMultiMinimax( std::shared_
 }
 
 double MinimaxAI::evaluate( const std::shared_ptr<Battle> battle_state ) {
-  if ( battle_state->getState() == BattleState::WIN_ATTACKER ) {
+  if ( battle_state->getState() == battle::State::WIN_ATTACKER ) {
     return INF_SCORE;
   }
-  if ( battle_state->getState() == BattleState::WIN_DEFENDER ) {
+  if ( battle_state->getState() == battle::State::WIN_DEFENDER ) {
     return -INF_SCORE;
   }
   const auto attacking_army = battle_state->getAttackingArmy();

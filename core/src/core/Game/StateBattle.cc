@@ -146,7 +146,7 @@
 
 game::StateTransition game::StateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
   battle_.move( *battle_.getUnitInAction(), ms.destination );
-  battle_.setBattleState( BattleState::ATTACKING );
+  battle_.setBattleState( battle::State::ATTACKING );
   return game::NoTransition{};
 }
 game::StateTransition game::StateBattle::handleAttackStack( const BattleCommand &as ) noexcept {
@@ -154,21 +154,21 @@ game::StateTransition game::StateBattle::handleAttackStack( const BattleCommand 
   auto *defender = battle_.getUnitFromCoords( as.destination );
   battle_.attack( *attacker, *defender );
 
-  if ( battle_.getState() == BattleState::WIN_ATTACKER ) {
+  if ( battle_.getState() == battle::State::WIN_ATTACKER ) {
     return PopState{};  // TODO actual change
   }
-  if ( battle_.getState() == BattleState::WIN_DEFENDER ) {
+  if ( battle_.getState() == battle::State::WIN_DEFENDER ) {
     return PopState{};  // TODO actual change
   }
   battle_.nextUnit();
   return NoTransition{};
 }
 game::StateTransition game::StateBattle::handleWait() noexcept {
-  if ( battle_.getState() == BattleState::ATTACKING ) {
-    battle_.setBattleState( BattleState::MOVING );
+  if ( battle_.getState() == battle::State::ATTACKING ) {
+    battle_.setBattleState( battle::State::MOVING );
     battle_.nextUnit();
-  } else if ( battle_.getState() == BattleState::MOVING ) {
-    battle_.setBattleState( BattleState::ATTACKING );
+  } else if ( battle_.getState() == battle::State::MOVING ) {
+    battle_.setBattleState( battle::State::ATTACKING );
   }
   return NoTransition{};
 }
@@ -189,11 +189,11 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
   std::vector<BattleCommand> legal_commands;
 
   switch ( battle_.getState() ) {
-    case BattleState::MOVING:
+    case battle::State::MOVING:
       legal_commands.append_range( this->createMoveCommands() );
       legal_commands.append_range( this->createWaitCommands() );
       break;
-    case BattleState::ATTACKING:
+    case battle::State::ATTACKING:
       legal_commands.append_range( this->createAttackCommands() );
       legal_commands.append_range( this->createWaitCommands() );
       break;
@@ -216,21 +216,27 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
   }
   auto battle_command = std::get<BattleCommand>( command );
   std::cout << battle_command.destination << '\n';
+
+  game::StateTransition transition = None{};
+
   if ( battle_command.destination == battle_.getUnitInAction()->getCoordsInBattle() ) {
-    return handleWait();
+    transition = handleWait();
+  } else if ( battle_.getState() == battle::State::ATTACKING ) {
+    transition = handleAttackStack( battle_command );
+  } else if ( battle_.getState() == battle::State::MOVING ) {
+    transition = handleMoveStack( battle_command );
+  } else {
+    assert( false && "GameStateBattle::applyCommand -> unexpected state" );
   }
-  if ( battle_.getState() == BattleState::ATTACKING ) {
-    return handleAttackStack( battle_command );
-  }
-  if ( battle_.getState() == BattleState::MOVING ) {
-    return handleMoveStack( battle_command );
-  }
-  assert( false && "GameStateBattle::applyCommand -> unexpected state" );
   // return std::visit( Overload{ [&]( const MoveStack &ms ) -> StateTransition { return handleMoveStack( ms ); },
   //                              [&]( const AttackStack &as ) -> StateTransition { return handleAttackStack( as ); },
   //                              [&]( const Wait &w ) -> StateTransition { return handleWait( w ); },
   //                              [&]( const Defend &d ) -> StateTransition { return handleDefend( d ); } },
   //                    std::get<BattleCommand>( command ) );
+  if ( !battle_.isFinished() ) {
+    battle_.setPossibleMoves( this->legalCommands() );
+  }
+  return transition;
 }
 [[nodiscard]] bool game::StateBattle::isLegalCommand( const UserCommand &command ) const noexcept {
   if ( !isCommandForThisState( command ) ) {

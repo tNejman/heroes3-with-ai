@@ -22,7 +22,9 @@ class UnitStack;
 class GridTile;
 class Visitor;
 
-enum class BattleState : char {
+namespace battle {
+
+enum class State : char {
   PREPPING,  //@Warning remove later possibly
   //   DEFENDING,
   MOVING,
@@ -33,9 +35,11 @@ enum class BattleState : char {
   WIN_DEFENDER
 };
 
+};
+
 class Battle : public std::enable_shared_from_this<Battle> {
  private:
-  BattleState state_ = BattleState::PREPPING;
+  battle::State state_ = battle::State::PREPPING;
   std::shared_ptr<BattleField> battlefield_;
   std::shared_ptr<Character> attacker_;
   std::shared_ptr<Character> defender_;
@@ -67,10 +71,10 @@ class Battle : public std::enable_shared_from_this<Battle> {
   Battle( const Battle& ) = delete;
   Battle( Battle&& ) = delete;
 
-  [[nodiscard]] BattleState getState() const;
+  [[nodiscard]] battle::State getState() const;
   [[nodiscard]] bool setUnit( UnitStack& unit_stack, CoordPair new_coords );
   [[nodiscard]] bool killUnit( UnitStack& dead_unit_to_kill );
-  void setBattleState( BattleState state );
+  void setBattleState( battle::State state );
   bool move( UnitStack& unit_stack, CoordPair new_coords );
   bool attack( UnitStack& attacker, UnitStack& defender );
 
@@ -100,5 +104,6 @@ class Battle : public std::enable_shared_from_this<Battle> {
   [[nodiscard]] bool isAIMove() const;
   void forceUnplaceUnitStacks();
   void forcePlaceUnitStack( UnitStack& unit_stack, CoordPair new_coords );
+  [[nodiscard]] bool isFinished() const noexcept;
   [[nodiscard]] std::shared_ptr<Battle> copy();
 };

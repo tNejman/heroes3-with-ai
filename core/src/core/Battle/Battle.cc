@@ -109,7 +109,7 @@ void Battle::nextRound() {
    * check dead unit/obstacle
    */
   assert( unit_in_action_ != nullptr && "Battle::isAttackLegal -> battle.unit_in_action is nullptr" );
-  if ( state_ != BattleState::ATTACKING ) {
+  if ( state_ != battle::State::ATTACKING ) {
     return false;
   }
   const auto* const target = getUnitFromCoords( bc.destination );
@@ -130,7 +130,7 @@ void Battle::nextRound() {
 /* === @PUBLIC === */
 
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background )
-    : state_( BattleState::MOVING ),
+    : state_( battle::State::MOVING ),
       battlefield_( std::make_shared<BattleField>( background ) ),
       attacker_( std::move( attacker ) ),
       defender_( std::move( defender ) ),
@@ -149,7 +149,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
   is_minimax_ = is_minimax;
 }
 
-BattleState Battle::getState() const {
+battle::State Battle::getState() const {
   return state_;
 }
 
@@ -181,17 +181,17 @@ bool Battle::killUnit( UnitStack& unit_stack_to_kill ) {
         }
       } );
   if ( getAttackingArmy().empty() ) {
-    setBattleState( BattleState::WIN_DEFENDER );
+    setBattleState( battle::State::WIN_DEFENDER );
     return true;
   }
   if ( getDefendingArmy().empty() ) {
-    setBattleState( BattleState::WIN_ATTACKER );
+    setBattleState( battle::State::WIN_ATTACKER );
     return true;
   }
   return false;
 }
 
-void Battle::setBattleState( BattleState state ) {
+void Battle::setBattleState( battle::State state ) {
   state_ = state;
 }
 
@@ -271,8 +271,8 @@ bool Battle::attack( UnitStack& attacker, UnitStack& defender ) {
     return isWaitLegal( command );
   }
   switch ( state_ ) {
-    case BattleState::ATTACKING: return isAttackLegal( command );
-    case BattleState::MOVING: return isMoveLegal( command );
+    case battle::State::ATTACKING: return isAttackLegal( command );
+    case battle::State::MOVING: return isMoveLegal( command );
     default: assert( false && "Battle::isLegalCommand -> reached unknown state" );
   }
 }
@@ -436,6 +436,10 @@ void Battle::forcePlaceUnitStack( UnitStack& unit_stack, CoordPair new_coords ) 
   auto tile = battlefield_->getTileByProxy( new_coords );
   tile->setObject( unit_stack );
   unit_stack.setCoordsInBattle( new_coords );
+}
+
+[[nodiscard]] bool Battle::isFinished() const noexcept {
+  return state_ == battle::State::WIN_ATTACKER || state_ == battle::State::WIN_DEFENDER;
 }
 
 std::shared_ptr<Battle> Battle::copy() {
