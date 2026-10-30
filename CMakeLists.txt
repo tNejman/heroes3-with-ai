@@ -89,7 +89,7 @@ if(FETCH_ASSETS)
         )
 
         if(NOT rc EQUAL 0)
-            message(FATAL_ERROR "sprite fetch failed")
+            message(FATAL_ERROR "fetch failed")
         endif()
     endforeach()
     
@@ -97,6 +97,7 @@ endif()
 
 set(ENGINE_MODEL_MODULES
     IGame
+    IGraphics
     Coords
 )
 

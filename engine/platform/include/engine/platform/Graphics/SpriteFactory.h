@@ -1,87 +1,129 @@
-#pragma once
+// #pragma once
 
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <functional>
-#include <magic_enum/magic_enum.hpp>
-#include <string_view>
+// // #include <SFML/Graphics/Rect.hpp>
+// // #include <SFML/Graphics/Sprite.hpp>
+// // #include <SFML/Graphics/Texture.hpp>
+// // #include <SFML/System/Vector2.hpp>
+// // #include <functional>
+// // #include <magic_enum/magic_enum.hpp>
+// // #include <string_view>
 
-#include "aux/Enum.hpp"
-#include "core/Artifact/ArtifactLib.h"
-#include "core/Character/Character.h"
-#include "core/Misc/ProjectLib.h"
-#include "core/Unit/UnitsLib.h"
-#include "core/WorldMap/OverworldObstacle.h"
+// // #include "aux/Enum.hpp"
+// // #include "core/Artifact/ArtifactLib.h"
+// // #include "core/Character/Character.h"
+// // #include "core/Misc/ProjectLib.h"
+// // #include "core/Unit/UnitsLib.h"
+// // #include "core/WorldMap/OverworldObstacle.h"
 
-enum class SpriteDomain : char { WORLD, BATTLE };
+// // enum class SpriteDomain : char { WORLD, BATTLE };
 
-template <Enum E, SpriteDomain D>
-struct Tagged {
-  E val;
-};
+// // template <Enum E, SpriteDomain D>
+// // struct Tagged {
+// //   E val;
+// // };
 
-enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION };
+// // enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION };
 
-class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
- private:
-  template <Enum Binding>
-  static const sf::Texture& getTexture(
-      Binding b, std::string_view path,
-      const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
+// #include <SFML/Graphics/Sprite.hpp>
+// #include <SFML/Graphics/Texture.hpp>
 
-  template <Enum Binding, SpriteDomain D>
-  static const sf::Texture& getTexture(
-      Binding b, std::string_view path,
-      const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
+// #include "core/Game/IState.h"
+// #include "engine/model/IGraphics/SpriteBinding.h"
+// #include "engine/model/IGraphics/TextureLoader.h"
+// class SpriteFactory {
+//  public:
+//   SpriteFactory() = delete;
+//   ~SpriteFactory() = default;
+//   SpriteFactory( const SpriteFactory& ) = delete;
+//   SpriteFactory( SpriteFactory&& ) = delete;
+//   SpriteFactory& operator=( const SpriteFactory& ) = delete;
+//   SpriteFactory& operator=( SpriteFactory&& ) = delete;
 
-  template <typename Binding>
-  static const sf::Texture& getTexture(
-      std::string_view path, const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
+//   template <typename Object, typename GlobalState = game::IState, typename... Params>
+//   requires SpriteBound<Object, GlobalState, Params...>
+//   [[nodiscard]] static constexpr TextureSource source( Params... params ) noexcept {
+//     return ResolvedSpriteBinding<Object, GlobalState>::source( params... );
+//   }
 
-  [[nodiscard]] static sf::Texture loadTextureOrAbort( std::string_view path ) noexcept;
-  [[nodiscard]] static sf::Sprite cropTexture( const sf::Texture& texture, sf::Vector2<int> ltc_pos,
-                                               sf::Vector2<int> size ) noexcept;
+//   template <typename Object, typename GlobalState = game::IState, typename... Params>
+//   requires SpriteBound<Object, GlobalState, Params...>
+//   [[nodiscard]] static sf::Sprite make( Params... params ) noexcept {
+//     const TextureSource texture_source{ source<Object, GlobalState>( params... ) };
+//     const sf::Texture& texture = TextureLoader::getTexture( texture_source );
 
-  static void eraseCharactersTextureCornerMarkers( sf::Texture&, unsigned int width, unsigned int height ) noexcept;
-  static void cleanupRawMagentaAndCyanTexture( sf::Texture& ) noexcept;
+//     sf::Sprite sprite = [&] {
+//       if ( texture_source.crop_.has_value() ) {
+//         return sf::Sprite{ texture, *texture_source.crop_ };
+//       }
+//       return sf::Sprite{ texture };
+//     }();
 
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( HexagonType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( artifact::Type ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::BATTLE> ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( OverworldObstacleType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( character::Type, CharacterMoveDirection ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( CastleUnitType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( ConfluxUnitType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( ForgeUnitType ) noexcept;
-  [[nodiscard]] static sf::Sprite getSpriteFromBinding( WarMachineType ) noexcept;
+//     if ( texture_source.sprite_cleanup_fun_ != nullptr ) {
+//       texture_source.sprite_cleanup_fun_( sprite );
+//     }
 
- public:
-  SpriteFactory() = delete;
-  SpriteFactory( const SpriteFactory& ) = delete;
-  SpriteFactory( SpriteFactory&& ) = delete;
-  SpriteFactory& operator=( const SpriteFactory& ) = delete;
-  SpriteFactory& operator=( SpriteFactory&& ) = delete;
+//     return sprite;
+//   }
+// };
 
-  static void flipSpriteHorizontally( sf::Sprite& ) noexcept;
+// // class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
+// //  private:
+// //   template <Enum Binding>
+// //   static const sf::Texture& getTexture(
+// //       Binding b, std::string_view path,
+// //       const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
 
-  template <Enum Binding>
-  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Binding binding ) noexcept;
+// //   template <Enum Binding, SpriteDomain D>
+// //   static const sf::Texture& getTexture(
+// //       Binding b, std::string_view path,
+// //       const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
 
-  template <Enum Binding1, Enum Binding2>
-  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Binding1 binding1, Binding2 binding2 ) noexcept;
+// //   template <typename Binding>
+// //   static const sf::Texture& getTexture(
+// //       std::string_view path, const std::function<void( sf::Texture& )>& texutre_cleanup_func = nullptr ) noexcept;
 
-  /**
-   * @note use if enum has different meanings in different contexts
-   */
-  template <Enum Binding, SpriteDomain D>
-  [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Tagged<Binding, D> binding ) noexcept;
+// //   [[nodiscard]] static sf::Texture loadTextureOrAbort( std::string_view path ) noexcept;
+// //   [[nodiscard]] static sf::Sprite cropTexture( const sf::Texture& texture, sf::Vector2<int> ltc_pos,
+// //                                                sf::Vector2<int> size ) noexcept;
 
-  [[nodiscard]] inline static sf::Sprite getSpriteFromBindingV( UnitTypeV type ) noexcept;
+// //   static void eraseCharactersTextureCornerMarkers( sf::Texture&, unsigned int width, unsigned int height ) noexcept;
+// //   static void cleanupRawMagentaAndCyanTexture( sf::Texture& ) noexcept;
 
-  [[nodiscard]] static int getFootHeightForUnit( UnitTypeV type ) noexcept;
-};
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( HexagonType ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( artifact::Type ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::BATTLE> ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( Tagged<Terrain, SpriteDomain::WORLD> ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( OverworldObstacleType ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( character::Type, CharacterMoveDirection ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( CastleUnitType ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ConfluxUnitType ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ForgeUnitType ) noexcept;
+// //   [[nodiscard]] static sf::Sprite getSpriteFromBinding( WarMachineType ) noexcept;
 
-#include "engine/platform/Graphics/SpriteFactory.tpp"  // IWYU pragma: keep
+// //  public:
+// //   SpriteFactory() = delete;
+// //   SpriteFactory( const SpriteFactory& ) = delete;
+// //   SpriteFactory( SpriteFactory&& ) = delete;
+// //   SpriteFactory& operator=( const SpriteFactory& ) = delete;
+// //   SpriteFactory& operator=( SpriteFactory&& ) = delete;
+
+// //   static void flipSpriteHorizontally( sf::Sprite& ) noexcept;
+
+// //   template <Enum Binding>
+// //   [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Binding binding ) noexcept;
+
+// //   template <Enum Binding1, Enum Binding2>
+// //   [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Binding1 binding1, Binding2 binding2 ) noexcept;
+
+// //   /**
+// //    * @note use if enum has different meanings in different contexts
+// //    */
+// //   template <Enum Binding, SpriteDomain D>
+// //   [[nodiscard]] static inline sf::Sprite getSpriteFromBindingV( Tagged<Binding, D> binding ) noexcept;
+
+// //   [[nodiscard]] inline static sf::Sprite getSpriteFromBindingV( UnitTypeV type ) noexcept;
+
+// //   [[nodiscard]] static int getFootHeightForUnit( UnitTypeV type ) noexcept;
+// // };
+
+// // #include "engine/platform/Graphics/SpriteFactory.tpp"  // IWYU pragma: keep

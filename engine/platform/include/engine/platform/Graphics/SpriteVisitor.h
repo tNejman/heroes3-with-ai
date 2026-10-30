@@ -9,6 +9,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <concepts>
 #include <optional>
 #include <string>
 
@@ -16,19 +17,19 @@
 #include "core/Battle/Battle.h"
 #include "core/Battle/Obstacle.hpp"
 #include "core/Character/Character.h"
+#include "core/Game/IState.h"
 #include "core/Magic/Spell.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/model/IGraphics/Visitor.h"
 
+template <typename GameState>
+requires std::derived_from<GameState, game::IState>
 class SpriteVisitor : public Visitor {
  private:
   std::optional<sf::Sprite> sprite_;
-
-  [[nodiscard]] static sf::Texture loadTextureOrAbort( const std::string& path ) noexcept;
-  [[nodiscard]] static const sf::Texture& getTexture( const TextureSource& texture_source ) noexcept;
-  [[nodiscard]] static sf::Sprite getSprite( const sf::Texture& texture, const TextureSource& texture_source ) noexcept;
+  // std::optional<TextureSource> texture_source_;
 
  public:
   void visit( const Artifact& e ) override;
@@ -41,4 +42,7 @@ class SpriteVisitor : public Visitor {
   void visit( const UnitStack& e ) override;
 
   sf::Sprite extractSprite() noexcept;
+  // TextureSource extractTextureSource() noexcept;
 };
+
+#include "engine/platform/Graphics/SpriteVisitor.tpp"

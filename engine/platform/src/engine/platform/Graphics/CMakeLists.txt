@@ -1,6 +1,6 @@
 add_library(Graphics SHARED
-    SpriteFactory.cc
-    SpriteVisitor.cc
+    # SpriteFactory.cc
+    # SpriteVisitor.cc
     
     Renderers/BattleRenderer.cc
     Renderers/GameRenderer.cc

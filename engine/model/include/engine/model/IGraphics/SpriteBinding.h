@@ -61,7 +61,9 @@ using ResolvedSpriteBinding =
                        SpriteBinding<Object, game::IState>>;
 
 template <typename Object, typename GlobalState, typename... Params>
-concept SpriteBound =
-    std::derived_from<GlobalState, game::IState> && ( Enum<Params> && ... ) && requires( Params... params ) {
-      { ResolvedSpriteBinding<Object, GlobalState>::source( params... ) } -> std::same_as<TextureSource>;
-    };
+concept SpriteBound = std::derived_from<GlobalState, game::IState> && ( Enum<Params> && ... )
+                      && requires( const Object& object, Params... params ) {
+                           {
+                             ResolvedSpriteBinding<Object, GlobalState>::source( object, params... )
+                           } -> std::same_as<TextureSource>;
+                         };
