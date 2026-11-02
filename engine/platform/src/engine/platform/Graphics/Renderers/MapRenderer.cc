@@ -12,9 +12,12 @@
 #include <algorithm>
 #include <engine/platform/Graphics/Renderers/IRenderer.hpp>
 
+#include "core/Game/StateOverworld.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/WorldMap.h"
 #include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/ISpriteFactory.h"
+#include "engine/platform/Graphics/SpriteBindingDefs.h"
 
 void MapRenderer::renderGridWithFun( void ( MapRenderer::*fun )( int, int ) const ) const noexcept {
   static constexpr int MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY = 13;
@@ -45,7 +48,7 @@ void MapRenderer::renderBackgroundTile( int x, int y ) const noexcept {
   double screen_y = ( ( center_coords_.y_ - y ) * graphics::TERRAIN_SPRITE_HEIGHT )
                     + ( static_cast<double>( target_render_texture_.get().getSize().y ) / 2 );
 
-  sf::Sprite sprite = SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::WORLD>{ terrain } );
+  sf::Sprite sprite = SpriteFactory::make<Terrain, game::StateOverworld>( terrain );
   sprite.setPosition( sf::Vector2f{ static_cast<float>( screen_x ), static_cast<float>( screen_y ) } );
 
   target_render_texture_.get().draw( sprite );

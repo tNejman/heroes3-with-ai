@@ -13,6 +13,7 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/model/IGraphics/ISpriteFactory.h"
 #include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/platform/Graphics/SpriteFactory.h"
 
@@ -25,7 +26,7 @@ struct SpriteBinding<HexagonType, game::StateBattle> {
 
 template <>
 struct SpriteBinding<Artifact> {
-  [[nodiscard]] static TextureSource source( artifact::Type artifact_type ) noexcept;
+  [[nodiscard]] static TextureSource source( const Artifact& artifact ) noexcept;
 };
 
 template <>
@@ -45,6 +46,11 @@ struct SpriteBinding<OverworldObstacle, game::StateOverworld> {
 
 template <>
 struct SpriteBinding<Character, game::StateOverworld> {
+  [[nodiscard]] static TextureSource source( const Character& character ) noexcept;
+};
+
+template <>
+struct SpriteBinding<Character, game::StateBattle> {
   [[nodiscard]] static TextureSource source( const Character& character ) noexcept;
 };
 

@@ -5,6 +5,8 @@
 #include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/model/IGraphics/TextureLoader.h"
 
+enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION };
+
 class SpriteFactory {
  private:
  public:

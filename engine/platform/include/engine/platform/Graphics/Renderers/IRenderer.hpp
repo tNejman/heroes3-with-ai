@@ -6,13 +6,16 @@
 #include <functional>
 #include <memory>
 
+#include "core/Game/StateBattle.h"
+#include "core/Game/StateOverworld.h"
 #include "engine/platform/Graphics/SpriteVisitor.h"
 
 template <class T>
 class IRenderer {
  protected:
   std::reference_wrapper<sf::RenderTexture> target_render_texture_;
-  static inline std::shared_ptr<SpriteVisitor> sprite_visitor_ = std::make_shared<SpriteVisitor>();
+  static inline std::shared_ptr<SpriteVisitor<game::StateOverworld>> sprite_visitor_ = std::make_shared<SpriteVisitor<game::StateOverworld>>();
+  static inline std::shared_ptr<SpriteVisitor<game::StateBattle>> sprite_visitor_2_ = std::make_shared<SpriteVisitor<game::StateBattle>>();
   std::reference_wrapper<const T> object_;
 
  public:

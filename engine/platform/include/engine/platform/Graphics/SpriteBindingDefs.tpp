@@ -19,6 +19,7 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
+#include "engine/model/IGraphics/ISpriteFactory.h"
 #include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
 #include "engine/platform/Graphics/GraphicsLib.h"
@@ -39,7 +40,7 @@
   return texture_source;
 }
 
-[[nodiscard]] TextureSource SpriteBinding<Artifact>::source( artifact::Type artifact_type ) noexcept {
+[[nodiscard]] TextureSource SpriteBinding<Artifact>::source( const Artifact& artifact ) noexcept {
   static TextureSource texture_source{ .path_ = SPRITE_ROOT_DIR + "/artifacts/artifacts" };
 
   static constexpr int ARTIFACT_SPRITE_WIDTH = 58;
@@ -69,7 +70,7 @@
   };
 
   auto sprite_location = [&] -> sf::Vector2<int> {
-    switch ( artifact_type ) {
+    switch ( artifact.getData().type_ ) {
       case artifact::Type::CROWN_OF_THE_SUPREME_MAGI: return get_sprite_location_from_sprite_relative_pos( 17, 0 );
       case artifact::Type::HELM_OF_THE_ALABASTER_UNICORN: return get_sprite_location_from_sprite_relative_pos( 14, 0 );
       case artifact::Type::THUNDER_HELMET: return get_sprite_location_from_sprite_relative_pos( 19, 0 );
@@ -206,6 +207,10 @@
   return texture_source;
 }
 
+[[nodiscard]] TextureSource SpriteBinding<Character, game::StateBattle>::source( const Character& character ) noexcept {
+  return SpriteBinding<Character, game::StateOverworld>::source( character );
+}
+
 [[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source( CastleUnitType unit_type ) noexcept {
   static TextureSource texture_source{ .path_prefix_ = SPRITE_ROOT_DIR + "/units/castle/" };
   texture_source.path_ = toLower( magic_enum::enum_name( unit_type ) );
@@ -228,15 +233,18 @@
 
   return texture_source;
 }
-[[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source( ConfluxUnitType unit_type ) noexcept {
+[[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source(
+    ConfluxUnitType /*unit_type*/ ) noexcept {
   err::passCondOrAbort( false, "not implemented" );
   std::unreachable();
 }
-[[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source( ForgeUnitType unit_type ) noexcept {
+[[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source(
+    ForgeUnitType /*unit_type*/ ) noexcept {
   err::passCondOrAbort( false, "not implemented" );
   std::unreachable();
 }
-[[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source( WarMachineType unit_type ) noexcept {
+[[nodiscard]] TextureSource SpriteBinding<UnitStack, game::StateBattle>::source(
+    WarMachineType /*unit_type*/ ) noexcept {
   err::passCondOrAbort( false, "not implemented" );
   std::unreachable();
 }

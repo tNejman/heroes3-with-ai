@@ -138,6 +138,8 @@ function(apply_compiler_flags target)
         -fsanitize=address
         -fsanitize=undefined
 
+        -Wno-missing-field-initializers
+
         # --coverage
         >
 

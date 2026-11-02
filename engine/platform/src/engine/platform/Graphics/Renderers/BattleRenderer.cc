@@ -28,10 +28,13 @@
 #include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
+#include "core/Game/StateBattle.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 #include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/ISpriteFactory.h"
+#include "engine/platform/Graphics/SpriteBindingDefs.h"
 
 [[nodiscard]] std::pair<int, int> BattleRenderer::getHexagonOffset( CoordPair coords ) noexcept {
   int offset_x = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( coords.x_ * graphics::BATTLE_MAP_SPRITE_X_DELTA );
@@ -48,7 +51,8 @@
 void BattleRenderer::renderBackground() noexcept {
   Terrain background = object_.get().getBattlefield()->getBackground();
   sf::Sprite background_sprite =
-      SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::BATTLE>( background ) );
+      // SpriteFactory::getSpriteFromBindingV( Tagged<Terrain, SpriteDomain::BATTLE>( background ) );
+      SpriteFactory::make<Terrain, game::StateBattle>( background );
   target_render_texture_.get().draw( background_sprite );
 }
 void BattleRenderer::renderCharacters() noexcept {
@@ -56,12 +60,14 @@ void BattleRenderer::renderCharacters() noexcept {
   const auto defender = object_.get().getDefender();
 
   sf::Sprite attacker_sprite =
-      SpriteFactory::getSpriteFromBindingV( attacker->getType(), CharacterMoveDirection::DOWN_RIGHT );
+      // SpriteFactory::getSpriteFromBindingV( attacker->getType(), CharacterMoveDirection::DOWN_RIGHT );
+      SpriteFactory::make<Character, game::StateBattle>( *attacker );  // @TODO fix to actual battle sprites
   attacker_sprite.setPosition( { 0, 0 } );
   target_render_texture_.get().draw( attacker_sprite );
 
   sf::Sprite defender_sprite =
-      SpriteFactory::getSpriteFromBindingV( attacker->getType(), CharacterMoveDirection::DOWN_LEFT );
+      // SpriteFactory::getSpriteFromBindingV( attacker->getType(), CharacterMoveDirection::DOWN_LEFT );
+      SpriteFactory::make<Character, game::StateBattle>( *attacker );  // @TODO fix to actual battle sprites
   const sf::FloatRect defender_bounds{ defender_sprite.getGlobalBounds() };
   const float target_width{ static_cast<float>( target_render_texture_.get().getSize().x ) };
   defender_sprite.move(
@@ -73,7 +79,7 @@ void BattleRenderer::renderCharacters() noexcept {
 void BattleRenderer::renderGrid() noexcept {
   const static sf::Texture combined_hexagons_texture = [] {
     sf::RenderTexture combined_hexagons{ sf::Vector2u{ graphics::WINDOW_WIDTH, graphics::WINDOW_HEIGHT } };
-    sf::Sprite hex_sprite = SpriteFactory::getSpriteFromBindingV( HexagonType::EMPTY );
+    sf::Sprite hex_sprite = SpriteFactory::make<HexagonType, game::StateBattle>( HexagonType::EMPTY );
     combined_hexagons.clear( sf::Color::Transparent );
 
     for ( int x = 0; x < MAP_WIDTH_BF; ++x ) {
@@ -100,17 +106,17 @@ void BattleRenderer::renderMoves() noexcept {
       switch ( command.action ) {
         case BattleCommand::Action::MOVE: {
           offset = getHexagonOffset( command.destination );
-          return SpriteFactory::getSpriteFromBindingV( HexagonType::MOVE );
+          return SpriteFactory::make<HexagonType, game::StateBattle>( HexagonType::MOVE );
           break;
         }
         case BattleCommand::Action::ATTACK: {
           offset = getHexagonOffset( command.destination );
-          return SpriteFactory::getSpriteFromBindingV( HexagonType::ATTACK );
+          return SpriteFactory::make<HexagonType, game::StateBattle>( HexagonType::ATTACK );
           break;
         }
         case BattleCommand::Action::WAIT: {
           offset = getHexagonOffset( object_.get().getUnitInAction()->getCoordsInBattle() );
-          return SpriteFactory::getSpriteFromBindingV( HexagonType::IN_ACTION );
+          return SpriteFactory::make<HexagonType, game::StateBattle>( HexagonType::IN_ACTION );
           break;
         }
         case BattleCommand::Action::DEFEND: {
@@ -149,10 +155,15 @@ void BattleRenderer::renderObjects() noexcept {
                   == nullptr ) {
         continue;
       }
-      const UnitStack* unit =
-          object_.get().getBattlefield()->getGrid()[x][static_cast<size_t>( y )]->getObject()->asUnit();
+      const UnitStack* unit = object_.get()
+                                  .getBattlefield()
+                                  ->getGrid()[x][static_cast<size_t>( y )]
+                                  ->getObject()
+                                  ->asUnit();  // @TODO cleanup readability
 
-      sf::Sprite unit_sprite = SpriteFactory::getSpriteFromBindingV( unit->getData().type_ );
+      sf::Sprite unit_sprite =
+          // SpriteFactory::getSpriteFromBindingV( unit->getData().type_ ); // @TODO make sure this is ok
+          SpriteFactory::make<UnitStack, game::StateBattle>( *unit );
       auto [tile_offset_x, tile_offset_y] = getHexagonOffset( unit->getCoordsInBattle() );
       auto unit_draw_x = static_cast<float>( tile_offset_x )
                          + ( static_cast<float>( graphics::HEXAGON_SPRITE_WIDTH ) / 2 )
