@@ -97,14 +97,14 @@ void BattleRenderer::renderMoves() noexcept {
       err::passCondOrAbort( std::holds_alternative<BattleCommand>( move ),
                             "Battle::getPossibleMoves ought to return BattleCommand wrappers only" );
       BattleCommand command = std::get<BattleCommand>( move );
-      switch ( command.action ) {
+      switch ( command.action_ ) {
         case BattleCommand::Action::MOVE: {
-          offset = getHexagonOffset( command.destination );
+          offset = getHexagonOffset( command.destination_ );
           return SpriteFactory::getSpriteFromBindingV( HexagonType::MOVE );
           break;
         }
         case BattleCommand::Action::ATTACK: {
-          offset = getHexagonOffset( command.destination );
+          offset = getHexagonOffset( command.destination_ );
           return SpriteFactory::getSpriteFromBindingV( HexagonType::ATTACK );
           break;
         }

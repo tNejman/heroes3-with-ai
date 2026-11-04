@@ -32,14 +32,14 @@ using TownCommand = std::variant<std::monostate>;
 // using BattleCommand = std::variant<MoveStack, AttackStack, Wait, Defend>;
 
 struct BattleCommand {
-  enum class Action : char { MOVE, ATTACK, WAIT, DEFEND } action;
+  enum class Action : char { MOVE, ATTACK, WAIT, DEFEND } action_;
 
-  CoordPair destination;
+  CoordPair destination_;
 };
 
 constexpr bool operator==( const BattleCommand& one, const BattleCommand& other ) noexcept {
   // operator defined outside of struct to keep it's aggregate property
-  return one.action == other.action && one.destination == other.destination;
+  return one.action_ == other.action_ && one.destination_ == other.destination_;
 }
 
 /* === GAME === */

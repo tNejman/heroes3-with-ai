@@ -52,7 +52,7 @@
 
     const CoordPair current_coords = current_tile->getCoords();
     if ( cost > 0 ) {
-      valid_moves.push_back( BattleCommand{ .action = BattleCommand::Action::MOVE, .destination = current_coords } );
+      valid_moves.push_back( BattleCommand{ .action_ = BattleCommand::Action::MOVE, .destination_ = current_coords } );
     }
 
     if ( cost >= max_steps ) {
@@ -110,8 +110,8 @@
       std::ranges::for_each( target_units, [&]( const UnitStack &unit_on_battlefield ) {
         if ( current_coords == unit_on_battlefield.getCoordsInBattle()
              && !battle_.isSameArmy( *battle_.getUnitInAction(), unit_on_battlefield ) ) {
-          valid_moves.push_back( BattleCommand{ .action = BattleCommand::Action::ATTACK,
-                                                .destination = unit_on_battlefield.getCoordsInBattle() } );
+          valid_moves.push_back( BattleCommand{ .action_ = BattleCommand::Action::ATTACK,
+                                                .destination_ = unit_on_battlefield.getCoordsInBattle() } );
         }
       } );
     }
@@ -140,18 +140,18 @@
 }
 
 [[nodiscard]] std::vector<BattleCommand> game::StateBattle::createWaitCommands() const noexcept {
-  return { BattleCommand{ .action = BattleCommand::Action::WAIT,
-                          .destination = battle_.getUnitInAction()->getCoordsInBattle() } };
+  return { BattleCommand{ .action_ = BattleCommand::Action::WAIT,
+                          .destination_ = battle_.getUnitInAction()->getCoordsInBattle() } };
 }
 
 game::StateTransition game::StateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
-  battle_.move( *battle_.getUnitInAction(), ms.destination );
+  battle_.move( *battle_.getUnitInAction(), ms.destination_ );
   battle_.setBattleState( battle::State::ATTACKING );
   return game::NoTransition{};
 }
 game::StateTransition game::StateBattle::handleAttackStack( const BattleCommand &as ) noexcept {
   auto *attacker = battle_.getUnitInAction();
-  auto *defender = battle_.getUnitFromCoords( as.destination );
+  auto *defender = battle_.getUnitFromCoords( as.destination_ );
   battle_.attack( *attacker, *defender );
 
   if ( battle_.getState() == battle::State::WIN_ATTACKER ) {
@@ -215,11 +215,11 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
     return NoTransition{};
   }
   auto battle_command = std::get<BattleCommand>( command );
-  std::cout << battle_command.destination << '\n';
+  std::cout << battle_command.destination_ << '\n';
 
   game::StateTransition transition = None{};
 
-  if ( battle_command.destination == battle_.getUnitInAction()->getCoordsInBattle() ) {
+  if ( battle_command.destination_ == battle_.getUnitInAction()->getCoordsInBattle() ) {
     transition = handleWait();
   } else if ( battle_.getState() == battle::State::ATTACKING ) {
     transition = handleAttackStack( battle_command );

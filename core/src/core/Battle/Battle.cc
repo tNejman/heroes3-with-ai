@@ -112,12 +112,12 @@ void Battle::nextRound() {
   if ( state_ != battle::State::ATTACKING ) {
     return false;
   }
-  const auto* const target = getUnitFromCoords( bc.destination );
+  const auto* const target = getUnitFromCoords( bc.destination_ );
   if ( target == nullptr || isSameArmy( *unit_in_action_, *target ) ) {
     return false;
   }
   const bool is_ranged_unit = unit_in_action_->getData().is_range_;
-  const bool next_to_defender = unit_in_action_->getCoordsInBattle().distanceFrom( bc.destination ) < 2;
+  const bool next_to_defender = unit_in_action_->getCoordsInBattle().distanceFrom( bc.destination_ ) < 2;
   const bool is_unit_blocked = isUnitBlocked( *unit_in_action_ );
 
   return next_to_defender || ( is_ranged_unit && !is_unit_blocked );
@@ -267,7 +267,7 @@ bool Battle::attack( UnitStack& attacker, UnitStack& defender ) {
 }
 
 [[nodiscard]] bool Battle::isLegalCommand( const BattleCommand& command ) const noexcept {
-  if ( command.destination == unit_in_action_->getCoordsInBattle() ) {
+  if ( command.destination_ == unit_in_action_->getCoordsInBattle() ) {
     return isWaitLegal( command );
   }
   switch ( state_ ) {

@@ -81,12 +81,12 @@ void MouseHandler::visit( const game::StateBattle& gbs ) noexcept {
   const auto possible_moves = gbs.viewBattle().getPossibleMoves();
 
   auto it = std::ranges::find_if( possible_moves, [&]( const UserCommand& user_command ) {
-    return std::get<BattleCommand>( user_command ).destination == *maybe_coords;
+    return std::get<BattleCommand>( user_command ).destination_ == *maybe_coords;
   } );
 
   if ( it == possible_moves.end() ) {
     return;
   }
 
-  command_ =  std::get<BattleCommand>( *it );
+  command_ = std::get<BattleCommand>( *it );
 }
