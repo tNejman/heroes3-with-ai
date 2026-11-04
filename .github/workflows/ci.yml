@@ -52,3 +52,14 @@ jobs:
 
       - name: Run Tests
         run: ctest --test-dir build --output-on-failure
+
+      - name: Check formatting
+        shell: bash
+        run: |
+          find core/include core/src engine/include engine/src -type f \( -name '*.h' -o -name '*.hpp' -o -name '*.cc' \) \
+            -exec clang-format --dry-run --Werror {} + 2> clang-format.log || {
+            cat clang-format.log
+            echo "### Files needing formatting" >> "$GITHUB_STEP_SUMMARY"
+            grep -oP '^[^:]+(?=:\d+:\d+: error:)' clang-format.log | sort -u | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          }
