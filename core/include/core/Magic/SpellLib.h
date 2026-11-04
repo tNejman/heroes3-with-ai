@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <functional>
 #include <magic_enum/magic_enum.hpp>
 #include <variant>
 
@@ -64,19 +66,29 @@ struct Target {
   enum class Side : char { ALLY, ENEMY, ANY };
   const Side side_;
 
-  struct Single {};
-  struct All {};
+  struct Single {
+    friend constexpr bool operator==( const Single&, const Single& ) noexcept = default;
+  };
+  struct All {
+    friend constexpr bool operator==( const All&, const All& ) noexcept = default;
+  };
 
   struct Count {
     const int min_targets_;
     const int max_targets_;
+
+    friend constexpr bool operator==( const Count&, const Count& ) noexcept = default;
   };
   struct AOE {
     const int diameter_;
     enum class Location : char { UNIT, EMPTY_TILE, NO_FORCE } forced_location_;
+
+    friend constexpr bool operator==( const AOE&, const AOE& ) noexcept = default;
   };
 
   const std::variant<Single, All, Count, AOE> target_;
+
+  friend constexpr bool operator==( const Target& one, const Target& other ) noexcept = default;
 };
 
 namespace effect {
@@ -86,6 +98,8 @@ constexpr inline int SECONDARY_SKILL_LEVEL_OPTIONS = 3;
 struct Damage {
   const std::array<int, SECONDARY_SKILL_LEVEL_OPTIONS> base_damage_;
   const int mult_;
+
+  friend constexpr bool operator==( const Damage&, const Damage& ) noexcept = default;
 };
 
 struct UnitBuff {  // also debuff, just put negative
@@ -98,14 +112,20 @@ struct UnitBuff {  // also debuff, just put negative
   const std::variant<Flat, Mult> intensity_;
 
   // duration ~=~ hero spell power
+
+  friend constexpr bool operator==( const UnitBuff&, const UnitBuff& ) noexcept = default;
 };
 
 struct Summon {
-  const UnitData& unit_data_;
+  std::reference_wrapper<const UnitData> unit_data_;
+
+  friend constexpr bool operator==( const Summon&, const Summon& ) noexcept = default;
 };
 
 struct Special {
   // what does it do?
+
+  friend constexpr bool operator==( const Special&, const Special& ) noexcept = default;
 };
 
 };  // namespace effect
@@ -121,9 +141,9 @@ struct BaseData {
   const Target target_;
   const Effect effect_;
 
-  [[no_unique_address]] DisableCopyMove _no_copy_move{};
+  [[no_unique_address]] DisableCopyMove _no_copy_move{};  // NOLINT(readability-identifier-naming)
 
-  //   constexpr bool operator==( const spell::BaseData& other ) const noexcept = default;
+  friend constexpr bool operator==( const spell::BaseData& one, const spell::BaseData& other ) noexcept = default;
 };
 // NOLINTEND(misc-non-private-member-variables-in-classes)
 // NOLINTEND(cppcoreguidelines-avoid-const-or-ref-data-members)

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <optional>
 #include <variant>
 
+#include "core/Magic/Spell.h"
 #include "engine/model/IGame/Coords.h"
 
 /* === WORLD MAP === */
@@ -32,14 +34,15 @@ using TownCommand = std::variant<std::monostate>;
 // using BattleCommand = std::variant<MoveStack, AttackStack, Wait, Defend>;
 
 struct BattleCommand {
-  enum class Action : char { MOVE, ATTACK, WAIT, DEFEND } action_;
-
+  enum class Action : char { MOVE, ATTACK, WAIT, DEFEND, CAST_SPELL } action_;
+  std::optional<Spell> maybe_spell_;
   CoordPair destination_;
 };
 
 constexpr bool operator==( const BattleCommand& one, const BattleCommand& other ) noexcept {
   // operator defined outside of struct to keep it's aggregate property
-  return one.action_ == other.action_ && one.destination_ == other.destination_;
+  return one.action_ == other.action_ && one.maybe_spell_ == other.maybe_spell_
+         && one.destination_ == other.destination_;
 }
 
 /* === GAME === */

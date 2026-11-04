@@ -117,6 +117,10 @@ void BattleRenderer::renderMoves() noexcept {
           err::raise<NotImplementedException>();
           break;
         }
+        case BattleCommand::Action::CAST_SPELL: {
+          err::abort("not implemented");
+          break;
+        }
       }
       std::unreachable();
     }();

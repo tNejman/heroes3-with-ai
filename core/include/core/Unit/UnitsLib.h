@@ -69,7 +69,9 @@ struct UnitData {
   const int fight_value_;
   const bool is_range_;
 
-  [[no_unique_address]] DisableCopyMove _no_copy_move_{};
+  [[no_unique_address]] DisableCopyMove _no_copy_move_{};  // NOLINT(readability-identifier-naming)
+
+  friend constexpr bool operator==( const UnitData&, const UnitData& ) noexcept = default;
 };
 // NOLINTEND(cppcoreguidelines-avoid-const-or-ref-data-members)
 

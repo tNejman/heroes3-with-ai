@@ -16,6 +16,7 @@ class Spell {
 
  public:
   virtual ~Spell() = default;
+  [[nodiscard]] friend constexpr bool operator==( const Spell&, const Spell& ) noexcept = default;
 
   [[nodiscard]] const spell::BaseData& getData() const noexcept;
 };
