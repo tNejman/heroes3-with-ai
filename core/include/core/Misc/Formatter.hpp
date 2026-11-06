@@ -1,16 +1,9 @@
 #pragma once
 
-#include <format>
+#include <string>
 
 #include "engine/model/IGame/Coords.h"
 
-template <>
-struct std::formatter<CoordPair> {
-  constexpr auto parse( std::format_parse_context& ctx ) {
-    return ctx.begin();
-  }
-
-  auto format( const CoordPair& cp, format_context& ctx ) const {
-    return format_to( ctx.out(), "x={}, y={}", cp.x_, cp.y_ );
-  }
-};
+inline std::string toString( const CoordPair& cp ) {
+  return "x=" + std::to_string( cp.x_ ) + ", y=" + std::to_string( cp.y_ );
+}

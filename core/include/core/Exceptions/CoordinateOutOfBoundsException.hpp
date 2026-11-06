@@ -1,7 +1,6 @@
 #pragma once
 
 #include <exception>
-#include <format>
 #include <string>
 #include <utility>
 
@@ -17,7 +16,7 @@ class CoordinateOutOfBoundsException : public std::exception {
   CoordinateOutOfBoundsException( std::string msg ) : message_( std::move( msg ) ) {
   }
   CoordinateOutOfBoundsException( std::string msg, CoordPair coords )
-      : message_( std::format( "{}, {}", msg, coords ) ) {
+      : message_( msg + ", " + toString( coords ) ) {
   }
 
   [[nodiscard]] const char* what() const noexcept override {

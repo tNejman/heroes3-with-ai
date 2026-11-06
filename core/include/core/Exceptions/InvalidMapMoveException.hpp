@@ -1,7 +1,6 @@
 #pragma once
 
 #include <exception>
-#include <format>
 #include <string>
 #include <utility>
 
@@ -16,7 +15,7 @@ class InvalidMapMoveException : public std::exception {
  public:
   InvalidMapMoveException( std::string msg ) : message_( std::move( msg ) ) {
   }
-  InvalidMapMoveException( std::string msg, CoordPair coords ) : message_( std::format( "{}, {}", msg, coords ) ) {
+  InvalidMapMoveException( std::string msg, CoordPair coords ) : message_( msg + ", " + toString( coords ) ) {
   }
 
   [[nodiscard]] const char* what() const noexcept override {

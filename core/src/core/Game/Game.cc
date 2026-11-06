@@ -1,7 +1,7 @@
 #include "core/Game/Game.h"
 
 #include <cassert>
-#include <format>
+#include <string>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -81,10 +81,10 @@ void Game::startBattle( const game::RequestBattle& request ) {
   auto attacker = context_.findCharacterById( request.attacker_id_ );
   auto defender = context_.findCharacterById( request.defender_id_ );
   if ( attacker == nullptr ) {
-    err::raise<UnknownStateException>( std::format( "attacker not found; id={}", request.attacker_id_ ) );
+    err::raise<UnknownStateException>( "attacker not found; id=" + std::to_string( request.attacker_id_ ) );
   }
   if ( defender == nullptr ) {
-    err::raise<UnknownStateException>( std::format( "defender not found; id={}", request.defender_id_ ) );
+    err::raise<UnknownStateException>( "defender not found; id=" + std::to_string( request.defender_id_ ) );
   }
   this->getStateStack().push( std::make_unique<game::StateBattle>( attacker, defender, request.terrain_ ) );
 }
