@@ -1,9 +1,9 @@
 #pragma once
 #include <concepts>
 #include <cstdlib>
-#include <format>
 #include <iostream>
 #include <source_location>
+#include <string>
 #include <string_view>
 #include <typeinfo>
 
@@ -25,25 +25,25 @@ constexpr std::string_view scopeFunName( std::source_location src = std::source_
 
 template <class E>
 [[noreturn]] void raise( std::string_view text, std::source_location loc = std::source_location::current() ) {
-  throw E{ std::format( "{} -> {} -> {}", typeid( E ).name(), scopeFunName( loc ), text ) };
+  throw E{ std::string{ typeid( E ).name() } + " -> " + scopeFunName( loc ) + " -> " + text };
 }
 
 template <class E>
 [[noreturn]] void raise( std::source_location loc = std::source_location::current() ) {
-  throw E{ std::format( "{} -> {}", typeid( E ).name(), scopeFunName( loc ) ) };
+  throw E{ std::string{ typeid( E ).name() } + " -> " + scopeFunName( loc ) };
 }
 
 template <class E, class Forward>
 requires( !std::convertible_to<Forward, std::string_view> )
 [[noreturn]] void raise( Forward arg, std::source_location loc = std::source_location::current() ) {
-  throw E{ std::format( "{} -> {}", typeid( E ).name(), scopeFunName( loc ) ), arg };
+  throw E{ std::string{ typeid( E ).name() } + " -> " + scopeFunName( loc ), arg };
 }
 
 template <class E, class Forward>
 requires( !std::convertible_to<Forward, std::string_view> )
 [[noreturn]] void raise( std::string_view text, Forward arg,
                          std::source_location loc = std::source_location::current() ) {
-  throw E{ std::format( "{} -> {} -> {}", typeid( E ).name(), scopeFunName( loc ), text ), arg };
+  throw E{ std::string{ typeid( E ).name() } + " -> " + scopeFunName( loc ) + " -> " + text, arg };
 }
 
 struct Cond {
