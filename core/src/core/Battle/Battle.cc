@@ -134,6 +134,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
       battlefield_( std::make_shared<BattleField>( background ) ),
       attacker_( std::move( attacker ) ),
       defender_( std::move( defender ) ),
+      current_character_( nullptr ),
       attacker_threw_spell_( false ),
       defender_threw_spell_( false ) {
   round_queue_.reserve( static_cast<size_t>( character::MAX_PARTY_SIZE ) * 2 );
@@ -320,6 +321,7 @@ void Battle::nextUnit() {
   }
   unit_in_action_ = &( round_queue_.front().get() );
   round_queue_.erase( round_queue_.begin() );
+  current_character_ = &getUnitStackOwner( *unit_in_action_ );
 }
 
 std::vector<std::reference_wrapper<UnitStack>> Battle::getAttackingArmy() const {
@@ -385,6 +387,14 @@ UnitStack* Battle::getUnitInAction() noexcept {
   return unit_in_action_;
 }
 
+[[nodiscard]] const Character* Battle::getCurrentCharacter() const noexcept {
+  return current_character_;
+}
+
+[[nodiscard]] Character* Battle::getCurrentCharacter() noexcept {
+  return current_character_;
+}
+
 std::vector<UserCommand> Battle::getPossibleMoves() const noexcept {
   return possible_moves_;
 }
@@ -396,7 +406,7 @@ void Battle::setPossibleMoves( std::vector<UserCommand> possible_moves ) noexcep
   possible_moves_ = std::move( possible_moves );
 }
 
-bool Battle::isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const {
+bool Battle::isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const noexcept {
   const auto attacking_army = getAttackingArmy();
   const auto defending_army = getDefendingArmy();
 
@@ -407,6 +417,28 @@ bool Battle::isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const 
 
   return ( is_unit_in_army( attacking_army, unit1 ) && is_unit_in_army( attacking_army, unit2 ) )
          || ( is_unit_in_army( defending_army, unit1 ) && is_unit_in_army( defending_army, unit2 ) );
+}
+
+[[nodiscard]] Character& Battle::getUnitStackOwner( const UnitStack& unit_stack ) const noexcept {
+  err::abort( "this fails if both own an exact copy of unit stack" );
+  const bool attacking_army_contains_stack = [&] {
+    const auto attacking_army = getAttackingArmy();
+    return std::ranges::find_if( attacking_army, [&]( const UnitStack& stack ) { return stack == unit_stack; } )
+           != attacking_army.end();
+  }();
+
+  const bool defending_army_contains_stack = [&] {
+    const auto defending_army = getDefendingArmy();
+    return std::ranges::find_if( defending_army, [&]( const UnitStack& stack ) { return stack == unit_stack; } )
+           != defending_army.end();
+  }();
+
+  if ( ( attacking_army_contains_stack && defending_army_contains_stack )
+       || ( !attacking_army_contains_stack && !defending_army_contains_stack ) ) {
+    err::abort( "invalid ownership" );
+  }
+
+  return ( attacking_army_contains_stack ) ? *attacker_ : *defender_;
 }
 
 bool Battle::isAIMove() const {

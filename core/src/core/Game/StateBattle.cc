@@ -17,6 +17,7 @@
 #include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/BattleField.h"
+#include "core/Battle/SpellHandler.h"
 #include "core/Battle/Tile.h"
 #include "core/Character/Character.h"
 #include "core/Game/Context.h"
@@ -175,6 +176,10 @@ game::StateTransition game::StateBattle::handleWait() noexcept {
 // StateTransition GameStateBattle::handleDefend( const Defend & ) noexcept {
 //   err::raise<NotImplementedException>();
 // }
+[[nodiscard]] game::StateTransition game::StateBattle::handleCastSpell( const BattleCommand &battle_command ) noexcept {
+  SpellHandler::handleSpell( battle_command, battle_ );
+  err::abort( "not implemented -> find state change" );
+}
 
 /* === @PUBLIC === */
 
@@ -225,6 +230,8 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
     transition = handleAttackStack( battle_command );
   } else if ( battle_.getState() == battle::State::MOVING ) {
     transition = handleMoveStack( battle_command );
+  } else if ( battle_command.maybe_spell_.has_value() ) {
+    transition = handleCastSpell( battle_command );
   } else {
     assert( false && "GameStateBattle::applyCommand -> unexpected state" );
   }

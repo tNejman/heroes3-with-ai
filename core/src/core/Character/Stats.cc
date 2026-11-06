@@ -12,6 +12,10 @@
   return mana_;
 }
 
+void character::Stats::spendMana( int amount ) noexcept {
+  mana_.current_mana_ -= amount;
+}
+
 [[nodiscard]] const character::Stats::Misc& character::Stats::getMisc() const noexcept {
   return misc_;
 }

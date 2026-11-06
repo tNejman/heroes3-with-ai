@@ -93,7 +93,12 @@ struct Target {
 
 namespace effect {
 
+constexpr inline int SECONDARY_SKILL_BASIC_BASE_DAMAGE_IDX = 0;
+constexpr inline int SECONDARY_SKILL_ADVANCED_BASE_DAMAGE_IDX = 1;
+constexpr inline int SECONDARY_SKILL_EXPERT_BASE_DAMAGE_IDX = 2;
 constexpr inline int SECONDARY_SKILL_LEVEL_OPTIONS = 3;
+
+static_assert( SECONDARY_SKILL_LEVEL_OPTIONS == SECONDARY_SKILL_EXPERT_BASE_DAMAGE_IDX + 1 );
 
 struct Damage {
   const std::array<int, SECONDARY_SKILL_LEVEL_OPTIONS> base_damage_;

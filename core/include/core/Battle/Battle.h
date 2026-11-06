@@ -43,6 +43,7 @@ class Battle : public std::enable_shared_from_this<Battle> {
   std::shared_ptr<BattleField> battlefield_;
   std::shared_ptr<Character> attacker_;
   std::shared_ptr<Character> defender_;
+  Character* current_character_;
   int round_counter_ = 0;
   bool attacker_threw_spell_;
   bool defender_threw_spell_;
@@ -73,7 +74,7 @@ class Battle : public std::enable_shared_from_this<Battle> {
 
   [[nodiscard]] battle::State getState() const;
   [[nodiscard]] bool setUnit( UnitStack& unit_stack, CoordPair new_coords );
-  [[nodiscard]] bool killUnit( UnitStack& dead_unit_to_kill );
+  bool killUnit( UnitStack& dead_unit_to_kill );
   void setBattleState( battle::State state );
   bool move( UnitStack& unit_stack, CoordPair new_coords );
   bool attack( UnitStack& attacker, UnitStack& defender );
@@ -98,9 +99,12 @@ class Battle : public std::enable_shared_from_this<Battle> {
   // [[nodiscard]] const std::vector<std::reference_wrapper<UnitStack>> getRoundQueue() const;
   [[nodiscard]] const UnitStack* getUnitInAction() const noexcept;
   [[nodiscard]] UnitStack* getUnitInAction() noexcept;
+  [[nodiscard]] const Character* getCurrentCharacter() const noexcept;
+  [[nodiscard]] Character* getCurrentCharacter() noexcept;
   [[nodiscard]] std::vector<UserCommand> getPossibleMoves() const noexcept;
   void setPossibleMoves( std::vector<UserCommand> ) noexcept;
-  [[nodiscard]] bool isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const;
+  [[nodiscard]] bool isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const noexcept;
+  [[nodiscard]] Character& getUnitStackOwner( const UnitStack& ) const noexcept;
   [[nodiscard]] bool isAIMove() const;
   void forceUnplaceUnitStacks();
   void forcePlaceUnitStack( UnitStack& unit_stack, CoordPair new_coords );

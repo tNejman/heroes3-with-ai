@@ -25,6 +25,7 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
   [[nodiscard]] game::StateTransition handleAttackStack( const BattleCommand & ) noexcept;
   [[nodiscard]] game::StateTransition handleWait() noexcept;
   // StateTransition handleDefend( const Defend & ) noexcept;
+  [[nodiscard]] game::StateTransition handleCastSpell( const BattleCommand & ) noexcept;
 
  public:
   StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );

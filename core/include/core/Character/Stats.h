@@ -60,6 +60,7 @@ class Stats {
   [[nodiscard]] const PrimarySkills& getPrimarySkills() const noexcept;
   [[nodiscard]] const Level& getLevel() const noexcept;
   [[nodiscard]] const Mana& getMana() const noexcept;
+  void spendMana( int amount ) noexcept;
   [[nodiscard]] const Misc& getMisc() const noexcept;
   [[nodiscard]] const Movement& getMovement() const noexcept;
   //   [[nodiscard]] uint32_t getAttack() const;

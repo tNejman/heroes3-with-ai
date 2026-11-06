@@ -19,4 +19,6 @@ class TileObject {  // NOLINT(cppcoreguidelines-special-member-functions)
   [[nodiscard]] virtual UnitStack* asUnit() noexcept {
     return nullptr;
   }
+
+  [[nodiscard]] bool operator==( const TileObject& ) const noexcept = default;
 };

@@ -1,16 +1,17 @@
 add_library(Battle SHARED
-    Battle.cc
-    Battlefield.cc
-    Tile.cc
+  Battle.cc
+  Battlefield.cc
+  SpellHandler.cc
+  Tile.cc
 )
 
 target_include_directories(Battle PRIVATE
 )
 
 target_link_libraries(Battle PUBLIC
-    Character
-    Unit
+  Character
+  Unit
 )
 
-target_link_libraries(Battle PRIVATE 
+target_link_libraries(Battle PRIVATE
 )

@@ -55,15 +55,15 @@ struct Cond {
 
 template <typename Arg>
 [[noreturn]] inline void abort( Arg msg, std::source_location loc = std::source_location::current() ) {
-  std::cout << scopeFunName( loc ) << " -> " << msg;
+  std::cerr << scopeFunName( loc ) << " -> " << msg << std::endl;
   std::abort();
 }
 
 template <typename... Args>
 constexpr void passCondOrAbort( Cond c, Args&&... msgs ) {
   if ( !c.value ) {
-    std::cout << scopeFunName( c.loc ) << " -> ";
-    ( std::cout << ... << std::forward<Args>( msgs ) ) << '\n';
+    std::cerr << scopeFunName( c.loc ) << " -> ";
+    ( std::cerr << ... << std::forward<Args>( msgs ) ) << std::endl;
     std::abort();
   }
 }

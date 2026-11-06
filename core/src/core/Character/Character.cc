@@ -83,6 +83,10 @@ bool Character::getIfUser() const {
   return army_;
 }
 
+[[nodiscard]] const character::SecondarySkillArr& Character::getSecondarySkills() const noexcept {
+  return secondary_skills_;
+}
+
 // uint32_t Character::getEffectiveSpeed() {
 //   err::raise<NotImplementedException>( "" );
 //   return 0;  // TODO

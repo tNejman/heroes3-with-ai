@@ -11,7 +11,7 @@
 #include "core/Unit/UnitsLib.h"
 #include "engine/model/IGame/Coords.h"
 class UnitStack : public TileObject {
- private: 
+ private:
   static constexpr int DEFAULT_UNIT_STACK_MORALE = 0;
   static constexpr int DEFAULT_UNIT_STACK_LUCK = 0;
 
@@ -41,6 +41,8 @@ class UnitStack : public TileObject {
   [[nodiscard]] CoordPair getCoordsInBattle() const noexcept;
 
   [[nodiscard]] UnitStack* asUnit() noexcept override;
+
+  [[nodiscard]] bool operator==( const UnitStack& other ) const noexcept = default;
 };
 
 /* ===== @IMPL ===== */

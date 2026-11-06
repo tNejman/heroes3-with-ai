@@ -32,7 +32,9 @@ namespace character {
 
 enum class Type : char { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
 
-};
+using SecondarySkillArr = std::array<std::optional<SecondarySkill>, SECONDARY_SKILLS_SLOTS_COUNT>;
+
+};  // namespace character
 
 class Character : public MapObject {
  private:
@@ -49,7 +51,7 @@ class Character : public MapObject {
   character::Inventory inventory_;
   character::Army army_;
 
-  std::array<std::optional<SecondarySkill>, SECONDARY_SKILLS_SLOTS_COUNT> secondary_skills_;
+  character::SecondarySkillArr secondary_skills_;
   std::optional<SpellBook> spell_book_ = std::nullopt;
 
  public:
@@ -80,6 +82,7 @@ class Character : public MapObject {
   [[nodiscard]] character::Inventory& inventory() noexcept;
   [[nodiscard]] const character::Army& army() const noexcept;
   [[nodiscard]] character::Army& army() noexcept;
+  [[nodiscard]] const character::SecondarySkillArr& getSecondarySkills() const noexcept;
 
   // [[nodiscard]] uint32_t getEffectiveSpeed();
 

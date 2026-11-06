@@ -1,5 +1,5 @@
 #pragma once
-// autor: Tomasz Nejman i Tomasz Naszkowski
+// autor: Tomasz Nejman
 /* zawarość klasa spell:
     - klasa ma pozwalać na rzucanie zaklęć
 */
