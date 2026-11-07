@@ -5,7 +5,6 @@
 #include <string>
 
 #include "core/Artifact/Artifact.h"
-#include "core/Artifact/ArtifactLib.h"
 #include "core/Character/Character.h"
 #include "core/Game/StateBattle.h"
 #include "core/Game/StateOverworld.h"
@@ -15,7 +14,6 @@
 #include "core/WorldMap/OverworldObstacle.h"
 #include "engine/model/IGraphics/ISpriteFactory.h"
 #include "engine/model/IGraphics/SpriteBinding.h"
-#include "engine/platform/Graphics/SpriteFactory.h"
 
 static const inline std::string SPRITE_ROOT_DIR = "assets/sprites";
 
@@ -41,7 +39,7 @@ struct SpriteBinding<Terrain, game::StateBattle> {
 
 template <>
 struct SpriteBinding<OverworldObstacle, game::StateOverworld> {
-  [[nodiscard]] static TextureSource source( OverworldObstacleType overworld_obstacle_type ) noexcept;
+  [[nodiscard]] static TextureSource source( const OverworldObstacle& overworld_obstacle_type ) noexcept;
 };
 
 template <>
@@ -63,5 +61,3 @@ struct SpriteBinding<UnitStack, game::StateBattle> {
 
   [[nodiscard]] static TextureSource source( const UnitStack& unit_stack ) noexcept;
 };
-
-#include "engine/platform/Graphics/SpriteBindingDefs.tpp"  // IWYU pragma: keep

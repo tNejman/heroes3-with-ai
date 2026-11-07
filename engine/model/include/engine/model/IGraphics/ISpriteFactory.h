@@ -32,7 +32,11 @@ class SpriteFactory {
     if ( texture_source.crop_.has_value() ) {
       return sf::Sprite{ texture, *texture_source.crop_ };
     }
-    return sf::Sprite{ texture };
+    sf::Sprite sprite{ texture };
+    if ( texture_source.sprite_cleanup_fun_ != nullptr ) {
+      texture_source.sprite_cleanup_fun_( sprite );
+    }
+    return sprite;
   }
 
   static void flipSpriteHorizontally( sf::Sprite& ) noexcept;

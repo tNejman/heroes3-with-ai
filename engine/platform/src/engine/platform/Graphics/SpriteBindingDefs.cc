@@ -1,4 +1,4 @@
-#pragma once
+#include "engine/platform/Graphics/SpriteBindingDefs.h"
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -23,8 +23,6 @@
 #include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
 #include "engine/platform/Graphics/GraphicsLib.h"
-#include "engine/platform/Graphics/SpriteBindingDefs.h"  // IWYU pragma: keep
-#include "engine/platform/Graphics/SpriteFactory.h"
 
 [[nodiscard]] TextureSource SpriteBinding<HexagonType, game::StateBattle>::source( HexagonType hexagon_type ) noexcept {
   static TextureSource texture_source{ .path_prefix_ = SPRITE_ROOT_DIR + "/battle/aux/" };
@@ -142,10 +140,11 @@
 }
 
 [[nodiscard]] TextureSource SpriteBinding<OverworldObstacle, game::StateOverworld>::source(
-    OverworldObstacleType overworld_obstacle_type ) noexcept {
-  static TextureSource texture_source{ .path_prefix_ = SPRITE_ROOT_DIR + "/landscape/" };
+    const OverworldObstacle& overworld_obstacle ) noexcept {
+  static TextureSource texture_source{ .path_prefix_ = SPRITE_ROOT_DIR + "/landscape/",
+                                       .tex_cleanup_fun_ = graphics::cleanupRawMagentaAndCyanTexture };
   texture_source.path_ = [&] {
-    switch ( overworld_obstacle_type ) {
+    switch ( overworld_obstacle.getType() ) {
       case OverworldObstacleType::DRIED_TREE: return "AVLtRo06";
       case OverworldObstacleType::GREEN_TREE: return "AVLswt15";
     }
@@ -200,7 +199,9 @@
   switch ( character.getOrientation() ) {
     case CharacterMoveDirection::UP_LEFT:
     case CharacterMoveDirection::LEFT:
-    case CharacterMoveDirection::DOWN_LEFT: texture_source.sprite_cleanup_fun_ = graphics::flipSpriteHorizontally;
+    case CharacterMoveDirection::DOWN_LEFT:
+      texture_source.sprite_cleanup_fun_ = graphics::flipSpriteHorizontally;
+      break;
     default: texture_source.sprite_cleanup_fun_ = nullptr;  // other directions have dedicated textures
   }
 

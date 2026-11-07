@@ -1,7 +1,6 @@
 #include "engine/platform/Graphics/Renderers/BattleRenderer.h"
 
 #include <engine/platform/Graphics/GraphicsLib.h>
-#include <engine/platform/Graphics/SpriteFactory.h>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -16,15 +15,11 @@
 #include <cmath>
 #include <cstddef>
 #include <engine/platform/Graphics/Renderers/IRenderer.hpp>
-#include <iterator>
-#include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
 
 #include "aux/Err.hpp"
-#include "aux/Overload.hpp"
 #include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
@@ -34,7 +29,7 @@
 #include "core/Unit/UnitStack.h"
 #include "engine/model/IGame/Coords.h"
 #include "engine/model/IGraphics/ISpriteFactory.h"
-#include "engine/platform/Graphics/SpriteBindingDefs.h"
+#include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
 
 [[nodiscard]] std::pair<int, int> BattleRenderer::getHexagonOffset( CoordPair coords ) noexcept {
   int offset_x = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( coords.x_ * graphics::BATTLE_MAP_SPRITE_X_DELTA );
@@ -168,12 +163,12 @@ void BattleRenderer::renderObjects() noexcept {
       auto unit_draw_x = static_cast<float>( tile_offset_x )
                          + ( static_cast<float>( graphics::HEXAGON_SPRITE_WIDTH ) / 2 )
                          - ( static_cast<float>( unit_sprite.getTextureRect().size.x ) / 2 );
-      auto unit_draw_y = static_cast<float>( tile_offset_y + FEET_FROM_TOP_OFFSET
-                                             - SpriteFactory::getFootHeightForUnit( unit->getData().type_ ) );
+      auto unit_draw_y =
+          static_cast<float>( tile_offset_y + FEET_FROM_TOP_OFFSET - graphics::getFootHeightForUnit( *unit ) );
       unit_sprite.setPosition( sf::Vector2f{ unit_draw_x, unit_draw_y } );
 
       if ( object_.get().getDefender()->army().containsInParty( *unit ) ) {
-        SpriteFactory::flipSpriteHorizontally( unit_sprite );
+        graphics::flipSpriteHorizontally( unit_sprite );
       }
 
       target_render_texture_.get().draw( unit_sprite );

@@ -3,12 +3,10 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <concepts>
-#include <optional>
-#include <string>
+#include <meta>
 #include <utility>
 
 #include "aux/Err.hpp"
-#include "aux/StringHash.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Obstacle.hpp"
@@ -21,46 +19,58 @@
 #include "engine/model/IGraphics/SpriteBinding.h"
 #include "engine/model/IGraphics/Visitor.h"
 #include "engine/platform/Graphics/SpriteBindingDefs.h"
-#include "engine/platform/Graphics/SpriteFactory.h"
 #include "engine/platform/Graphics/SpriteVisitor.h"
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
 void SpriteVisitor<GameState>::visit( const Artifact& e ) {
   // sprite_ = SpriteFactory::getSpriteFromBindingV( e.getData().type_ );
-  sprite_ = SpriteFactory::make<Artifact, game::IState>( e );
+  if constexpr ( SpriteBound<Artifact, game::IState> ) {
+    sprite_ = SpriteFactory::make<Artifact, game::IState>( e );
+  } else {
+    err::abort( "no binding for " + std::string{ std::meta::display_string_of( ^^Artifact ) } + " for state "
+                + std::string{ std::meta::display_string_of( ^^GameState ) } );
+  }
 }
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
-void SpriteVisitor<GameState>::visit( const Obstacle& ) {
+void SpriteVisitor<GameState>::visit( const Obstacle& /*unused*/ ) {
   err::passCondOrAbort( false, "not implemented: OBSTACLE" );
 }
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
 void SpriteVisitor<GameState>::visit( const Character& e ) {
-  // sprite_ = SpriteFactory::getSpriteFromBindingV( e.getType(), e.getOrientation() );
-  sprite_ = SpriteFactory::make<Character, GameState>( e );
+  if constexpr ( SpriteBound<Character, GameState> ) {
+    sprite_ = SpriteFactory::make<Character, GameState>( e );
+  } else {
+    err::abort( "no binding for " + std::string{ std::meta::display_string_of( ^^Character ) } + " for state "
+                + std::string{ std::meta::display_string_of( ^^GameState ) } );
+  }
 }
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
-void SpriteVisitor<GameState>::visit( const Spell& ) {
+void SpriteVisitor<GameState>::visit( const Spell& /*unused*/ ) {
   err::passCondOrAbort( false, "not implemented: SPELL" );
 }
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
-void SpriteVisitor<GameState>::visit( const Resource& ) {
+void SpriteVisitor<GameState>::visit( const Resource& /*unused*/ ) {
   err::passCondOrAbort( false, "not implemented: RESOURCE" );
 }
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
 void SpriteVisitor<GameState>::visit( const OverworldObstacle& e ) {
-  // sprite_ = SpriteFactory::getSpriteFromBindingV( e.getType() );
-  sprite_ = SpriteFactory::make<OverworldObstacle, GameState>( e );
+  if constexpr ( SpriteBound<OverworldObstacle, GameState> ) {
+    sprite_ = SpriteFactory::make<OverworldObstacle, GameState>( e );
+  } else {
+    err::abort( "no binding for " + std::string{ std::meta::display_string_of( ^^OverworldObstacle ) } + " for state "
+                + std::string{ std::meta::display_string_of( ^^GameState ) } );
+  }
 }
 
 template <typename GameState>
@@ -72,8 +82,12 @@ void SpriteVisitor<GameState>::visit( const Building& ) {
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
 void SpriteVisitor<GameState>::visit( const UnitStack& e ) {
-  // sprite_ = SpriteFactory::getSpriteFromBindingV( e.getData().type_ );
-  sprite_ = SpriteFactory::make<UnitStack, GameState>( e );
+  if constexpr ( SpriteBound<UnitStack, GameState> ) {
+    sprite_ = SpriteFactory::make<UnitStack, GameState>( e );
+  } else {
+    err::abort( "no binding for " + std::string{ std::meta::display_string_of( ^^UnitStack ) } + " for state "
+                + std::string{ std::meta::display_string_of( ^^GameState ) } );
+  }
 }
 
 template <typename GameState>

@@ -1,7 +1,6 @@
 #include "engine/platform/Graphics/Renderers/MapRenderer.h"
 
 #include <engine/platform/Graphics/GraphicsLib.h>
-#include <engine/platform/Graphics/SpriteFactory.h>
 #include <engine/platform/Graphics/SpriteVisitor.h>
 
 #include <SFML/Graphics/Rect.hpp>
@@ -17,7 +16,6 @@
 #include "core/WorldMap/WorldMap.h"
 #include "engine/model/IGame/Coords.h"
 #include "engine/model/IGraphics/ISpriteFactory.h"
-#include "engine/platform/Graphics/SpriteBindingDefs.h"
 
 void MapRenderer::renderGridWithFun( void ( MapRenderer::*fun )( int, int ) const ) const noexcept {
   static constexpr int MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY = 13;

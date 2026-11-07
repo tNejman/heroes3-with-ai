@@ -77,4 +77,41 @@ inline void flipSpriteHorizontally( sf::Sprite& sprite ) noexcept {
       unit_stack.getData().type_ );
 }
 
+inline void cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noexcept {
+  /**
+   * @brief
+   * textures have shadows in magenta and pink and cyan background
+   * this normalizes them
+   */
+  static constexpr int MEDIUM_SHADOW_ALPHA = 64;
+  static constexpr int DARK_SHADOW_ALPHA = 128;
+
+  static constexpr sf::Color SF_CYAN{ 0, 255, 255 };
+  static constexpr sf::Color SF_PINK{ 255, 150, 255 };
+  static constexpr sf::Color SF_MAGENTA{ 255, 0, 255 };
+
+  static constexpr sf::Color SF_TRANSPARENT{ 0, 0, 0, 0 };
+  static constexpr sf::Color SF_MEDIUM_SHADOW{ 0, 0, 0, MEDIUM_SHADOW_ALPHA };
+  static constexpr sf::Color SF_DARK_SHADOW{ 0, 0, 0, DARK_SHADOW_ALPHA };
+
+  sf::Image image{ texture.copyToImage() };
+  const sf::Vector2u size{ image.getSize() };
+
+  for ( unsigned int y{ 0 }; y < size.y; ++y ) {
+    for ( unsigned int x{ 0 }; x < size.x; ++x ) {
+      const sf::Color px{ image.getPixel( { x, y } ) };
+
+      if ( px == SF_CYAN ) {
+        image.setPixel( { x, y }, SF_TRANSPARENT );
+      } else if ( px == SF_PINK ) {
+        image.setPixel( { x, y }, SF_MEDIUM_SHADOW );
+      } else if ( px == SF_MAGENTA ) {
+        image.setPixel( { x, y }, SF_DARK_SHADOW );
+      }
+    }
+  }
+
+  DISCARD_RETURN() texture.loadFromImage( image );
+}
+
 };  // namespace graphics
