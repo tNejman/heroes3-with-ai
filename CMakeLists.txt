@@ -121,7 +121,12 @@ set(CORE_MODULES
     WorldMap
 )
 
-add_compile_options(-freflection -fdiagnostics-all-candidates)
+add_compile_options(-freflection) # -fdiagnostics-all-candidates
+
+add_custom_target(format_visitor_h ALL
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/sort_and_clean_visitor_template.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
 
 function(apply_compiler_flags target)
     target_compile_options(${target} PRIVATE
@@ -173,10 +178,10 @@ foreach(module ${CORE_MODULES})
     target_include_directories(${module} PUBLIC
         ${CMAKE_SOURCE_DIR}/aux/include/ 
         ${CMAKE_SOURCE_DIR}/engine/model/include/
-        ${CMAKE_SOURCE_DIR}/core/include/
-      # ${CMAKE_SOURCE_DIR}/engine/model/include/ #### @TODO REMOVE ASAP
-        
+        ${CMAKE_SOURCE_DIR}/core/include/        
     )
+
+    add_dependencies(${module} format_visitor_h)
     apply_compiler_flags(${module})
 endforeach()
 

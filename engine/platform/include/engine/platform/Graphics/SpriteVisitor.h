@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 
+#include "aux/Visitor.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Obstacle.hpp"
@@ -26,7 +27,7 @@
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>
-class SpriteVisitor : public Visitor {
+class SpriteVisitor : public GfxVisitor::Impl<SpriteVisitor<GameState>> {
  private:
   std::optional<sf::Sprite> sprite_;
   // std::optional<TextureSource> texture_source_;
@@ -45,4 +46,4 @@ class SpriteVisitor : public Visitor {
   // TextureSource extractTextureSource() noexcept;
 };
 
-#include "engine/platform/Graphics/SpriteVisitor.tpp"
+// #include "engine/platform/Graphics/SpriteVisitor.tpp"

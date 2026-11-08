@@ -23,3 +23,5 @@ assets/sprites/battle/*
 assets/fonts/
 
 .clangd-stubs/
+
+__*

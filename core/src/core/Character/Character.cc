@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "aux/Err.hpp"
-#include "core/Artifact/Artifact.h"
 #include "core/Character/Army.h"
 #include "core/Character/Inventory.h"
 #include "core/Character/Stats.h"
@@ -20,16 +19,8 @@
 
 Character::Character( int id, CoordPair coords, character::Type type, std::string name, bool is_user,
                       character::Stats stats ) noexcept
-    : MapObject( coords ),
-      id_( id ),
-      type_( type ),
-      name_( std::move( name ) ),
-      is_user_( is_user ),
-      stats_( std::move( stats ) ) {};
-
-void Character::accept( Visitor& v ) const {
-  v.visit( *this );
-}
+    : MapObject( coords ), id_( id ), type_( type ), name_( std::move( name ) ), is_user_( is_user ), stats_( stats ) {
+      };
 
 [[nodiscard]] int Character::getId() const noexcept {
   return id_;

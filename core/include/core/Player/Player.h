@@ -25,7 +25,7 @@ class Player {
  private:
   std::vector<std::shared_ptr<Character>> characters_on_map_;
   std::vector<std::weak_ptr<Castle>> owned_castles_;
-  std::array<std::unique_ptr<Resource>, magic_enum::enum_count<ResourceType>()> resources_;
+  std::array<std::unique_ptr<Resource>, magic_enum::enum_count<Resource::Type>()> resources_;
 
   PlayerColor color_;
 
@@ -45,8 +45,8 @@ class Player {
   bool loseCastle( std::shared_ptr<Castle> castle );
   std::array<std::shared_ptr<Resource>, AMOUNT_OF_RESOURCES> getResourcesInPointers();
   std::array<Resource, AMOUNT_OF_RESOURCES> getResourcesInValues();
-  Resource getResource( ResourceType resource );
-  Resource setResource( ResourceType resource, int amount );
+  Resource getResource( Resource::Type resource );
+  Resource setResource( Resource::Type resource, int amount );
   std::shared_ptr<Move> makeMove( std::vector<Move> possible_states );
 
   [[nodiscard]] PlayerColor getColor() const noexcept;

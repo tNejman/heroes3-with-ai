@@ -1,7 +1,12 @@
 #pragma once
 
+#include "aux/HasMethod.hpp"
+
+namespace visitor {
+
 template <typename T>
 class VisitorFor {  // NOLINT(cppcoreguidelines-special-member-functions)
+ public:
   virtual ~VisitorFor() = default;
   virtual void visit( const T& node ) noexcept = 0;
 };
@@ -10,30 +15,37 @@ template <typename Derived, typename Base, typename... Ts>
 class VisitorImpl;
 
 template <typename... Ts>
-class Visitor : VisitorFor<Ts>... {
+class Visitor : public VisitorFor<Ts>... {
+ public:
   using VisitorFor<Ts>::visit...;
 
-  template <typename Derived>
-  using Impl = VisitorImpl<Derived, Visitor, Ts...>;
+  template <typename DerivedFromThis>
+  using Impl = VisitorImpl<DerivedFromThis, Visitor, Ts...>;
 };
 
 template <typename Derived, typename Base>
-class VisitorImpl<Derived, Base> : Base {
+class VisitorImpl<Derived, Base> : public Base {
+ public:
   using Base::visit;
 };
 
-template <typename Derived, typename Base, typename T, typename... Ts>
-class VisitorImpl<Derived, Base, T, Ts...> : VisitorImpl<Derived, Base, Ts...> {
-  using VisitorImpl<Derived, Base, Ts...>::visit;
+template <typename DerivedFromThis, typename Base, typename T, typename... Ts>
+requires hasMethod_c<DerivedFromThis, "handleVisit">
+class VisitorImpl<DerivedFromThis, Base, T, Ts...> : public VisitorImpl<DerivedFromThis, Base, Ts...> {
+ public:
+  using VisitorImpl<DerivedFromThis, Base, Ts...>::visit;
 
-  void visit( const T& node ) noexcept override {
-    static_cast<const Derived&>( *this ).visitNode( node );
+  void visit( const T& t ) noexcept override {
+    this->handleVisit( t );
   }
 };
 
-template <typename Derived, typename Base, typename VisitorT>
-class Visitable : Base {
-  void accept( VisitorT& visitor ) override {
-    visitor.visit( static_cast<Derived&>( *this ) );
+template <typename DerivedFromThis, typename CommonInterface, typename CommonVisitor>
+class Visitable : public CommonInterface {
+ public:
+  void accept( CommonVisitor& visitor ) const noexcept override {
+    visitor.visit( static_cast<const DerivedFromThis&>( *this ) );
   }
 };
+
+}  // namespace visitor

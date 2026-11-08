@@ -16,7 +16,7 @@
 #include <optional>
 #include <string>
 
-#include "core/Artifact/Artifact.h"
+#include "aux/Visitor.hpp"
 #include "core/Character/Army.h"
 #include "core/Character/Inventory.h"
 #include "core/Character/SecondarySkill.h"
@@ -25,6 +25,8 @@
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
 #include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/IPrintable.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 constexpr inline int SECONDARY_SKILLS_SLOTS_COUNT = 8;
 
@@ -34,7 +36,7 @@ enum class Type : char { FIRE_HERO, BLACK_HERO_WHITE_HORSE };
 
 };
 
-class Character : public MapObject {
+class Character : public MapObject, public visitor::Visitable<Character, IPrintable, GfxVisitor> {
  private:
   // NOLINTBEGIN(cppcoreguidelines-avoid-const-or-ref-data-members)
   const int id_;
@@ -63,7 +65,6 @@ class Character : public MapObject {
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
 
-  void accept( Visitor& v ) const override;
   [[nodiscard]] Character* asCharacter() noexcept override;
 
   [[nodiscard]] int getId() const noexcept;

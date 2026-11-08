@@ -1,14 +1,12 @@
 #include "core/Resource/Resource.h"
 
-#include "engine/model/IGraphics/Visitor.h"
+#include "aux/Err.hpp"
 
-Resource::Resource( ResourceType type, int amount ) : type_( type ), amount_( amount ) {};
+Resource::Resource( Resource::Type type, int amount ) noexcept : type_( type ), amount_( amount ) {
+  err::passCondOrAbort( amount_ >= 0, "resource amount needn't be negative" );
+};
 
-void Resource::accept( Visitor& v ) const {
-  v.visit( *this );
-}
-
-ResourceType Resource::getType() const noexcept {
+Resource::Type Resource::getType() const noexcept {
   return this->type_;
 }
 

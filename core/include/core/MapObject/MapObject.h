@@ -4,23 +4,25 @@
   - klasa
 */
 
+#include "engine/model/IGame/Coords.h"
 #include "engine/model/IGraphics/IPrintable.h"
 #include "engine/model/IGraphics/Visitor.h"
-#include "engine/model/IGame/Coords.h"
 
 class Character;
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class MapObject : public IPrintable {
  protected:
-  CoordPair coords_;
-  bool is_traversable_;
+  CoordPair coords_;     // NOLINT(misc-non-private-member-variables-in-classes,
+                         // cppcoreguidelines-non-private-member-variables-in-classes)
+  bool is_traversable_;  // NOLINT(misc-non-private-member-variables-in-classes,
+                         // cppcoreguidelines-non-private-member-variables-in-classes)
 
  public:
-  MapObject( CoordPair coords );
-  MapObject( CoordPair coords, bool is_traversable );
-  virtual ~MapObject() = default;
+  MapObject( CoordPair coords ) noexcept;
+  MapObject( CoordPair coords, bool is_traversable ) noexcept;
+  virtual ~MapObject() = default;  // NOLINT(modernize-use-override, cppcoreguidelines-explicit-virtual-functions)
 
-  void accept( Visitor& v ) const override = 0;
   [[nodiscard]] CoordPair getCoords() const noexcept;
   void setCoords( CoordPair new_coords ) noexcept;
   [[nodiscard]] bool isTraversable() const noexcept;

@@ -11,20 +11,21 @@
 
 #include <functional>
 
+#include "aux/Visitor.hpp"
 #include "core/Artifact/ArtifactLib.h"
+#include "engine/model/IGraphics/IPrintable.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 class Visitor;
 
-// public Printable
-class Artifact {
+class Artifact : public visitor::Visitable<Artifact, IPrintable, GfxVisitor> {
  private:
   std::reference_wrapper<const artifact::Data> data_;
 
-  Artifact( const artifact::Data& data );
+  Artifact( const artifact::Data& data ) noexcept;
 
  public:
   Artifact() = delete;
-  void accept( Visitor& ) const;
 
   [[nodiscard]] static Artifact create( artifact::Type type ) noexcept;
   [[nodiscard]] const artifact::Data& getData() const noexcept;

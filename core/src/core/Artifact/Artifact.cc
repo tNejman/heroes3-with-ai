@@ -6,11 +6,7 @@
 #include "core/Artifact/ArtifactLib.h"
 #include "engine/model/IGraphics/Visitor.h"
 
-Artifact::Artifact( const artifact::Data& data ) : data_( data ) {
-}
-
-void Artifact::accept( Visitor& vis ) const {
-  vis.visit( *this );
+Artifact::Artifact( const artifact::Data& data ) noexcept : data_( data ) {
 }
 
 [[nodiscard]] Artifact Artifact::create( const artifact::Type type ) noexcept {
