@@ -1,5 +1,6 @@
 add_executable(${APP_NAME} Main.cc)
 apply_compiler_flags(${APP_NAME})
+target_compile_options(${APP_NAME} PRIVATE -freflection)
 target_include_directories(${APP_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/core/include/
     ${CMAKE_SOURCE_DIR}/engine/model/include/

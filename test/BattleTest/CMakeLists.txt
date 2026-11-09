@@ -1,4 +1,5 @@
 f_add_test_executable(testBattle testBattle.cc)
+target_compile_options(testBattle PRIVATE -freflection)
 target_link_libraries(testBattle PRIVATE
     Battle
     WorldMap

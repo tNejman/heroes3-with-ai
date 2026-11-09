@@ -120,8 +120,6 @@ set(CORE_MODULES
   WorldMap
 )
 
-add_compile_options(-freflection) # -fdiagnostics-all-candidates
-
 function(apply_compiler_flags target)
   target_compile_options(${target} PRIVATE
     $<$<CONFIG:Debug>:
