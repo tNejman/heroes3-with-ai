@@ -420,16 +420,15 @@ bool Battle::isSameArmy( const UnitStack& unit1, const UnitStack& unit2 ) const 
 }
 
 [[nodiscard]] Character& Battle::getUnitStackOwner( const UnitStack& unit_stack ) const noexcept {
-  err::abort( "this fails if both own an exact copy of unit stack" );
   const bool attacking_army_contains_stack = [&] {
     const auto attacking_army = getAttackingArmy();
-    return std::ranges::find_if( attacking_army, [&]( const UnitStack& stack ) { return stack == unit_stack; } )
+    return std::ranges::find_if( attacking_army, [&]( const UnitStack& stack ) { return &stack == &unit_stack; } )
            != attacking_army.end();
   }();
 
   const bool defending_army_contains_stack = [&] {
     const auto defending_army = getDefendingArmy();
-    return std::ranges::find_if( defending_army, [&]( const UnitStack& stack ) { return stack == unit_stack; } )
+    return std::ranges::find_if( defending_army, [&]( const UnitStack& stack ) { return &stack == &unit_stack; } )
            != defending_army.end();
   }();
 
