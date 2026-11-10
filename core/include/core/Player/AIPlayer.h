@@ -14,7 +14,8 @@ class AIPlayer : public Player {
 
  public:
   AIPlayer( int hardness, std::shared_ptr<Personality> personality )
-      : hardness_( hardness ), personality( personality ) {}
+      : hardness_( hardness ), personality( personality ) {
+  }
   std::shared_ptr<Personality> getPersonality() const;
   void setPersonality( std::shared_ptr<Personality> personality );
   int getHardness() const;

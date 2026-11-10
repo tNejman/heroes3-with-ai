@@ -17,7 +17,6 @@
 #include "core/WorldMap/WorldMap.h"
 #include "engine/model/IGame/IGame.h"
 
-
 class Game : public game::IGame {
  private:
   game::Context context_;

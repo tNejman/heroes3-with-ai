@@ -8,10 +8,10 @@
 #include "core/Game/Context.h"
 #include "core/Game/StateBattle.h"
 #include "core/Game/StateOverworld.h"
+#include "engine/model/IGame/Coords.h"
 #include "engine/model/IGraphics/IRVisitor.h"
 #include "engine/platform/Graphics/Renderers/BattleRenderer.h"
 #include "engine/platform/Graphics/Renderers/MapRenderer.h"
-#include "engine/model/IGame/Coords.h"
 
 class RVisitor : public IRVisitor {
  private:

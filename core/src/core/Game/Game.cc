@@ -1,9 +1,9 @@
 #include "core/Game/Game.h"
 
 #include <cassert>
-#include <string>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <utility>
 #include <variant>
 #include <vector>

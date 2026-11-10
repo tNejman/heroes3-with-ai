@@ -7,7 +7,6 @@
 #include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "engine/model/IGame/Coords.h"
 
-
 class InvalidMapMoveException : public std::exception {
  private:
   std::string message_;

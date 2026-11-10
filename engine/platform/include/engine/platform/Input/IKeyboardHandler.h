@@ -9,8 +9,8 @@ using Chord = std::set<sf::Keyboard::Key>;
 enum class ActionId {};
 
 struct ChordHash {
-  size_t operator()(const Chord& c) const noexcept {
-    return (size_t(c) << 8) | 
+  size_t operator()( const Chord& c ) const noexcept {
+    return ( size_t( c ) << 8 ) |
   }
 }
 

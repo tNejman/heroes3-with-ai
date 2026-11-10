@@ -13,7 +13,6 @@
 #include "core/Misc/ProjectLib.h"
 #include "engine/model/IGame/Coords.h"
 
-
 class Tile;
 class GridTile;
 

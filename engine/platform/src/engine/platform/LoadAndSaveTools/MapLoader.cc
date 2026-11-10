@@ -6,12 +6,12 @@
 #include <memory>
 #include <vector>
 
-#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "aux/Err.hpp"
-#include "engine/model/IGame/Coords.h"
+#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
+#include "engine/model/IGame/Coords.h"
 
 void MapLoader::resetCounters() {
   x_counter_ = 0;

@@ -3,8 +3,8 @@
 #include <optional>
 
 #include "core/Game/UserCommand.h"
-#include "engine/model/IGraphics/IRVisitor.h"
 #include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/IRVisitor.h"
 
 struct MouseCoords {
   int x;

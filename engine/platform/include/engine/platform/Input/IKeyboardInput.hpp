@@ -2,8 +2,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <set>
 
-#include "engine/platform/Input/KeyboardLib.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/platform/Input/KeyboardLib.h"
 
 struct IKeyboardInput {
   [[nodiscard]] virtual std::set<sf::Keyboard::Key> pressedNow() const = 0;

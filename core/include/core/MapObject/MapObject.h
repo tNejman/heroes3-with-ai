@@ -4,9 +4,9 @@
   - klasa
 */
 
+#include "engine/model/IGame/Coords.h"
 #include "engine/model/IGraphics/IPrintable.h"
 #include "engine/model/IGraphics/Visitor.h"
-#include "engine/model/IGame/Coords.h"
 
 class Character;
 

@@ -115,8 +115,8 @@ void BattleRenderer::renderMoves() noexcept {
           break;
         }
         case BattleCommand::Action::CAST_SPELL: {
-          offset = getHexagonOffset(command.destination_);
-          return SpriteFactory::getSpriteFromBindingV(HexagonType::SPELL_TARGET);
+          offset = getHexagonOffset( command.destination_ );
+          return SpriteFactory::getSpriteFromBindingV( HexagonType::SPELL_TARGET );
         }
       }
       std::unreachable();

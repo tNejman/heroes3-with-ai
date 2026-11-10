@@ -240,7 +240,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case character::Type::FIRE_HERO: return 16;
       case character::Type::BLACK_HERO_WHITE_HORSE: return 9;
     }
-  err::abort( "requested rendering an unknown character::Type" );
+    err::abort( "requested rendering an unknown character::Type" );
   }();
 
   sf::Vector2<int> sprite_local_position{ HERO_SPRITE_WIDTH * horizontal_multiplier,

@@ -7,7 +7,6 @@
 #include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "engine/model/IGame/Coords.h"
 
-
 class CoordinateOutOfBoundsException : public std::exception {
  private:
   std::string message_;
@@ -15,8 +14,7 @@ class CoordinateOutOfBoundsException : public std::exception {
  public:
   CoordinateOutOfBoundsException( std::string msg ) : message_( std::move( msg ) ) {
   }
-  CoordinateOutOfBoundsException( std::string msg, CoordPair coords )
-      : message_( msg + ", " + toString( coords ) ) {
+  CoordinateOutOfBoundsException( std::string msg, CoordPair coords ) : message_( msg + ", " + toString( coords ) ) {
   }
 
   [[nodiscard]] const char* what() const noexcept override {

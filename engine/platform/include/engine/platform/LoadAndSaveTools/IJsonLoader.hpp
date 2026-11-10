@@ -4,8 +4,8 @@
 #include <json.hpp>
 #include <string>
 
-#include "core/Exceptions/DamagedSaveException.hpp"
 #include "aux/Err.hpp"
+#include "core/Exceptions/DamagedSaveException.hpp"
 #include "core/Exceptions/InvalidInputFileException.hpp"
 
 using json = nlohmann::json;

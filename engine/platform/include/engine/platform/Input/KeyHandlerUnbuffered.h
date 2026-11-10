@@ -12,8 +12,7 @@ template <typename MoveType>
 class KeyHandlerUnbuffered : public IKeyboardHandler<MoveType> {
  private:
   std::unique_ptr<IKeyboardInput> input_;
-  std::map
-  KeyHandlerUnbuffered( std::unique_ptr<IKeyboardInput> input ) : input_( std::move( input ) ) {
+  std::map KeyHandlerUnbuffered( std::unique_ptr<IKeyboardInput> input ) : input_( std::move( input ) ) {
   }
 
  public:

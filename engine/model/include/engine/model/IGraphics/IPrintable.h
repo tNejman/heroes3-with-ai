@@ -4,7 +4,7 @@
 
 #include "engine/model/IGraphics/Visitor.h"
 
-class IPrintable { // NOLINT(cppcoreguidelines-special-member-functions)
+class IPrintable {  // NOLINT(cppcoreguidelines-special-member-functions)
  public:
   virtual void accept( Visitor& ) const = 0;
   virtual ~IPrintable() = default;

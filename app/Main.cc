@@ -94,11 +94,11 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   characters_2.push_back( Builder<Character>{}
                               .setName( "black_hero_white_horse_down_right" )
                               .setCoords( CoordPair{ 12, 12 } )
-                                .setStats( Builder<character::Stats>{}
-                                              .setPrimarySkills( character::Stats::PrimarySkills{
-                                                  .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 } )
-                                              .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } )
-                                              .build() )
+                              .setStats( Builder<character::Stats>{}
+                                             .setPrimarySkills( character::Stats::PrimarySkills{
+                                                 .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 } )
+                                             .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } )
+                                             .build() )
                               .setIsUser( false )
                               .build<std::shared_ptr>() );
 

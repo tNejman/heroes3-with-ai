@@ -12,8 +12,8 @@
 #include "core/Magic/Spell.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/platform/Graphics/SpriteFactory.h"
 #include "engine/model/IGraphics/Visitor.h"
+#include "engine/platform/Graphics/SpriteFactory.h"
 
 void SpriteVisitor::visit( const Artifact& e ) {
   sprite_ = SpriteFactory::getSpriteFromBindingV( e.getData().type_ );

@@ -2,7 +2,6 @@
 
 #include "engine/model/IGame/Coords.h"
 
-
 MapObject::MapObject( CoordPair coords ) : coords_( coords ), is_traversable_( false ) {};
 
 MapObject::MapObject( CoordPair coords, bool is_traversable ) : coords_( coords ), is_traversable_( is_traversable ) {};

@@ -3,9 +3,9 @@
 #include <string>
 #include <utility>
 
-#include "engine/model/IGraphics/Visitor.h"
 #include "core/MapObject/MapObject.h"
 #include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 Building::Building( CoordPair coords, std::string name ) : MapObject( coords ), name_( std::move( name ) ) {
 }

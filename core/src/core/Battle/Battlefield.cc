@@ -8,11 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "aux/Err.hpp"
 #include "core/Battle/Tile.h"
 #include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
-#include "aux/Err.hpp"
-#include "engine/model/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/model/IGame/Coords.h"
 
 BattleField::BattleField( Terrain background ) : battle_grid_(), background_( background ) {
   for ( size_t i = 0; i < battle_grid_.size(); ++i ) {

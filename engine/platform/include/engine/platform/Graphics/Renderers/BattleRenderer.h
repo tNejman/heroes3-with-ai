@@ -6,8 +6,8 @@
 #include <utility>
 
 #include "core/Battle/Battle.h"
-#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
 #include "engine/model/IGame/Coords.h"
+#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
 
 class BattleRenderer : public IRenderer<Battle> {
  private:

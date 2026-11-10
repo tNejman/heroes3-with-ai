@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "core/Battle/BattleField.h"
-#include "engine/model/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
+#include "engine/model/IGame/Coords.h"
 
 TEST( LayoutTest, check_up_right_neighbour_even ) {
   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );

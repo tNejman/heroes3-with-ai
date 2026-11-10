@@ -4,8 +4,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "core/WorldMap/WorldMap.h"
-#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
 #include "engine/model/IGame/Coords.h"
+#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
 
 class MapRenderer : public IRenderer<WorldMap> {  // NOLINT(cppcoreguidelines-special-member-functions)
  private:

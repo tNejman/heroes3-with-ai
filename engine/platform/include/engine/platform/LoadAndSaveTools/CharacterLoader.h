@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "engine/Character/Character.h"
-#include "engine/platform/LoadAndSaveTools/ILoader.hpp"
 #include "engine/model/IGame/Coords.h"
+#include "engine/platform/LoadAndSaveTools/ILoader.hpp"
 
 struct CharacterSaveContainer {
  public:

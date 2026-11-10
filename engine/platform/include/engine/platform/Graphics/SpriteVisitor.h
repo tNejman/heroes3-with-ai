@@ -19,7 +19,6 @@
 #include "core/WorldMap/OverworldObstacle.h"
 #include "engine/model/IGraphics/Visitor.h"
 
-
 class SpriteVisitor : public Visitor {
  private:
   std::optional<sf::Sprite> sprite_;
