@@ -52,10 +52,8 @@ class Stats {
   Movement movement_;
 
  public:
-  constexpr Stats() noexcept;
-  constexpr Stats( PrimarySkills primary_skills ) noexcept;
-  constexpr Stats( Misc misc ) noexcept;
-  constexpr Stats( PrimarySkills primary_skills, Misc misc ) noexcept;
+  constexpr Stats() noexcept = default;
+  constexpr Stats( PrimarySkills, Level, Mana, Misc, Movement ) noexcept;
 
   [[nodiscard]] const PrimarySkills& getPrimarySkills() const noexcept;
   [[nodiscard]] const Level& getLevel() const noexcept;
@@ -63,45 +61,6 @@ class Stats {
   void spendMana( int amount ) noexcept;
   [[nodiscard]] const Misc& getMisc() const noexcept;
   [[nodiscard]] const Movement& getMovement() const noexcept;
-  //   [[nodiscard]] uint32_t getAttack() const;
-  //   void setAttack( const uint32_t new_attack );
-  //   void modifyAttack( const uint32_t attack_diff );
-
-  //   [[nodiscard]] uint32_t getDefense() const;
-  //   void setDefense( const uint32_t new_defense );
-  //   void modifyDefense( const uint32_t defense_diff );
-
-  //   [[nodiscard]] uint32_t getPower() const;
-  //   void setPower( const uint32_t new_power );
-  //   void modifyPower( const uint32_t power_diff );
-
-  //   [[nodiscard]] uint32_t getKnowledge() const;
-  //   void setKnowledge( const uint32_t new_knowledge );
-  //   void modifyKnowledge( const uint32_t knowledge_diff );
-
-  //   [[nodiscard]] uint32_t getMovementPoints() const;
-  //   void setMovementPoints( const uint32_t new_movement );
-  //   void modifyMovementPoints( const uint32_t movement_diff );
-
-  //   [[nodiscard]] uint32_t getLevel() const;
-  //   [[nodiscard]] uint32_t getExperience() const;
-  //   void gainExperience( const uint32_t experience );
-
-  //   [[nodiscard]] uint32_t getMaxMana() const;
-  //   void setMaxMana( const uint32_t new_max_mana );
-  //   void modifyMaxMana( const uint32_t max_mana_diff );
-
-  //   [[nodiscard]] uint32_t getCurrentMana() const;
-  //   void setCurrentMana( const uint32_t new_current_mana );
-  //   void modifyCurrentMana( const uint32_t current_mana_diff );
-
-  //   [[nodiscard]] int getMorale() const;
-  //   void setMorale( const int new_morale );
-  //   void modifyMorale( const int morale_diff );
-
-  //   [[nodiscard]] int getLuck() const;
-  //   void setLuck( const int new_luck );
-  //   void modifyLuck( const int luck_diff );
 };
 
 }  // namespace character
@@ -109,17 +68,7 @@ class Stats {
 /* ==== @IMPL ==== */
 // obviously constexpr in header
 
-constexpr character::Stats::Stats() noexcept : primary_skills_(), level_(), mana_(), misc_(), movement_() {
-}
-
-constexpr character::Stats::Stats( PrimarySkills primary_skills ) noexcept
-    : primary_skills_( primary_skills ), level_(), mana_(), misc_(), movement_() {
-}
-
-constexpr character::Stats::Stats( Misc misc ) noexcept
-    : primary_skills_(), level_(), mana_(), misc_( misc ), movement_() {
-}
-
-constexpr character::Stats::Stats( PrimarySkills primary_skills, Misc misc ) noexcept
-    : primary_skills_( primary_skills ), level_(), mana_(), misc_( misc ), movement_() {
+constexpr character::Stats::Stats( PrimarySkills primary_skills, Level level, Mana mana, Misc misc,
+                                   Movement movement ) noexcept
+    : primary_skills_( primary_skills ), level_( level ), mana_( mana ), misc_( misc ), movement_( movement ) {
 }

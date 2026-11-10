@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <concepts>
 #include <cstddef>
 #include <iostream>
 
@@ -49,10 +50,9 @@ struct CoordPair {
   int y_;  // NOLINT(misc-non-private-member-variables-in-classes)
 
   CoordPair() = delete;
-  constexpr CoordPair( int x, int y ) noexcept  // NOLINT(bugprone-easily-swappable-parameters)
-      : x_( x ), y_( y ) {
-    // assert( x >= 0 && NEGATIVE_X_ASSERT_MSG );
-    // assert( y >= 0 && NEGATIVE_Y_ASSERT_MSG );
+
+  constexpr CoordPair( std::integral auto x, std::integral auto y ) noexcept
+      : x_( static_cast<int>( x ) ), y_( static_cast<int>( y ) ) {
   }
 
   CoordPair operator+( const CoordPair& other ) const noexcept;

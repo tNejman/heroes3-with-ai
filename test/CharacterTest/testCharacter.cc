@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 
+#include "aux/Builder.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
-#include "aux/Builder.hpp"
-#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
+#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Unit/Faction.hpp"
 #include "engine/model/IGame/Coords.h"
 
@@ -16,14 +16,15 @@ TEST( CharacterTest, createValidCharacter ) {
   //     "John", { 0, 0 }, character::Stats{ character::Stats::PrimarySkills{ 1, 2, 3, 4 } }, character::Stats::Misc{ 1,
   //     2 }
   //     );
-  Character character1 =
-      Builder<Character>{}
-          .setName( "John" )
-          .setCoords( CoordPair{ 0, 0 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-          .build();
+  Character character1 = Builder<Character>{}
+                             .setName( "John" )
+                             .setCoords( CoordPair{ 0, 0 } )
+                             .setStats( Builder<character::Stats>{}
+                                            .setPrimarySkills( character::Stats::PrimarySkills{
+                                                .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 } )
+                                            .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } )
+                                            .build() )
+                             .build();
 
   ASSERT_EQ( character1.getName(), "John" );
   ASSERT_EQ( character1.getCoords(), CoordPair( 0, 0 ) );
@@ -45,14 +46,7 @@ TEST( CharacterTest, createValidCharacter ) {
 TEST( CharacterTest, moveArtifactsAround ) {
   // std::unique_ptr<Character> character1 =
   //     std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
-  Character character1 =
-      Builder<Character>{}
-          .setName( "John" )
-          .setCoords( CoordPair{ 0, 0 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-          .build();
+  Character character1 = Builder<Character>{}.build();
   Artifact crown_otsm = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
 
   character1.inventory().pickUpArtifact( crown_otsm );
@@ -66,14 +60,7 @@ TEST( CharacterTest, moveArtifactsAround ) {
 TEST( CharacterTest, equipUknownArtifact ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
   // );
-  Character character1 =
-      Builder<Character>{}
-          .setName( "John" )
-          .setCoords( CoordPair{ 0, 0 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-          .build();
+  Character character1 = Builder<Character>{}.build();
 
   ASSERT_THROW(
       character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
@@ -83,14 +70,7 @@ TEST( CharacterTest, equipUknownArtifact ) {
 TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
   // );
-  Character character1 =
-      Builder<Character>{}
-          .setName( "John" )
-          .setCoords( CoordPair{ 0, 0 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-          .build();
+  Character character1 = Builder<Character>{}.build();
 
   Artifact crown_otsm1 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
   Artifact crown_otsm2 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
@@ -108,14 +88,15 @@ TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
 TEST( CharacterTest, copyCharacter ) {
   // std::shared_ptr<Character> character_original =
   //     std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
-  Character character_original =
-      Builder<Character>{}
-          .setName( "John" )
-          .setCoords( CoordPair{ 0, 0 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 },
-              character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } } )
-          .build();
+  Character character_original = Builder<Character>{}
+                                     .setName( "John" )
+                                     .setCoords( CoordPair{ 0, 0 } )
+                                     .setStats( Builder<character::Stats>{}
+                                                    .setPrimarySkills( character::Stats::PrimarySkills{
+                                                        .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 } )
+                                                    .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } )
+                                                    .build() )
+                                     .build();
 
   auto artifact_1 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
   auto artifact_2 = Artifact::create( artifact::Type::THUNDER_HELMET );

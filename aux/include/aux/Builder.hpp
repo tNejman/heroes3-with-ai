@@ -132,7 +132,7 @@ consteval auto defaultsDiagnostic( std::meta::info type, std::meta::info default
     for ( std::meta::info parameter : parameters ) {
       std::string_view field_name = std::meta::has_identifier( parameter ) ? std::meta::identifier_of( parameter )
                                                                            : std::string_view{ "<unnamed>" };
-      message += "    static inline const " + displayType( std::meta::remove_cvref( std::meta::type_of( parameter ) ) )
+      message += "    static constexpr " + displayType( std::meta::remove_cvref( std::meta::type_of( parameter ) ) )
                  + " " + field_name + "{...};\n";
     }
     message += "};";

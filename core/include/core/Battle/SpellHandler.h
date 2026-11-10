@@ -24,5 +24,7 @@ class SpellHandler {
  public:
   SpellHandler() = delete;
 
+  [[nodiscard]] static int calculateManaCost( const Character&, const Spell& ) noexcept;
+
   static void handleSpell( const BattleCommand&, Battle& ) noexcept;
 };

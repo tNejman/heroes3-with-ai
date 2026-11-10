@@ -2,18 +2,24 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <magic_enum/magic_enum.hpp>
 #include <memory>
+#include <optional>
 #include <queue>
+#include <ranges>
 #include <set>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "aux/Err.hpp"
+#include "aux/Overload.hpp"
 #include "aux/_NotImplementedException.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/BattleField.h"
@@ -24,6 +30,8 @@
 #include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
+#include "core/Magic/Spell.h"
+#include "core/Magic/SpellLib.h"
 #include "core/Misc/ProjectLib.h"
 #include "engine/model/IGame/Coords.h"
 #include "engine/model/IGraphics/IRVisitor.h"
@@ -145,6 +153,113 @@
                           .destination_ = battle_.getUnitInAction()->getCoordsInBattle() } };
 }
 
+[[nodiscard]] std::vector<BattleCommand> game::StateBattle::createCastSpellCommands() const noexcept {
+  const auto &caster = *battle_.getCurrentCharacter();
+
+  if ( !caster.getSpellBook().has_value() || battle_.hasCurrentCharacterThrownSpell() ) {
+    return {};
+  }
+
+  const int available_mana = caster.stats().getMana().current_mana_;
+  std::vector<Spell> spells_available_to_cast;
+  for ( const auto &spell : caster.getSpellBook()->getSpells() ) {
+    if ( SpellHandler::calculateManaCost( caster, spell ) < available_mana ) {
+      spells_available_to_cast.push_back( spell );
+    }
+  }
+
+  std::vector<BattleCommand> valid_commands;
+
+  for ( const auto &spell : spells_available_to_cast ) {
+    const auto &target = spell.getData().target_;
+    valid_commands.append_range( std::visit(
+        Overload{ [&]( spell::Target::Single ) -> std::vector<BattleCommand> {
+                   return commandsPerUnit( spell, unitsOnSide( target.side_ ) );
+                 },
+                  [&]( spell::Target::All ) {
+                    return std::vector<BattleCommand>{ BattleCommand{ .action_ = BattleCommand::Action::CAST_SPELL,
+                                                                      .maybe_spell_ = spell,
+                                                                      .destination_ = CoordPair{ 0, 0 } } };
+                  },
+                  [&]( spell::Target::Count ) {
+                    err::unreachable( "spell::Target::Count" );
+                    return std::vector<BattleCommand>{};
+                  },
+                  [&]( spell::Target::AOE ) { return createAoeSpellCommands( spell ); } },
+        spell.getData().target_.target_ ) );
+  }
+
+  return valid_commands;
+  // err::abort( "finish implementing spell generation" );
+}
+
+[[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> game::StateBattle::unitsOnSide(
+    spell::Target::Side side ) const noexcept {
+  switch ( side ) {
+    case spell::Target::Side::ALLY: return battle_.getCurrentCharacterArmy();
+    case spell::Target::Side::ENEMY: return battle_.getOpposingCharacterArmy();
+    case spell::Target::Side::ANY: return battle_.getUnitsInBattle();
+  }
+
+  err::unreachable();
+}
+
+[[nodiscard]] std::vector<BattleCommand> game::StateBattle::commandsPerUnit(
+    const Spell &spell, const std::vector<std::reference_wrapper<UnitStack>> &units ) noexcept {
+  return units | std::views::transform( [&]( const UnitStack &u ) {
+           return BattleCommand{ .action_ = BattleCommand::Action::CAST_SPELL,
+                                 .maybe_spell_ = spell,
+                                 .destination_ = u.getCoordsInBattle() };
+         } )
+         | std::ranges::to<std::vector>();
+}
+
+[[nodiscard]] std::vector<BattleCommand> game::StateBattle::commandsPerEmptyTile(
+    BattleCommand::Action action, std::optional<std::reference_wrapper<const Spell>> maybe_spell ) const noexcept {
+  std::vector<BattleCommand> valid_commands;
+  valid_commands.reserve( static_cast<int>( MAP_WIDTH_BF * MAP_HEIGHT_BF ) );
+
+  const auto &grid = battle_.getBattlefield()->getGrid();
+  for ( size_t x = 0; x < grid.size(); ++x ) {
+    for ( size_t y = 0; y < grid[0].size(); ++y ) {
+      if ( grid[x][y]->getObject() == nullptr ) {
+        valid_commands.emplace_back( action, maybe_spell, CoordPair{ x, y } );
+      }
+    }
+  }
+
+  return valid_commands;
+}
+
+[[nodiscard]] std::vector<BattleCommand> game::StateBattle::commandsPerTile(
+    BattleCommand::Action action, std::optional<std::reference_wrapper<const Spell>> maybe_spell ) const noexcept {
+  std::vector<BattleCommand> valid_commands;
+
+  const auto &grid = battle_.getBattlefield()->getGrid();
+  for ( size_t x = 0; x < grid.size(); ++x ) {
+    for ( size_t y = 0; y < grid[0].size(); ++y ) {
+      valid_commands.emplace_back( action, maybe_spell, CoordPair{ x, y } );
+    }
+  }
+
+  return valid_commands;
+}
+
+[[nodiscard]] std::vector<BattleCommand> game::StateBattle::createAoeSpellCommands(
+    const Spell &spell ) const noexcept {
+  const auto &target = spell.getData().target_;
+  const auto &aoe_target = std::get<spell::Target::AOE>( target.target_ );
+
+  switch ( aoe_target.forced_location_ ) {
+    case spell::Target::AOE::Location::UNIT: return commandsPerUnit( spell, unitsOnSide( target.side_ ) );
+    case spell::Target::AOE::Location::EMPTY_TILE:
+      return commandsPerEmptyTile( BattleCommand::Action::CAST_SPELL, spell );
+    case spell::Target::AOE::Location::NO_FORCE: return commandsPerTile( BattleCommand::Action::CAST_SPELL, spell );
+  }
+
+  err::unreachable();
+}
+
 game::StateTransition game::StateBattle::handleMoveStack( const BattleCommand &ms ) noexcept {
   battle_.move( *battle_.getUnitInAction(), ms.destination_ );
   battle_.setBattleState( battle::State::ATTACKING );
@@ -206,6 +321,8 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
       err::abort( "illegal to get legalCommands in state: "
                   + std::string{ magic_enum::enum_name( battle_.getState() ) } );
   }
+
+  legal_commands.append_range( this->createCastSpellCommands() );
 
   return { legal_commands.begin(), legal_commands.end() };
 }

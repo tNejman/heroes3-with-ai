@@ -45,8 +45,7 @@ class Battle : public std::enable_shared_from_this<Battle> {
   std::shared_ptr<Character> defender_;
   Character* current_character_;
   int round_counter_ = 0;
-  bool attacker_threw_spell_;
-  bool defender_threw_spell_;
+  bool has_current_character_thrown_spell_this_turn_;
 
   std::vector<std::reference_wrapper<UnitStack>> round_queue_;
 
@@ -89,12 +88,13 @@ class Battle : public std::enable_shared_from_this<Battle> {
   [[nodiscard]] int getRoundCounter() const;
   [[nodiscard]] const UnitStack* getUnitFromCoords( CoordPair coords ) const noexcept;
   [[nodiscard]] UnitStack* getUnitFromCoords( CoordPair coords ) noexcept;
-  [[nodiscard]] bool hasAttackerThrownSpell() const;
-  [[nodiscard]] bool hasDefenderThrownSpell() const;
+  [[nodiscard]] bool hasCurrentCharacterThrownSpell() const noexcept;
   void nextUnit();
-  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getAttackingArmy() const;
-  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getDefendingArmy() const;
-  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getUnitsInBattle() const;
+  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getAttackingArmy() const noexcept;
+  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getDefendingArmy() const noexcept;
+  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getUnitsInBattle() const noexcept;
+  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getCurrentCharacterArmy() const noexcept;
+  [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getOpposingCharacterArmy() const noexcept;
   [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getUnitsInBattleSortedToPrint() const;
   // [[nodiscard]] const std::vector<std::reference_wrapper<UnitStack>> getRoundQueue() const;
   [[nodiscard]] const UnitStack* getUnitInAction() const noexcept;

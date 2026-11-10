@@ -22,7 +22,7 @@ struct Tagged {
   E val;
 };
 
-enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION };
+enum class HexagonType : char { EMPTY, ATTACK, MOVE, IN_ACTION, SPELL_TARGET };
 
 class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
  private:

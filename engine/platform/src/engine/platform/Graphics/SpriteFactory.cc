@@ -88,6 +88,7 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
       case HexagonType::ATTACK: return "Hexagon_Attack";
       case HexagonType::MOVE: return "Hexagon_Movement";
       case HexagonType::IN_ACTION: return "Hexagon_Unit_In_Action";
+      case HexagonType::SPELL_TARGET: return "Hexagon_Spell_Target";
     }
     err::abort( "unknown hexagon type requested to render" );
   }() + ".png";

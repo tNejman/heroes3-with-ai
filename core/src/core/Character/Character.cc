@@ -87,6 +87,18 @@ bool Character::getIfUser() const {
   return secondary_skills_;
 }
 
+void Character::setSpellBook( SpellBook spell_book ) noexcept {
+  spell_book_ = std::move( spell_book );
+}
+
+[[nodiscard]] const std::optional<SpellBook>& Character::getSpellBook() const noexcept {
+  return spell_book_;
+}
+
+[[nodiscard]] std::optional<SpellBook>& Character::getSpellBook() noexcept {
+  return spell_book_;
+}
+
 // uint32_t Character::getEffectiveSpeed() {
 //   err::raise<NotImplementedException>( "" );
 //   return 0;  // TODO

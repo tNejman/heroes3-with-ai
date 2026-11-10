@@ -8,7 +8,6 @@
 
 #include "core/Magic/Spell.h"
 
-// public Printable
 class SpellBook {
  private:
   std::vector<Spell> spells_;
@@ -23,5 +22,6 @@ class SpellBook {
 
   friend class CharacterSaver;
   void learnSpell( Spell spell );
+  [[nodiscard]] const std::vector<Spell>& getSpells() const noexcept;
   [[nodiscard]] SpellBook copy() const;
 };

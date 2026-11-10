@@ -83,6 +83,9 @@ class Character : public MapObject {
   [[nodiscard]] const character::Army& army() const noexcept;
   [[nodiscard]] character::Army& army() noexcept;
   [[nodiscard]] const character::SecondarySkillArr& getSecondarySkills() const noexcept;
+  void setSpellBook( SpellBook ) noexcept;
+  [[nodiscard]] const std::optional<SpellBook>& getSpellBook() const noexcept;
+  [[nodiscard]] std::optional<SpellBook>& getSpellBook() noexcept;
 
   // [[nodiscard]] uint32_t getEffectiveSpeed();
 

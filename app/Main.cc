@@ -15,10 +15,12 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Window.hpp>
 #include <SFML/Window/WindowEnums.hpp>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "aux/Err.hpp"
@@ -26,7 +28,11 @@
 #include "core/Character/Stats.h"
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
+#include "core/Magic/Spell.h"
+#include "core/Magic/SpellBook.h"
+#include "core/Magic/SpellLib.h"
 #include "core/Misc/BuilderDefaults.hpp"  // IWYU pragma: keep
+#include "core/Misc/Formatter.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
@@ -47,55 +53,54 @@ void preMain() {
 
 std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   std::vector<std::shared_ptr<Character>> characters;
-  characters.push_back(
-      Builder<Character>{}
-          .setName( "fire_hero_down_right" )
-          .setCoords( CoordPair{ 0, 0 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
-              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
-          .build<std::shared_ptr>() );
-  characters.push_back(
-      Builder<Character>{}
-          .setName( "john" )
-          .setCoords( CoordPair{ 5, 5 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
-              character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
-          .build<std::shared_ptr>() );
+  characters.push_back( Builder<Character>{}
+                            .setName( "fire_hero_down_right" )
+                            .setCoords( CoordPair{ 0, 0 } )
+                            .setStats( Builder<character::Stats>{}
+                                           .setPrimarySkills( character::Stats::PrimarySkills{
+                                               .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 } )
+                                           .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                                           .build() )
+                            .build<std::shared_ptr>() );
+  characters.push_back( Builder<Character>{}
+                            .setName( "john" )
+                            .setCoords( CoordPair{ 5, 5 } )
+                            .setStats( Builder<character::Stats>{}
+                                           .setPrimarySkills( character::Stats::PrimarySkills{
+                                               .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 } )
+                                           .setMisc( character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } )
+                                           .build() )
+                            .build<std::shared_ptr>() );
 
-  // characters.push_back(
-  //     Builder<Character>{}
-  //         .setName( "john" )
-  //         .setCoords( CoordPair{ 5, 5 } )
-  //         .setStats( character::Stats{
-  //             character::Stats::PrimarySkills{ .attack_ = 5, .defense_ = 5, .power_ = 5, .knowledge_ = 5 },
-  //             character::Stats::Misc{ .morale_ = 1, .luck_ = 1 } } )
-  //         .build<std::shared_ptr>() );
+  SpellBook spell_book{};
+  spell_book.learnSpell( Spell::create( spell::Type::LIGHTNING_BOLT ) );
+  characters[0]->setSpellBook( std::move( spell_book ) );
 
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 10 } );
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 15 } );
   characters[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 10 } );
 
   std::vector<std::shared_ptr<Character>> characters_2;
-  characters_2.push_back(
-      Builder<Character>{}
-          .setName( "black_hero_white_horse_down_right" )
-          .setCoords( CoordPair{ 2, 2 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
-              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
-          .setIsUser( false )
-          .build<std::shared_ptr>() );
-  characters_2.push_back(
-      Builder<Character>{}
-          .setName( "black_hero_white_horse_down_right" )
-          .setCoords( CoordPair{ 12, 12 } )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 },
-              character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } } )
-          .setIsUser( false )
-          .build<std::shared_ptr>() );
+  characters_2.push_back( Builder<Character>{}
+                              .setName( "black_hero_white_horse_down_right" )
+                              .setCoords( CoordPair{ 2, 2 } )
+                              .setStats( Builder<character::Stats>{}
+                                             .setPrimarySkills( character::Stats::PrimarySkills{
+                                                 .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 } )
+                                             .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                                             .build() )
+                              .setIsUser( false )
+                              .build<std::shared_ptr>() );
+  characters_2.push_back( Builder<Character>{}
+                              .setName( "black_hero_white_horse_down_right" )
+                              .setCoords( CoordPair{ 12, 12 } )
+                                .setStats( Builder<character::Stats>{}
+                                              .setPrimarySkills( character::Stats::PrimarySkills{
+                                                  .attack_ = 12, .defense_ = 15, .power_ = 8, .knowledge_ = 2 } )
+                                              .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = -2 } )
+                                              .build() )
+                              .setIsUser( false )
+                              .build<std::shared_ptr>() );
 
   characters_2[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::SWORDSMAN, 5 } );
   characters_2[0]->army().recruitUnitStack( UnitStack{ CastleUnitType::ARCHER, 10 } );
@@ -130,6 +135,9 @@ int main() {
                                                      static_cast<unsigned int>( graphics::WINDOW_HEIGHT ) } ) );
   target.setSmooth( false );
 
+  bool were_commands_just_printed = false;
+  bool are_commands_the_same = false;
+
   while ( window.isOpen() ) {
     if ( window.getSize()
          != sf::Vector2u( static_cast<unsigned int>( graphics::WINDOW_WIDTH * window_scale_mult ),
@@ -162,6 +170,17 @@ int main() {
     }
     game.applyCommand( command );
     GameRenderer{ window, target, game }.render();
+
+    are_commands_the_same = std::holds_alternative<None>( command );
+
+    if ( !were_commands_just_printed && !are_commands_the_same ) {
+      for ( const auto& legal_command : game.legalCommands() ) {
+        std::cout << toString( legal_command ) << '\n';
+      }
+      were_commands_just_printed = true;
+    } else {
+      were_commands_just_printed = false;
+    }
   }
 };
 

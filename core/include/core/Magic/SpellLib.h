@@ -236,6 +236,8 @@ constexpr inline std::array BASE_PRESET = {
         .effect_ = spell::effect::Summon{ getUnitDataFromType( ConfluxUnitType::AIR_ELEMENTAL ) } },
 };
 
+/* ===== @STATIC ASSERTIONS ====== */
+
 constexpr inline int MIN_LEVEL = 1;
 constexpr inline int MAX_LEVEL = 5;
 

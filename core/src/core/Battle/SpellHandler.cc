@@ -128,14 +128,20 @@ void SpellHandler::handleSpecialSpell( const BattleCommand& /*command*/, Battle&
 
 /* ==== @PUBLIC ==== */
 
+[[nodiscard]] int SpellHandler::calculateManaCost( const Character& caster, const Spell& spell ) noexcept {
+  const bool is_mana_discount_allowed = doesCharacterHaveMatchingSpellMastery( caster, spell );
+
+  const int mana_cost =
+      ( is_mana_discount_allowed ) ? spell.getData().mana_cost_mastery_ : spell.getData().mana_cost_default_;
+
+  return mana_cost;
+}
+
 void SpellHandler::handleSpell( const BattleCommand& command, Battle& battle ) noexcept {
   auto* caster = battle.getCurrentCharacter();
   err::passCondOrAbort( caster != nullptr, "current_character_ in battle is null" );
-  const bool is_mana_discount_allowed = doesCharacterHaveMatchingSpellMastery( *caster, *command.maybe_spell_ );
 
-  const int mana_cost = ( is_mana_discount_allowed ) ? command.maybe_spell_->getData().mana_cost_mastery_
-                                                     : command.maybe_spell_->getData().mana_cost_default_;
-  caster->stats().spendMana( mana_cost );
+  caster->stats().spendMana( calculateManaCost( *caster, *command.maybe_spell_ ) );
 
   // "visit" instead of "if constexpr", because it's exhaustive
   std::visit( Overload{

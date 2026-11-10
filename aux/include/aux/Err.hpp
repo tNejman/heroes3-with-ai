@@ -6,6 +6,9 @@
 #include <string>
 #include <string_view>
 #include <typeinfo>
+#include <utility>
+
+// NOLINTBEGIN(performance-avoid-endl)
 
 namespace err {
 
@@ -47,9 +50,10 @@ requires( !std::convertible_to<Forward, std::string_view> )
 }
 
 struct Cond {
-  bool value;
-  std::source_location loc;
-  constexpr Cond( bool v, std::source_location l = std::source_location::current() ) : value( v ), loc( l ) {
+  bool value_;  // NOLINT(misc-non-private-member-variables-in-classes, clang-tidyreadability-identifier-naming)
+  std::source_location
+      loc_;  // NOLINT(misc-non-private-member-variables-in-classes, clang-tidyreadability-identifier-naming)
+  constexpr Cond( bool v, std::source_location l = std::source_location::current() ) : value_( v ), loc_( l ) {
   }
 };
 
@@ -59,10 +63,21 @@ template <typename Arg>
   std::abort();
 }
 
+[[noreturn]] inline void unreachable( std::source_location loc = std::source_location::current() ) {
+  std::cerr << scopeFunName( loc ) << " -> Reached unreachable code" << std::endl;
+  std::unreachable();
+}
+
+template <typename Arg>
+[[noreturn]] inline void unreachable( Arg msg, std::source_location loc = std::source_location::current() ) {
+  std::cerr << scopeFunName( loc ) << " -> Reached unreachable code; msg: " << msg << std::endl;
+  std::unreachable();
+}
+
 template <typename... Args>
 constexpr void passCondOrAbort( Cond c, Args&&... msgs ) {
-  if ( !c.value ) {
-    std::cerr << scopeFunName( c.loc ) << " -> ";
+  if ( !c.value_ ) {
+    std::cerr << scopeFunName( c.loc_ ) << " -> ";
     ( std::cerr << ... << std::forward<Args>( msgs ) ) << std::endl;
     std::abort();
   }
@@ -81,3 +96,5 @@ inline void passCondOrThrow( bool condition, Args&&... args ) {
   is_first_call = false;
 
 }  // namespace err
+
+// NOLINTEND(performance-avoid-endl)

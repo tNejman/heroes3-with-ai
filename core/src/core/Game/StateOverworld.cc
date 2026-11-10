@@ -38,7 +38,8 @@ game::StateOverworld::StateOverworld( CtorKey, WorldMap&& world_map ) noexcept :
 }
 
 [[nodiscard]] std::vector<UserCommand> game::StateOverworld::legalCommands() const noexcept {
-  err::raise<NotImplementedException>();
+  return {};
+  // err::raise<NotImplementedException>();
 }
 
 game::StateTransition game::StateOverworld::applyCommand( const UserCommand& command, game::Context& ) noexcept {

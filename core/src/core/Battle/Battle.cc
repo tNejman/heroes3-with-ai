@@ -21,6 +21,7 @@
 #include "core/Character/Character.h"
 #include "core/Exceptions/UnknownStateException.hpp"
 #include "core/Game/UserCommand.h"
+#include "core/Misc/Formatter.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
 #include "engine/model/IGame/Coords.h"
@@ -92,8 +93,8 @@ void Battle::nextRound() {
     setUnitInQueue( unit );
   }
   ++round_counter_;
-  attacker_threw_spell_ = false;
-  defender_threw_spell_ = false;
+  has_current_character_thrown_spell_this_turn_ = false;
+  err::abort( "has_current_character_thrown_spell_this_turn_ must be updated each move, not only after round ends" );
 }
 
 [[nodiscard]] bool Battle::isMoveLegal( const BattleCommand& command_in_question ) const noexcept {
@@ -135,8 +136,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
       attacker_( std::move( attacker ) ),
       defender_( std::move( defender ) ),
       current_character_( nullptr ),
-      attacker_threw_spell_( false ),
-      defender_threw_spell_( false ) {
+      has_current_character_thrown_spell_this_turn_( false ) {
   round_queue_.reserve( static_cast<size_t>( character::MAX_PARTY_SIZE ) * 2 );
   setAttackingArmy();
   setDefendingArmy();
@@ -307,12 +307,8 @@ UnitStack* Battle::getUnitFromCoords( CoordPair coords ) noexcept {
   return ( maybe_object == nullptr ) ? nullptr : maybe_object->asUnit();
 }
 
-bool Battle::hasAttackerThrownSpell() const {
-  return attacker_threw_spell_;
-}
-
-bool Battle::hasDefenderThrownSpell() const {
-  return defender_threw_spell_;
+[[nodiscard]] bool Battle::hasCurrentCharacterThrownSpell() const noexcept {
+  return has_current_character_thrown_spell_this_turn_;
 }
 
 void Battle::nextUnit() {
@@ -324,7 +320,7 @@ void Battle::nextUnit() {
   current_character_ = &getUnitStackOwner( *unit_in_action_ );
 }
 
-std::vector<std::reference_wrapper<UnitStack>> Battle::getAttackingArmy() const {
+std::vector<std::reference_wrapper<UnitStack>> Battle::getAttackingArmy() const noexcept {
   std::vector<std::reference_wrapper<UnitStack>> attacking_army;
   for ( auto& unit_stack : attacker_->army().getParty() ) {
     if ( unit_stack ) {
@@ -334,7 +330,7 @@ std::vector<std::reference_wrapper<UnitStack>> Battle::getAttackingArmy() const 
   return attacking_army;
 }
 
-std::vector<std::reference_wrapper<UnitStack>> Battle::getDefendingArmy() const {
+std::vector<std::reference_wrapper<UnitStack>> Battle::getDefendingArmy() const noexcept {
   std::vector<std::reference_wrapper<UnitStack>> defending_army;
   for ( auto& unit_stack : defender_->army().getParty() ) {
     if ( unit_stack ) {
@@ -344,12 +340,36 @@ std::vector<std::reference_wrapper<UnitStack>> Battle::getDefendingArmy() const 
   return defending_army;
 }
 
-std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattle() const {
+std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattle() const noexcept {
   std::vector<std::reference_wrapper<UnitStack>> units_in_battle;
   units_in_battle.reserve( static_cast<size_t>( character::MAX_PARTY_SIZE ) * 2 );
   units_in_battle.append_range( getAttackingArmy() );
   units_in_battle.append_range( getDefendingArmy() );
   return units_in_battle;
+}
+
+[[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> Battle::getCurrentCharacterArmy() const noexcept {
+  if ( current_character_ == attacker_.get() ) {
+    return getAttackingArmy();
+  }
+  if ( current_character_ == defender_.get() ) {
+    return getDefendingArmy();
+  }
+
+  err::unreachable( "current character is neither Attacker nor Defender; character is: "
+                    + toString( *current_character_ ) );
+}
+
+[[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> Battle::getOpposingCharacterArmy() const noexcept {
+  if ( current_character_ == attacker_.get() ) {
+    return getDefendingArmy();
+  }
+  if ( current_character_ == defender_.get() ) {
+    return getAttackingArmy();
+  }
+
+  err::unreachable( "current character is neither Attacker nor Defender; character is: "
+                    + toString( *current_character_ ) );
 }
 
 std::vector<std::reference_wrapper<UnitStack>> Battle::getUnitsInBattleSortedToPrint() const {
@@ -512,8 +532,7 @@ std::shared_ptr<Battle> Battle::copy() {
   copy->possible_moves_.clear();
   // Copy primitive and enum members
   copy->round_counter_ = round_counter_;
-  copy->attacker_threw_spell_ = attacker_threw_spell_;
-  copy->defender_threw_spell_ = defender_threw_spell_;
+  copy->has_current_character_thrown_spell_this_turn_ = has_current_character_thrown_spell_this_turn_;
   copy->state_ = state_;
 
   return copy;

@@ -3,17 +3,17 @@
 #include <memory>
 #include <optional>
 
+#include "aux/Builder.hpp"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
-#include "aux/Builder.hpp"
-#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
+#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitsLib.h"
-#include "engine/model/IGraphics/Visitor.h"
 #include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
 
 // Easy factory constructor
 // const std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
@@ -29,14 +29,20 @@ TEST( BattleTest, checkattacking ) {
   UnitStack pikeman_army{ CastleUnitType::PIKEMAN, 30 };
   UnitStack angel_army{ CastleUnitType::ANGEL, 1 };
 
-  std::shared_ptr<Character> character1 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character2 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
+  std::shared_ptr<Character> character1 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character2 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
 
   auto& pikeman_ref = character1->army().recruitUnitStack( pikeman_army );
   auto& angel_ref = character2->army().recruitUnitStack( angel_army );
@@ -51,30 +57,38 @@ TEST( BattleTest, checkingattacking ) {
   std::shared_ptr<Character> character1 =
       Builder<Character>{}
           .setName( "John" )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 },
-              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 } )
+                         .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                         .build() )
           .build<std::shared_ptr>();
   std::shared_ptr<Character> character2 =
       Builder<Character>{}
           .setName( "Silverhand" )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 },
-              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                         .build() )
           .build<std::shared_ptr>();
   std::shared_ptr<Character> character3 =
       Builder<Character>{}
           .setName( "V" )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 100, .defense_ = 100, .power_ = 10, .knowledge_ = 10 },
-              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 100, .defense_ = 100, .power_ = 10, .knowledge_ = 10 } )
+                         .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                         .build() )
           .build<std::shared_ptr>();
   std::shared_ptr<Character> character4 =
       Builder<Character>{}
           .setName( "Panam" )
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 },
-              character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } } )
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                         .build() )
           .build<std::shared_ptr>();
 
   auto& pikeman_john_ref = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
@@ -96,21 +110,32 @@ TEST( BattleTest, checkingattacking ) {
 TEST( BattleTest, checkingMaxattackBonus ) {
   std::shared_ptr<Character> character1 =
       Builder<Character>{}
-          .setStats( character::Stats{
-              character::Stats::PrimarySkills{ .attack_ = 4000, .defense_ = 4000, .power_ = 10, .knowledge_ = 10 } } )
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 4000, .defense_ = 4000, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
           .build<std::shared_ptr>();
-  std::shared_ptr<Character> character2 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character3 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 100, .defense_ = 100, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character4 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
+  std::shared_ptr<Character> character2 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character3 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 100, .defense_ = 100, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character4 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
 
   auto& pikeman_john_ref = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
   auto& angel_silverhand_ref = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 1 } );
@@ -128,22 +153,34 @@ TEST( BattleTest, checkingMaxattackBonus ) {
 }
 
 TEST( BattleTest, checkingMaxdefenseBonus ) {
-  std::shared_ptr<Character> character1 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 200, .defense_ = 200, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character2 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character3 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 100, .defense_ = 100, .power_ = 100, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character4 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
+  std::shared_ptr<Character> character1 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 200, .defense_ = 200, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character2 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character3 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 100, .defense_ = 100, .power_ = 100, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character4 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
   auto& angel_john_ref = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
   auto& angel_silverhand_ref = character2->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
   auto& angel_v_ref = character3->army().recruitUnitStack( UnitStack{ CastleUnitType::ANGEL, 5 } );
@@ -164,14 +201,20 @@ TEST( BattleTest, checkingMaxdefenseBonus ) {
 }
 
 TEST( BattleTestMoving, checksettingarmies ) {
-  std::shared_ptr<Character> character1 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character2 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
+  std::shared_ptr<Character> character1 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character2 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
 
   auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
   auto& pikeman_2_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
@@ -194,14 +237,20 @@ TEST( BattleTestMoving, checksettingarmies ) {
 }
 
 TEST( BattleTestMoving, checkmovingarmies ) {
-  std::shared_ptr<Character> character1 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character2 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
+  std::shared_ptr<Character> character1 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character2 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
 
   auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
   auto& pikeman_2_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
@@ -225,14 +274,20 @@ TEST( BattleTestMoving, checkmovingarmies ) {
 }
 
 TEST( BattleTestAttack, check_attacking_armies ) {
-  std::shared_ptr<Character> character1 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
-  std::shared_ptr<Character> character2 = Builder<Character>{}
-                                              .setStats( character::Stats{ character::Stats::PrimarySkills{
-                                                  .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } } )
-                                              .build<std::shared_ptr>();
+  std::shared_ptr<Character> character1 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
+  std::shared_ptr<Character> character2 =
+      Builder<Character>{}
+          .setStats( Builder<character::Stats>{}
+                         .setPrimarySkills( character::Stats::PrimarySkills{
+                             .attack_ = 0, .defense_ = 0, .power_ = 10, .knowledge_ = 10 } )
+                         .build() )
+          .build<std::shared_ptr>();
 
   auto& pikeman_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );
   auto& pikeman_2_army = character1->army().recruitUnitStack( UnitStack{ CastleUnitType::PIKEMAN, 30 } );

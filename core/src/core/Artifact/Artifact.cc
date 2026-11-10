@@ -13,7 +13,7 @@ void Artifact::accept( Visitor& vis ) const {
   vis.visit( *this );
 }
 
-[[nodiscard]] Artifact Artifact::create( const artifact::Type type ) noexcept {
+[[nodiscard]] Artifact Artifact::create( artifact::Type type ) noexcept {
   return Artifact{ artifact::PRESET[static_cast<size_t>( type )] };
 }
 

@@ -101,25 +101,22 @@ void BattleRenderer::renderMoves() noexcept {
         case BattleCommand::Action::MOVE: {
           offset = getHexagonOffset( command.destination_ );
           return SpriteFactory::getSpriteFromBindingV( HexagonType::MOVE );
-          break;
         }
         case BattleCommand::Action::ATTACK: {
           offset = getHexagonOffset( command.destination_ );
           return SpriteFactory::getSpriteFromBindingV( HexagonType::ATTACK );
-          break;
         }
         case BattleCommand::Action::WAIT: {
           offset = getHexagonOffset( object_.get().getUnitInAction()->getCoordsInBattle() );
           return SpriteFactory::getSpriteFromBindingV( HexagonType::IN_ACTION );
-          break;
         }
         case BattleCommand::Action::DEFEND: {
           err::raise<NotImplementedException>();
           break;
         }
         case BattleCommand::Action::CAST_SPELL: {
-          err::abort("not implemented");
-          break;
+          offset = getHexagonOffset(command.destination_);
+          return SpriteFactory::getSpriteFromBindingV(HexagonType::SPELL_TARGET);
         }
       }
       std::unreachable();
