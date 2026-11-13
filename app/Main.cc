@@ -60,6 +60,7 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
                                            .setPrimarySkills( character::Stats::PrimarySkills{
                                                .attack_ = 10, .defense_ = 10, .power_ = 10, .knowledge_ = 10 } )
                                            .setMisc( character::Stats::Misc{ .morale_ = 2, .luck_ = -3 } )
+                                           .setMana( character::Stats::Mana{ .max_mana_ = 100, .current_mana_ = 100 } )
                                            .build() )
                             .build<std::shared_ptr>() );
   characters.push_back( Builder<Character>{}

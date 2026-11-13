@@ -93,8 +93,8 @@ void Battle::nextRound() {
     setUnitInQueue( unit );
   }
   ++round_counter_;
-  has_current_character_thrown_spell_this_turn_ = false;
-  err::abort( "has_current_character_thrown_spell_this_turn_ must be updated each move, not only after round ends" );
+  has_attacker_thrown_spell_this_turn_ = false;
+  has_defender_thrown_spell_this_turn_ = false;
 }
 
 [[nodiscard]] bool Battle::isMoveLegal( const BattleCommand& command_in_question ) const noexcept {
@@ -135,8 +135,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
       battlefield_( std::make_shared<BattleField>( background ) ),
       attacker_( std::move( attacker ) ),
       defender_( std::move( defender ) ),
-      current_character_( nullptr ),
-      has_current_character_thrown_spell_this_turn_( false ) {
+      current_character_( nullptr ) {
   round_queue_.reserve( static_cast<size_t>( character::MAX_PARTY_SIZE ) * 2 );
   setAttackingArmy();
   setDefendingArmy();
@@ -213,16 +212,13 @@ bool Battle::move( UnitStack& unit_stack, CoordPair new_coords ) {
   return true;
 }
 
-bool Battle::attack( UnitStack& attacker, UnitStack& defender ) {
-  // in this attacker is the unit attacking not matter which champion attacked who
-  // assertion checks if attacker and defender are in different armies
-  auto attacking_army = getAttackingArmy();
-  auto defending_army = getDefendingArmy();
-  assert( !isSameArmy( attacker, defender ) );
-  const auto& attacker_unit = attacker.getData();
-  const auto& defender_unit = defender.getData();
-  bool positive_luck = attacker.getLuck() > 0;
-  bool luck = ( std::rand() % 100 ) < std::abs( attacker.getLuck() ) * 0.05 ? 1 : 0;
+bool Battle::attack( UnitStack& attacking_unit, UnitStack& defending_unit ) {
+  err::passCondOrAbort( !isSameArmy( attacking_unit, defending_unit ) );
+  const auto& attacking_unit_data = attacking_unit.getData();
+  const auto& defending_unit_data = defending_unit.getData();
+
+  bool positive_luck = attacking_unit.getLuck() > 0;
+  bool luck = ( randint_() % 100 ) < std::abs( attacking_unit.getLuck() ) * 0.05 ? 1 : 0;
   double luck_multiplier = 1.0;
   if ( luck ) {
     if ( positive_luck ) {
@@ -231,22 +227,22 @@ bool Battle::attack( UnitStack& attacker, UnitStack& defender ) {
       luck_multiplier = 0.5;
     }
   }
-  int attack_defense = attacker_unit.attack_ + attacker_->stats().getPrimarySkills().attack_ - defender_unit.defense_
-                       - defender_->stats().getPrimarySkills().defense_;
+  int attack_defense = attacking_unit_data.attack_ + attacker_->stats().getPrimarySkills().attack_
+                       - defending_unit_data.defense_ - defender_->stats().getPrimarySkills().defense_;
   int positive_attack = std::max( 0, attack_defense );
   positive_attack = std::min( 60, positive_attack );
   int positive_defense = std::max( 0, -attack_defense );
   positive_defense = std::min( 28, positive_defense );
-  int min_damage = attacker_unit.min_damage_ * attacker.getSize();
-  int max_damage = attacker_unit.max_damage_ * attacker.getSize();
-  int attacker_dmg = min_damage + ( rand() % ( max_damage - min_damage + 1 ) );
+  int min_damage = attacking_unit_data.min_damage_ * attacking_unit.getSize();
+  int max_damage = attacking_unit_data.max_damage_ * attacking_unit.getSize();
+  int attacker_dmg = min_damage + ( randint_() % ( max_damage - min_damage + 1 ) );
   // dmg  = base DMG * size * (1+0.05*(attack-defense)) * (1-0.025*(defense-attack)) * luck_multiplier
   double dmg = static_cast<double>( attacker_dmg ) * ( 1.0 + ( 0.05 * static_cast<double>( positive_attack ) ) )
                * ( 1.0 - ( 0.025 * static_cast<double>( positive_defense ) ) ) * luck_multiplier;
   int dmg_rounded = static_cast<int>( dmg );
-  defender.modifyCurrentHealth( dmg_rounded );
-  if ( !defender.isAlive() ) {
-    return killUnit( defender );
+  defending_unit.modifyCurrentHealth( dmg_rounded );
+  if ( !defending_unit.isAlive() ) {
+    return killUnit( defending_unit );
   }
   return false;
 }
@@ -308,7 +304,24 @@ UnitStack* Battle::getUnitFromCoords( CoordPair coords ) noexcept {
 }
 
 [[nodiscard]] bool Battle::hasCurrentCharacterThrownSpell() const noexcept {
-  return has_current_character_thrown_spell_this_turn_;
+  if ( current_character_ == attacker_.get() ) {
+    return has_attacker_thrown_spell_this_turn_;
+  }
+  if ( current_character_ == defender_.get() ) {
+    return has_defender_thrown_spell_this_turn_;
+  }
+
+  err::unreachable();
+}
+
+void Battle::setCurrentCharacterThrownSpellTrue() noexcept {
+  if ( current_character_ == attacker_.get() ) {
+    has_attacker_thrown_spell_this_turn_ = true;
+  } else if ( current_character_ == defender_.get() ) {
+    has_defender_thrown_spell_this_turn_ = true;
+  } else {
+    err::unreachable();
+  }
 }
 
 void Battle::nextUnit() {
@@ -532,7 +545,8 @@ std::shared_ptr<Battle> Battle::copy() {
   copy->possible_moves_.clear();
   // Copy primitive and enum members
   copy->round_counter_ = round_counter_;
-  copy->has_current_character_thrown_spell_this_turn_ = has_current_character_thrown_spell_this_turn_;
+  copy->has_attacker_thrown_spell_this_turn_ = has_attacker_thrown_spell_this_turn_;
+  copy->has_defender_thrown_spell_this_turn_ = has_defender_thrown_spell_this_turn_;
   copy->state_ = state_;
 
   return copy;

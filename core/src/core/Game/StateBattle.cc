@@ -349,6 +349,7 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
     transition = handleMoveStack( battle_command );
   } else if ( battle_command.maybe_spell_.has_value() ) {
     transition = handleCastSpell( battle_command );
+    battle_.setCurrentCharacterThrownSpellTrue();
   } else {
     assert( false && "GameStateBattle::applyCommand -> unexpected state" );
   }

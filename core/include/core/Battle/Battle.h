@@ -5,6 +5,7 @@
   - Zawiera metody do atakowania jednostek, zarządzania kolejnością jednostek w bitwie.
 */
 #include <cassert>
+#include <cstdlib>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -45,7 +46,9 @@ class Battle : public std::enable_shared_from_this<Battle> {
   std::shared_ptr<Character> defender_;
   Character* current_character_;
   int round_counter_ = 0;
-  bool has_current_character_thrown_spell_this_turn_;
+  bool has_attacker_thrown_spell_this_turn_ = false;
+  bool has_defender_thrown_spell_this_turn_ = false;
+  std::function<int( void )> randint_ = std::rand;  // @TODO mock
 
   std::vector<std::reference_wrapper<UnitStack>> round_queue_;
 
@@ -70,13 +73,16 @@ class Battle : public std::enable_shared_from_this<Battle> {
           bool is_minimax );
   Battle( const Battle& ) = delete;
   Battle( Battle&& ) = delete;
+  Battle& operator=( const Battle& ) = delete;
+  Battle& operator=( Battle&& ) = delete;
+  ~Battle() = default;
 
   [[nodiscard]] battle::State getState() const;
   [[nodiscard]] bool setUnit( UnitStack& unit_stack, CoordPair new_coords );
   bool killUnit( UnitStack& dead_unit_to_kill );
   void setBattleState( battle::State state );
   bool move( UnitStack& unit_stack, CoordPair new_coords );
-  bool attack( UnitStack& attacker, UnitStack& defender );
+  bool attack( UnitStack& attacking_unit, UnitStack& defending_unit );
 
   [[nodiscard]] bool isUnitBlocked( const UnitStack& ) const noexcept;
   [[nodiscard]] bool isLegalCommand( const BattleCommand& ) const noexcept;
@@ -89,6 +95,7 @@ class Battle : public std::enable_shared_from_this<Battle> {
   [[nodiscard]] const UnitStack* getUnitFromCoords( CoordPair coords ) const noexcept;
   [[nodiscard]] UnitStack* getUnitFromCoords( CoordPair coords ) noexcept;
   [[nodiscard]] bool hasCurrentCharacterThrownSpell() const noexcept;
+  void setCurrentCharacterThrownSpellTrue() noexcept;
   void nextUnit();
   [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getAttackingArmy() const noexcept;
   [[nodiscard]] std::vector<std::reference_wrapper<UnitStack>> getDefendingArmy() const noexcept;
