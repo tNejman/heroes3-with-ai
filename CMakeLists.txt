@@ -14,7 +14,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message(STATUS "Build type is: ${CMAKE_BUILD_TYPE}")
 
-option(CODE_COVERAGE "code coverage" ON)
+option(CODE_COVERAGE "instrument Debug builds with gcov and add a `coverage` target" ON)
 
 # @TODO uncomment when clang-tidy is ready
 # find_program(CLANG_TIDY_EXE NAMES clang-tidy) 
@@ -142,7 +142,7 @@ function(apply_compiler_flags target)
 
     -Wno-missing-field-initializers
 
-    # --coverage
+    $<$<BOOL:${CODE_COVERAGE}>:--coverage>
     >
 
     $<$<CONFIG:Release>:-march=native>
@@ -150,7 +150,7 @@ function(apply_compiler_flags target)
   target_link_options(${target} PUBLIC
     $<$<CONFIG:Debug>:
     -fsanitize=address,undefined
-    # --coverage
+    $<$<BOOL:${CODE_COVERAGE}>:--coverage>
     >
   )
 endfunction()
@@ -207,3 +207,5 @@ add_subdirectory(app)
 
 enable_testing()
 add_subdirectory(test)
+
+include(cmake/Coverage.cmake)
