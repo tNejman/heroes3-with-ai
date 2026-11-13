@@ -1,4 +1,4 @@
-f_add_test_executable(testUnit testUnit.cc)
-target_link_libraries(testUnit PRIVATE
-    Unit
+f_add_test_executable(testUnit
+  SOURCES testUnit.cc
+  LIBRARIES Unit
 )

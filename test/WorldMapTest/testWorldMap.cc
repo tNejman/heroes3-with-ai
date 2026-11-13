@@ -1,217 +1,162 @@
 #include <gtest/gtest.h>
 
-#include <array>
 #include <memory>
-#include <string>
+#include <ranges>
+#include <variant>
 #include <vector>
 
-#include "aux/BuildVector.hpp"
-#include "aux/DiscardReturn.hpp"
+#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
+#include "core/Exceptions/InvalidMapMoveException.hpp"
+#include "core/Game/IState.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
 #include "engine/model/IGame/Coords.h"
 
-// TEST( WorldMapTests, constructorWithGrid ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
-//   for ( uint32_t i = 0; i < WORLD_MAP_WIDTH; ++i ) {
-//     for ( uint32_t j = 0; j < WORLD_MAP_HEIGHT; ++j ) {
-//       if ( i % 2 && j % 2 ) {
-//         grid_temp[i][j] = 0;
-//       }
-//     }
-//   }
+namespace {
 
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
-//   for ( auto x = 0u; x < WORLD_MAP_WIDTH; ++x ) {
-//     for ( auto y = 0u; y < WORLD_MAP_HEIGHT; ++y ) {
-//       ASSERT_NO_THROW( world_map->getMapObject( CoordPair( x, y ) ) );
-//     }
-//   }
-// }
+constexpr int DIRT = static_cast<int>( Terrain::DIRT );
 
-TEST( WorldMapTests, loadGrid ) {
-  std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-  for ( auto& col : grid_temp ) {
-    col.fill( 1 );
+WorldMapGrid<int> filledGrid( int terrain ) {
+  WorldMapGrid<int> grid{};
+  for ( auto& column : grid ) {
+    column.fill( terrain );
   }
-  std::shared_ptr<WorldMap> world_map = nullptr;
-  ASSERT_NO_THROW( world_map = std::make_shared<WorldMap>( grid_temp ) );
-  for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
-    for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { x, y } ) );
-    }
+  return grid;
+}
+
+auto allCoords() {
+  return std::views::cartesian_product( std::views::iota( 0, WORLD_MAP_WIDTH ),
+                                        std::views::iota( 0, WORLD_MAP_HEIGHT ) )
+         | std::views::transform( []( auto xy ) { return CoordPair{ std::get<0>( xy ), std::get<1>( xy ) }; } );
+}
+
+std::shared_ptr<OverworldObstacle> makeTree( CoordPair coords ) {
+  return std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, coords );
+}
+
+class WorldMapTest : public ::testing::Test {
+ protected:
+  const WorldMapGrid<int> grid_ = filledGrid( DIRT );
+  WorldMap world_map_{ grid_ };
+};
+
+}  // namespace
+
+/*
+====== Loading ======
+*/
+
+TEST_F( WorldMapTest, loadGridSetsTerrainAndLeavesForegroundEmpty ) {
+  for ( const CoordPair coords : allCoords() ) {
+    SCOPED_TRACE( coords );
+    ASSERT_EQ( world_map_.getTerrain( coords ), Terrain::DIRT );
+    ASSERT_EQ( world_map_.getMapObject( coords ), nullptr );
   }
 }
 
-TEST( WorldMapTests, loadObstacles ) {
-  std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-  for ( auto& col : grid_temp ) {
-    col.fill( 1 );
-  }
+TEST_F( WorldMapTest, loadObstaclesPlacesThemAtTheirCoords ) {
+  const std::vector obstacles{
+      std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) ),
+      std::make_shared<OverworldObstacle>( OverworldObstacleType::GREEN_TREE, CoordPair( 2, 2 ) ),
+  };
 
-  std::vector<std::shared_ptr<OverworldObstacle>> obstacles =
-      buildVector( std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) ),
-                   std::make_shared<OverworldObstacle>( OverworldObstacleType::GREEN_TREE, CoordPair( 2, 2 ) ) );
+  const auto world_map = std::make_unique<WorldMap>( grid_, obstacles );
 
-  std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp, obstacles );
-
-  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 1, 1 } ) );
-  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 2, 2 } ) );
-
-  ASSERT_EQ( obstacles[0].get(), world_map->getMapObject( { 1, 1 } ) );
-  ASSERT_EQ( obstacles[1].get(), world_map->getMapObject( { 2, 2 } ) );
+  EXPECT_EQ( world_map->getMapObject( { 1, 1 } ), obstacles[0].get() );
+  EXPECT_EQ( world_map->getMapObject( { 2, 2 } ), obstacles[1].get() );
 }
 
-TEST( WorldMapTests, loadObjectsDuplicated ) {
-  std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-  for ( auto& col : grid_temp ) {
-    col.fill( 1 );
+TEST_F( WorldMapTest, loadObstaclesOnSameTileKeepsTheLastOne ) {
+  const std::vector obstacles{
+      std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) ),
+      std::make_shared<OverworldObstacle>( OverworldObstacleType::GREEN_TREE, CoordPair( 1, 1 ) ),
+  };
+
+  const auto world_map = std::make_unique<WorldMap>( grid_, obstacles );
+
+  EXPECT_EQ( world_map->getMapObject( { 1, 1 } ), obstacles[1].get() );
+  for ( const CoordPair coords : allCoords() ) {
+    SCOPED_TRACE( coords );
+    ASSERT_NE( world_map->getMapObject( coords ), obstacles[0].get() );
   }
-  std::vector<std::shared_ptr<OverworldObstacle>> obstacles;
-  obstacles.push_back( std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) ) );
-  obstacles.push_back( std::make_shared<OverworldObstacle>( OverworldObstacleType::GREEN_TREE, CoordPair( 1, 1 ) ) );
-
-  std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp, obstacles );
-
-  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 1, 1 } ) );
-
-  // check if the first obstacle was replaced by the second one
-  for ( int x = 0; x < WORLD_MAP_WIDTH; ++x ) {
-    for ( int y = 0; y < WORLD_MAP_HEIGHT; ++y ) {
-      ASSERT_NE( world_map->getMapObject( { x, y } ), obstacles[0].get() );
-    }
-  }
-  ASSERT_EQ( obstacles[1].get(), world_map->getMapObject( { 1, 1 } ) );
 }
 
-TEST( WorldMapTests, setMapObject ) {
-  std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-  for ( auto& col : grid_temp ) {
-    col.fill( 1 );
-  }
+/*
+====== Bounds ======
+*/
 
-  std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
+TEST( WorldMapBoundsTest, areCoordsInBounds ) {
+  EXPECT_TRUE( WorldMap::areCoordsInBounds( { 0, 0 } ) );
+  EXPECT_TRUE( WorldMap::areCoordsInBounds( { WORLD_MAP_WIDTH - 1, WORLD_MAP_HEIGHT - 1 } ) );
 
-  auto obstacle = std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) );
-  ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle ) );
-
-  ASSERT_EQ( obstacle.get(), world_map->getMapObject( { 1, 1 } ) );
+  EXPECT_FALSE( WorldMap::areCoordsInBounds( { -1, 0 } ) );
+  EXPECT_FALSE( WorldMap::areCoordsInBounds( { 0, -1 } ) );
+  EXPECT_FALSE( WorldMap::areCoordsInBounds( { WORLD_MAP_WIDTH, 0 } ) );
+  EXPECT_FALSE( WorldMap::areCoordsInBounds( { 0, WORLD_MAP_HEIGHT } ) );
 }
 
-// TEST( WorldMapTests, setMapObjectOutOfBounds ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
+/*
+====== Setting ======
+*/
 
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
+TEST_F( WorldMapTest, setMapObject ) {
+  const auto obstacle = makeTree( { 1, 1 } );
 
-//   auto obstacle = std::make_shared<OverworldObstacle>( "Obstacle1", CoordPair( WORLD_MAP_WIDTH, WORLD_MAP_HEIGHT ) );
-//   ASSERT_THROW( world_map->setMapObject( CoordPair( WORLD_MAP_WIDTH, WORLD_MAP_HEIGHT ), obstacle ),
-//                 CoordinateOutOfBoundsException );
-// }
+  world_map_.setMapObject( { 1, 1 }, obstacle );
 
-// TEST( WorldMapTests, setMapObjectOnOccupiedTile ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
-
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
-
-//   auto obstacle1 = std::make_shared<OverworldObstacle>( "Obstacle1", CoordPair( 1, 1 ) );
-//   auto obstacle2 = std::make_shared<OverworldObstacle>( "Obstacle2", CoordPair( 1, 1 ) );
-
-//   ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle1 ) );
-//   ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle2 ) );
-//   ASSERT_NE( obstacle1.get(), world_map->getMapObject( { 1, 1 } ) );
-//   ASSERT_EQ( obstacle2.get(), world_map->getMapObject( { 1, 1 } ) );
-// }
-
-TEST( WorldMapTests, moveMapObject ) {
-  std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-  for ( auto& col : grid_temp ) {
-    col.fill( 1 );
-  }
-
-  std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
-
-  auto obstacle = std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) );
-  ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle ) );
-
-  ASSERT_NO_THROW( DISCARD_RETURN() world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( 2, 2 ) ) );
-  ASSERT_EQ( obstacle.get(), world_map->getMapObject( { 2, 2 } ) );
-  ASSERT_EQ( nullptr, world_map->getMapObject( { 1, 1 } ) );
+  EXPECT_EQ( world_map_.getMapObject( { 1, 1 } ), obstacle.get() );
 }
 
-// TEST( WorldMapTests, moveMapObjectOutOfBounds ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
+TEST_F( WorldMapTest, setMapObjectOnOccupiedTileReplacesIt ) {
+  const auto obstacle1 = makeTree( { 1, 1 } );
+  const auto obstacle2 = makeTree( { 1, 1 } );
 
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
+  world_map_.setMapObject( { 1, 1 }, obstacle1 );
+  world_map_.setMapObject( { 1, 1 }, obstacle2 );
 
-//   auto obstacle = std::make_shared<OverworldObstacle>( "Obstacle1", CoordPair( 1, 1 ) );
-//   ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle ) );
-
-//   ASSERT_THROW( world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( WORLD_MAP_WIDTH + 10, WORLD_MAP_HEIGHT + 10 )
-//   ),
-//                 CoordinateOutOfBoundsException );
-// }
-
-// TEST( WorldMapTests, moveMapObjectOnOccupiedTile ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
-
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
-
-//   auto obstacle1 = std::make_shared<OverworldObstacle>( "Obstacle1", CoordPair( 1, 1 ) );
-//   auto obstacle2 = std::make_shared<OverworldObstacle>( "Obstacle2", CoordPair( 2, 2 ) );
-
-//   ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle1 ) );
-//   ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 2, 2 ), obstacle2 ) );
-
-//   ASSERT_THROW( world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( 2, 2 ) ), InvalidMapMoveException );
-// }
-
-// TEST( WorldMapTests, moveMapObjectNoExisting ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
-
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
-
-//   ASSERT_THROW( world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( 2, 2 ) ), InvalidMapMoveException );
-// }
-
-TEST( WorldMapTests, getTile ) {
-  std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-  for ( auto& col : grid_temp ) {
-    col.fill( 1 );
-  }
-
-  std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
-
-  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { 0, 0 } ) );
-  ASSERT_NO_THROW( DISCARD_RETURN() world_map->getMapObject( { WORLD_MAP_WIDTH - 1, WORLD_MAP_HEIGHT - 1 } ) );
+  EXPECT_EQ( world_map_.getMapObject( { 1, 1 } ), obstacle2.get() );
 }
 
-// TEST( WorldMapTests, getTileOutOfBounds ) {
-//   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};
-//   for ( auto& col : grid_temp ) {
-//     col.fill( 1 );
-//   }
+TEST_F( WorldMapTest, resetMapObjectEmptiesTile ) {
+  world_map_.setMapObject( { 1, 1 }, makeTree( { 1, 1 } ) );
 
-//   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
+  world_map_.resetMapObject( { 1, 1 } );
 
-//   ASSERT_THROW( world_map->getMapObject( { WORLD_MAP_WIDTH + 1, WORLD_MAP_HEIGHT + 1 } ),
-//                 CoordinateOutOfBoundsException );
-// }
+  EXPECT_EQ( world_map_.getMapObject( { 1, 1 } ), nullptr );
+}
+
+/*
+====== Moving ======
+*/
+
+TEST_F( WorldMapTest, moveMapObject ) {
+  const auto obstacle = makeTree( { 1, 1 } );
+  world_map_.setMapObject( { 1, 1 }, obstacle );
+
+  const game::StateTransition transition = world_map_.moveMapObject( { 1, 1 }, { 2, 2 } );
+
+  EXPECT_TRUE( std::holds_alternative<game::NoTransition>( transition ) );
+  EXPECT_EQ( world_map_.getMapObject( { 2, 2 } ), obstacle.get() );
+  EXPECT_EQ( world_map_.getMapObject( { 1, 1 } ), nullptr );
+  EXPECT_EQ( obstacle->getCoords(), CoordPair( 2, 2 ) );
+}
+
+TEST_F( WorldMapTest, moveMapObjectOutOfBoundsThrows ) {
+  world_map_.setMapObject( { 1, 1 }, makeTree( { 1, 1 } ) );
+
+  EXPECT_THROW( (void)world_map_.moveMapObject( { 1, 1 }, { WORLD_MAP_WIDTH + 10, WORLD_MAP_HEIGHT + 10 } ),
+                CoordinateOutOfBoundsException );
+  EXPECT_THROW( (void)world_map_.moveMapObject( { -1, 0 }, { 1, 1 } ), CoordinateOutOfBoundsException );
+}
+
+TEST_F( WorldMapTest, moveMapObjectOntoOccupiedTileThrows ) {
+  world_map_.setMapObject( { 1, 1 }, makeTree( { 1, 1 } ) );
+  world_map_.setMapObject( { 2, 2 }, makeTree( { 2, 2 } ) );
+
+  EXPECT_THROW( (void)world_map_.moveMapObject( { 1, 1 }, { 2, 2 } ), InvalidMapMoveException );
+}
+
+TEST_F( WorldMapTest, moveMapObjectFromEmptyTileThrows ) {
+  EXPECT_THROW( (void)world_map_.moveMapObject( { 1, 1 }, { 2, 2 } ), InvalidMapMoveException );
+}

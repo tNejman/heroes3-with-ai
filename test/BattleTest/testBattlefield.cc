@@ -1,233 +1,121 @@
 #include <gtest/gtest.h>
 
 #include <array>
-#include <cstdint>
+#include <cstddef>
+#include <magic_enum/magic_enum.hpp>
 #include <memory>
+#include <optional>
+#include <ranges>
+#include <string>
+#include <vector>
 
 #include "core/Battle/BattleField.h"
+#include "core/Battle/Tile.h"  // IWYU pragma: keep (Tile::getCoords)
+#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "engine/model/IGame/Coords.h"
 
-TEST( LayoutTest, check_up_right_neighbour_even ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF - 1; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) {
-        continue;
-      }
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[UR],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[UR] ) );
-    };
-  }
-  // top row
-  const uint32_t max_y = MAP_HEIGHT_BF - 1;
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, max_y ) )[UR], nullptr );
-  }
-  // right column
-  const uint32_t max_x = MAP_WIDTH_BF - 1;
-  for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) {
-      continue;
-    }
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[UR], nullptr );
-  }
-}  // done
+namespace {
 
-TEST( LayoutTest, check_right_neighbour_even ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++y ) {
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[R],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[R] ) );
+bool isOnBattlefield( CoordPair coords ) {
+  return coords.x_ >= 0 && coords.x_ < MAP_WIDTH_BF && coords.y_ >= 0 && coords.y_ < MAP_HEIGHT_BF;
+}
+
+auto allBattlefieldCoords() {
+  return std::views::cartesian_product( std::views::iota( 0, MAP_WIDTH_BF ), std::views::iota( 0, MAP_HEIGHT_BF ) )
+         | std::views::transform( []( auto xy ) { return CoordPair{ std::get<0>( xy ), std::get<1>( xy ) }; } );
+}
+
+// Coordinates of each neighbour in BATTLE_DIRECTIONS order; std::nullopt where the neighbour is off the battlefield.
+using Neighbourhood = std::array<std::optional<CoordPair>, 6>;
+
+Neighbourhood neighbourCoords( BattleField& battlefield, CoordPair coords ) {
+  const auto neighbours = battlefield.getTileNeighbours( coords );
+  Neighbourhood result{};
+  for ( auto [i, tile] : std::views::enumerate( neighbours ) | std::views::take( result.size() ) ) {
+    if ( tile != nullptr ) {
+      result.at( static_cast<std::size_t>( i ) ) = tile->getCoords();
     }
   }
-  // right column
-  const uint32_t max_x = MAP_WIDTH_BF - 1;
-  for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) {
-      continue;
-    }
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[R], nullptr );
-  }
-}  // done
+  return result;
+}
 
-TEST( LayoutTest, check_down_right_neighbour_even ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
-    for ( uint32_t y = 2; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) {
-        continue;
-      }
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[DR],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[DR] ) );
-    }
-  }
-  // max right col
-  const uint32_t max_x = MAP_WIDTH_BF - 1;
-  for ( uint32_t y = 2; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) {
-      continue;
-    }
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[DR], nullptr );
-  }
-  // max bottom row
-  const uint32_t min_y = 0u;
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, min_y ) )[DR], nullptr );
-  }
-}  // done
+class BattleFieldTest : public ::testing::Test {
+ protected:
+  BattleField battlefield_{ Terrain::GRASS };
+};
 
-TEST( LayoutTest, check_down_left_neighbour_even ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 2; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[DL],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[DL] ) );
-    }
-  }
-  // max bottom row
-  const uint32_t min_y = 0u;
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, min_y ) )[DL], nullptr );
-  }
-}  // done
+class BattleFieldNeighbourTest : public ::testing::TestWithParam<BATTLE_DIRECTIONS> {
+ protected:
+  BattleField battlefield_{ Terrain::GRASS };
+};
 
-TEST( LayoutTest, check_left_neighbour_even ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-  for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) {
-        continue;
-      }
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[L],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[L] ) );
-    }
-  }
-  const uint32_t min_x = 0u;
-  for ( uint32_t y = 0; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) {
-      continue;
-    }
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L], nullptr );
-  }
-}  // done
+}  // namespace
 
-TEST( LayoutTest, check_up_left_neighbour_even ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 0; y < MAP_HEIGHT_BF - 1; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[UL],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + EVEN_DIRECTIONS_BATTLE[UL] ) );
-    }
-  }
-  const uint32_t max_y = MAP_HEIGHT_BF - 1;
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, max_y ) )[UL], nullptr );
-  }
-}  // done
-
-TEST( LayoutTest, check_up_right_neighbour_odd ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[UR],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + ODD_DIRECTIONS_BATTLE[UR] ) );
-    }
-  }
-}  // done
-
-TEST( LayoutTest, check_right_neighbour_odd ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF - 1; ++x ) {
-    for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[R],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + ODD_DIRECTIONS_BATTLE[R] ) );
-    }
-  }
-  const uint32_t max_x = MAP_WIDTH_BF - 1;
-  for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( max_x, y ) )[R], nullptr );
-  }
-}  // done
-
-TEST( LayoutTest, check_down_right_neighbour_odd ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-
-  for ( uint32_t x = 0; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[DR],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + ODD_DIRECTIONS_BATTLE[DR] ) );
-    }
-  }
-}  // done
-
-TEST( LayoutTest, check_down_left_neighbour_odd ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-
-  for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[DL],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + ODD_DIRECTIONS_BATTLE[DL] ) );
-    }
-  }
-  const uint32_t min_x = 0u;
-  for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[DL], nullptr );
-  }
-}  // done
-
-TEST( LayoutTest, check_left_neighbour_odd ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-
-  for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[L],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + ODD_DIRECTIONS_BATTLE[L] ) );
-    }
-  }
-  const uint32_t min_x = 0u;
-  for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[L], nullptr );
-  }
-}  // done
-
-TEST( LayoutTest, check_up_left_neighbour_odd ) {
-  std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>( Terrain::GRASS );
-
-  for ( uint32_t x = 1; x < MAP_WIDTH_BF; ++x ) {
-    for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-      if ( y >= MAP_HEIGHT_BF ) continue;
-      ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( x, y ) )[UL],
-                 battlefield->getTileByProxy( CoordPair( x, y ) + ODD_DIRECTIONS_BATTLE[UL] ) );
-    }
-  }
-  const uint32_t min_x = 0u;
-  for ( uint32_t y = 1; y < MAP_HEIGHT_BF; ++ ++y ) {
-    if ( y >= MAP_HEIGHT_BF ) continue;
-    ASSERT_EQ( battlefield->getTileNeighbours( CoordPair( min_x, y ) )[UL], nullptr );
+TEST_F( BattleFieldTest, everyTileHasSixNeighbourSlots ) {
+  for ( const CoordPair coords : allBattlefieldCoords() ) {
+    SCOPED_TRACE( coords );
+    ASSERT_EQ( battlefield_.getTileNeighbours( coords ).size(), 6 );
   }
 }
 
-// WIP
-// TEST( LayoutConnection, checkingIfConnected ) {
-//   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>();
-//   ASSERT_EQ(2,battlefield->ifConnected(0,0,2,1));
-// }
+// Even rows are shifted right relative to odd rows, so the same direction maps to different shifts per row parity.
+TEST_P( BattleFieldNeighbourTest, neighbourMatchesRowParityShiftOrIsNullOffTheMap ) {
+  const auto direction = static_cast<std::size_t>( GetParam() );
 
-// TEST( LayoutConnection, checkingIfConnectedfar ) {
-//   std::unique_ptr<BattleField> battlefield = std::make_unique<BattleField>();
-//   ASSERT_EQ(19,battlefield->ifConnected(0,0,14,10));
-// }
+  for ( const CoordPair coords : allBattlefieldCoords() ) {
+    SCOPED_TRACE( coords );
+    const auto& shifts = ( coords.y_ % 2 == 0 ) ? EVEN_DIRECTIONS_BATTLE : ODD_DIRECTIONS_BATTLE;
+    const CoordPair expected = coords + shifts.at( direction );
+
+    const auto neighbour = battlefield_.getTileNeighbours( coords ).at( direction );
+
+    if ( isOnBattlefield( expected ) ) {
+      ASSERT_EQ( neighbour, battlefield_.getTileByProxy( expected ) );
+    } else {
+      ASSERT_EQ( neighbour, nullptr );
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P( AllDirections, BattleFieldNeighbourTest,
+                          ::testing::ValuesIn( magic_enum::enum_values<BATTLE_DIRECTIONS>() ),
+                          []( const ::testing::TestParamInfo<BATTLE_DIRECTIONS>& param_info ) {
+                            return std::string( magic_enum::enum_name( param_info.param ) );
+                          } );
+
+// Hand-written expectations, independent of the EVEN/ODD lookup tables used by the implementation.
+TEST_F( BattleFieldTest, neighboursOfEvenRowTile ) {
+  const Neighbourhood expected{ CoordPair{ 8, 5 }, CoordPair{ 8, 4 }, CoordPair{ 8, 3 },
+                                CoordPair{ 7, 3 }, CoordPair{ 6, 4 }, CoordPair{ 7, 5 } };
+
+  EXPECT_EQ( neighbourCoords( battlefield_, { 7, 4 } ), expected );
+}
+
+TEST_F( BattleFieldTest, neighboursOfOddRowTile ) {
+  const Neighbourhood expected{ CoordPair{ 7, 6 }, CoordPair{ 8, 5 }, CoordPair{ 7, 4 },
+                                CoordPair{ 6, 4 }, CoordPair{ 6, 5 }, CoordPair{ 6, 6 } };
+
+  EXPECT_EQ( neighbourCoords( battlefield_, { 7, 5 } ), expected );
+}
+
+TEST_F( BattleFieldTest, neighboursOfBottomLeftCorner ) {
+  const Neighbourhood expected{ CoordPair{ 1, 1 }, CoordPair{ 1, 0 }, std::nullopt,
+                                std::nullopt,      std::nullopt,      CoordPair{ 0, 1 } };
+
+  EXPECT_EQ( neighbourCoords( battlefield_, { 0, 0 } ), expected );
+}
+
+TEST_F( BattleFieldTest, neighboursOfTopRightCorner ) {
+  // top row (y = 10) is even, so it is shifted right and has no UR/R/UL neighbours at the right edge
+  const Neighbourhood expected{ std::nullopt,       std::nullopt,        std::nullopt,
+                                CoordPair{ 14, 9 }, CoordPair{ 13, 10 }, std::nullopt };
+
+  EXPECT_EQ( neighbourCoords( battlefield_, BATTLE_MAP_TOP_RIGHT_COORDS ), expected );
+}
+
+TEST_F( BattleFieldTest, getTileByProxyOutsideBattlefieldThrows ) {
+  EXPECT_THROW( battlefield_.getTileByProxy( { MAP_WIDTH_BF, 0 } ), CoordinateOutOfBoundsException );
+  EXPECT_THROW( battlefield_.getTileByProxy( { 0, MAP_HEIGHT_BF } ), CoordinateOutOfBoundsException );
+  EXPECT_THROW( battlefield_.getTileByProxy( { -1, 0 } ), CoordinateOutOfBoundsException );
+}

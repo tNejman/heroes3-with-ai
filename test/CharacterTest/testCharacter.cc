@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "aux/Builder.hpp"
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
@@ -8,119 +10,113 @@
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Misc/BuilderDefaults.hpp"
-#include "core/Unit/Faction.hpp"
 #include "engine/model/IGame/Coords.h"
 
+namespace {
+
+Character makeJohn() {
+  return Builder<Character>{}
+      .setName( "John" )
+      .setCoords( CoordPair{ 3, 4 } )
+      .setStats( Builder<character::Stats>{}
+                     .setPrimarySkills(
+                         character::Stats::PrimarySkills{ .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 } )
+                     .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } )
+                     .build() )
+      .build();
+}
+
+void expectSameStats( const character::Stats& actual, const character::Stats& expected ) {
+  EXPECT_EQ( actual.getPrimarySkills().attack_, expected.getPrimarySkills().attack_ );
+  EXPECT_EQ( actual.getPrimarySkills().defense_, expected.getPrimarySkills().defense_ );
+  EXPECT_EQ( actual.getPrimarySkills().power_, expected.getPrimarySkills().power_ );
+  EXPECT_EQ( actual.getPrimarySkills().knowledge_, expected.getPrimarySkills().knowledge_ );
+  EXPECT_EQ( actual.getLevel().level_, expected.getLevel().level_ );
+  EXPECT_EQ( actual.getLevel().experience_, expected.getLevel().experience_ );
+  EXPECT_EQ( actual.getMisc().morale_, expected.getMisc().morale_ );
+  EXPECT_EQ( actual.getMisc().luck_, expected.getMisc().luck_ );
+}
+
+}  // namespace
+
 TEST( CharacterTest, createValidCharacter ) {
-  // std::unique_ptr<Character> character1 = std::make_unique<Character>(
-  //     "John", { 0, 0 }, character::Stats{ character::Stats::PrimarySkills{ 1, 2, 3, 4 } }, character::Stats::Misc{ 1,
-  //     2 }
-  //     );
-  Character character1 = Builder<Character>{}
-                             .setName( "John" )
-                             .setCoords( CoordPair{ 0, 0 } )
-                             .setStats( Builder<character::Stats>{}
-                                            .setPrimarySkills( character::Stats::PrimarySkills{
-                                                .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 } )
-                                            .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } )
-                                            .build() )
-                             .build();
+  const Character john = makeJohn();
 
-  ASSERT_EQ( character1.getName(), "John" );
-  ASSERT_EQ( character1.getCoords(), CoordPair( 0, 0 ) );
-  ASSERT_EQ( character1.stats().getPrimarySkills().attack_, 1 );
-  ASSERT_EQ( character1.stats().getPrimarySkills().defense_, 2 );
-  ASSERT_EQ( character1.stats().getPrimarySkills().power_, 3 );
-  ASSERT_EQ( character1.stats().getPrimarySkills().knowledge_, 4 );
-  ASSERT_EQ( character1.stats().getLevel().level_, 1 );
-  ASSERT_EQ( character1.stats().getLevel().experience_, 0 );
-  // ASSERT_EQ( character1.getStats().getMana().max_mana_, 5 );
-  // ASSERT_EQ( character1.getStats().getMana().current_mana_, 5 );
-  // ASSERT_EQ(character1->getMovementPoints(), );
-  ASSERT_EQ( character1.stats().getMisc().morale_, 5 );
-  ASSERT_EQ( character1.stats().getMisc().luck_, 6 );
-
-  // ASSERT_FALSE( character1->getIfBackpackFull() );
+  EXPECT_EQ( john.getName(), "John" );
+  EXPECT_EQ( john.getCoords(), CoordPair( 3, 4 ) );
+  EXPECT_EQ( john.stats().getPrimarySkills().attack_, 1 );
+  EXPECT_EQ( john.stats().getPrimarySkills().defense_, 2 );
+  EXPECT_EQ( john.stats().getPrimarySkills().power_, 3 );
+  EXPECT_EQ( john.stats().getPrimarySkills().knowledge_, 4 );
+  EXPECT_EQ( john.stats().getLevel().level_, 1 );
+  EXPECT_EQ( john.stats().getLevel().experience_, 0 );
+  EXPECT_EQ( john.stats().getMisc().morale_, 5 );
+  EXPECT_EQ( john.stats().getMisc().luck_, 6 );
 }
 
-TEST( CharacterTest, moveArtifactsAround ) {
-  // std::unique_ptr<Character> character1 =
-  //     std::make_unique<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
-  Character character1 = Builder<Character>{}.build();
-  Artifact crown_otsm = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
+TEST( CharacterTest, equipArtifactMovesItFromBackpackToSlot ) {
+  Character character = Builder<Character>{}.build();
 
-  character1.inventory().pickUpArtifact( crown_otsm );
-  ASSERT_EQ( character1.inventory().getBackpack().size(), 1 );
-  ASSERT_EQ( character1.inventory().getBackpack()[0].getData().type_, artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
+  character.inventory().pickUpArtifact( Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI ) );
+  ASSERT_EQ( character.inventory().getBackpack().size(), 1 );
+  EXPECT_EQ( character.inventory().getBackpack()[0].getData().type_, artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
 
-  character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET );
-  ASSERT_EQ( character1.inventory().getBackpack().size(), 0 );
+  character.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET );
+
+  EXPECT_TRUE( character.inventory().getBackpack().empty() );
+  const auto& helmet = character.inventory().getSlot( EquipmentSlots::HELMET );
+  ASSERT_TRUE( helmet.has_value() );
+  EXPECT_EQ( helmet->getData().type_, artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
 }
 
-TEST( CharacterTest, equipUknownArtifact ) {
-  // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
-  // );
-  Character character1 = Builder<Character>{}.build();
+TEST( CharacterTest, equipArtifactNotInBackpackThrows ) {
+  Character character = Builder<Character>{}.build();
 
-  ASSERT_THROW(
-      character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
+  EXPECT_THROW(
+      character.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
       InvalidArtifactTypeException );
 }
 
-TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlot ) {
-  // std::unique_ptr<Character> character1 = std::make_unique<Character>( "John", CoordPair( 0, 0 ), 1, 2, 3, 4, 5, 6, 7
-  // );
-  Character character1 = Builder<Character>{}.build();
-
-  Artifact crown_otsm1 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
-  Artifact crown_otsm2 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
-
-  character1.inventory().pickUpArtifact( crown_otsm1 );
-  character1.inventory().pickUpArtifact( crown_otsm2 );
+TEST( CharacterTest, equipTwoArtifactsIntoTheSameSlotThrows ) {
+  Character character = Builder<Character>{}.build();
+  character.inventory().pickUpArtifact( Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI ) );
+  character.inventory().pickUpArtifact( Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI ) );
 
   ASSERT_NO_THROW(
-      character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ) );
-  ASSERT_THROW(
-      character1.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
+      character.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ) );
+  EXPECT_THROW(
+      character.inventory().equipArtifact( artifact::Type::CROWN_OF_THE_SUPREME_MAGI, EquipmentSlots::HELMET ),
       NotEmptySlotException );
 }
 
 TEST( CharacterTest, copyCharacter ) {
-  // std::shared_ptr<Character> character_original =
-  //     std::make_shared<Character>( "John", CoordPair( 0u, 0u ), 1, 2, 3, 4, 5, 6, 7 );
-  Character character_original = Builder<Character>{}
-                                     .setName( "John" )
-                                     .setCoords( CoordPair{ 0, 0 } )
-                                     .setStats( Builder<character::Stats>{}
-                                                    .setPrimarySkills( character::Stats::PrimarySkills{
-                                                        .attack_ = 1, .defense_ = 2, .power_ = 3, .knowledge_ = 4 } )
-                                                    .setMisc( character::Stats::Misc{ .morale_ = 5, .luck_ = 6 } )
-                                                    .build() )
-                                     .build();
+  Character original = makeJohn();
+  original.inventory().pickUpArtifact( Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI ) );
+  original.inventory().pickUpArtifact( Artifact::create( artifact::Type::THUNDER_HELMET ) );
+  original.inventory().equipArtifact( artifact::Type::THUNDER_HELMET, EquipmentSlots::HELMET );
 
-  auto artifact_1 = Artifact::create( artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
-  auto artifact_2 = Artifact::create( artifact::Type::THUNDER_HELMET );
+  const std::shared_ptr<Character> copy = original.copy();
 
-  character_original.inventory().pickUpArtifact( artifact_1 );
-  character_original.inventory().pickUpArtifact( artifact_2 );
+  ASSERT_NE( copy, nullptr );
+  EXPECT_NE( copy.get(), &original );
+  EXPECT_EQ( copy->getId(), original.getId() );
+  EXPECT_EQ( copy->getName(), original.getName() );
+  EXPECT_EQ( copy->getCoords(), original.getCoords() );
+  expectSameStats( copy->stats(), original.stats() );
 
-  character_original.inventory().equipArtifact( artifact::Type::THUNDER_HELMET, EquipmentSlots::HELMET );
+  ASSERT_EQ( copy->inventory().getBackpack().size(), 1 );
+  EXPECT_EQ( copy->inventory().getBackpack()[0].getData().type_, artifact::Type::CROWN_OF_THE_SUPREME_MAGI );
+  const auto& helmet = copy->inventory().getSlot( EquipmentSlots::HELMET );
+  ASSERT_TRUE( helmet.has_value() );
+  EXPECT_EQ( helmet->getData().type_, artifact::Type::THUNDER_HELMET );
+}
 
-  // auto faction = std::make_shared<FactionCastle>();
-  // auto pikeman = faction->getUnit( CastleUnitType::PIKEMAN );
-  // auto pikemen_stack = std::make_shared<UnitStack>( pikeman, 30 );
+TEST( CharacterTest, copyIsIndependentOfOriginal ) {
+  Character original = makeJohn();
+  const std::shared_ptr<Character> copy = original.copy();
 
-  // character_original->recruitUnitStack( pikemen_stack );
+  original.inventory().pickUpArtifact( Artifact::create( artifact::Type::THUNDER_HELMET ) );
 
-  // auto character_copy = character_original->copy();
-
-  // ASSERT_NE( character_original, character_copy );
-  // ASSERT_EQ( character_original->getAttack(), character_copy->getAttack() );
-  // ASSERT_EQ( character_original->getName(), character_copy->getName() );
-  // ASSERT_EQ( character_original->getCoords(), character_copy->getCoords() );
-  // ASSERT_EQ( character_original->getBackpack().size(), character_copy->getBackpack().size() );
-  // ASSERT_EQ( character_original->getPartySize(), character_copy->getPartySize() );
-
-  // ASSERT_EQ( character_original->getBackpack()[0].getData().type_, character_copy->getBackpack()[0].getData().type_
-  // );
+  EXPECT_EQ( original.inventory().getBackpack().size(), 1 );
+  EXPECT_TRUE( copy->inventory().getBackpack().empty() );
 }

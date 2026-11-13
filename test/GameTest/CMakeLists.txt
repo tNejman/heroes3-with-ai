@@ -1,5 +1,4 @@
-f_add_test_executable(testKeyHandler testKeyHandler.cc)
-target_link_libraries(testKeyHandler PRIVATE
-    Game
-    Battle
+f_add_test_executable(testKeyHandler
+  SOURCES testKeyHandler.cc
+  LIBRARIES Game Battle
 )

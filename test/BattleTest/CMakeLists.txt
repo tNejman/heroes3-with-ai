@@ -1,15 +1,10 @@
-f_add_test_executable(testBattle testBattle.cc)
-target_compile_options(testBattle PRIVATE -freflection)
-target_link_libraries(testBattle PRIVATE
-    Battle
-    WorldMap
-    MapObject
+f_add_test_executable(testBattle
+  SOURCES testBattle.cc
+  LIBRARIES Battle WorldMap MapObject
+  REFLECTION
 )
 
-f_add_test_executable(testBattlefield testBattlefield.cc)
-target_link_libraries(testBattlefield PRIVATE
-    Battle
-    Coords
-    WorldMap
-    MapObject
+f_add_test_executable(testBattlefield
+  SOURCES testBattlefield.cc
+  LIBRARIES Battle Coords
 )
