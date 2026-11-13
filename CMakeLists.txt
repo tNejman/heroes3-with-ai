@@ -120,6 +120,11 @@ set(CORE_MODULES
   WorldMap
 )
 
+add_custom_target(pre_compile_check_tools ALL
+  COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/check_all_headers_for_pragma.py
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
 function(apply_compiler_flags target)
   target_compile_options(${target} PRIVATE
     $<$<CONFIG:Debug>:
@@ -162,6 +167,7 @@ foreach(module ${ENGINE_MODEL_MODULES})
     ${CMAKE_SOURCE_DIR}/engine/model/include/
   )
 
+  add_dependencies(${module} pre_compile_check_tools)
   apply_compiler_flags(${module})
 endforeach()
 
@@ -171,9 +177,11 @@ foreach(module ${CORE_MODULES})
     ${CMAKE_SOURCE_DIR}/aux/include/
     ${CMAKE_SOURCE_DIR}/engine/model/include/
     ${CMAKE_SOURCE_DIR}/core/include/
-    # ${CMAKE_SOURCE_DIR}/engine/model/include/ #### @TODO REMOVE ASAP
+
 
   )
+
+  add_dependencies(${module} pre_compile_check_tools)
   apply_compiler_flags(${module})
 endforeach()
 
@@ -191,6 +199,7 @@ foreach(module ${ENGINE_PLATFORM_MODULES})
     ${CMAKE_SOURCE_DIR}/engine/platform/include/
   )
 
+  add_dependencies(${module} pre_compile_check_tools)
   apply_compiler_flags(${module})
 endforeach()
 
