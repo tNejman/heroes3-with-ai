@@ -27,11 +27,16 @@ set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS ON)
 
+list(APPEND CMAKE_PREFIX_PATH
+    "$ENV{HOME}/.local/sfml-3.0.1"
+)
+
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 3.0.1
     SYSTEM
+    FIND_PACKAGE_ARGS 3.0.1 COMPONENTS Graphics Window System
 )
 FetchContent_Declare(
     json
