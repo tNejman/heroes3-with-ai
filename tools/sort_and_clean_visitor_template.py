@@ -83,13 +83,9 @@ def main() -> int:
     sorted_and_unique_template_args = sortAndMakeUniqueTemplateArgs(template_args)
     lines_with_sroted_and_unique_class_decls = addClassDeclarations(lines_no_class_decl, sorted_and_unique_template_args, first_decl_loc)
     
-    print(lines_with_sroted_and_unique_class_decls)
-    
     with open(path, "w") as file:
         for line in lines_with_sroted_and_unique_class_decls:
             file.write(line)
-
-    # @SECTION clean up SpriteVisitor.h
         
     return 0
 

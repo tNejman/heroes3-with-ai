@@ -82,22 +82,25 @@ IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '^<ext/.*\.h>'
-    Priority: 2
-    SortPriority: 0
-    CaseSensitive: false
-  - Regex: '^<.*\.h>'
+  # C++ standard library
+  - Regex: '^<[a-z_]+>$'
     Priority: 1
-    SortPriority: 0
-    CaseSensitive: false
-  - Regex: "^<.*"
-    Priority: 2
-    SortPriority: 0
-    CaseSensitive: false
-  - Regex: ".*"
+    CaseSensitive: true
+  # project modules (quoted or angle-bracket)
+  - Regex: '^["<]engine/model/'
     Priority: 3
-    SortPriority: 0
-    CaseSensitive: false
+  - Regex: '^["<]engine/platform/'
+    Priority: 4
+  - Regex: '^["<]aux/'
+    Priority: 5
+  - Regex: '^["<]core/'
+    Priority: 6
+  # system / third-party headers (SFML, magic_enum, gtest, C headers)
+  - Regex: '^<'
+    Priority: 2
+  # everything else
+  - Regex: '.*'
+    Priority: 7
 IncludeIsMainRegex: "([-_](test|unittest))?$"
 IncludeIsMainSourceRegex: ""
 IndentAccessModifiers: false

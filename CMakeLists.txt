@@ -123,8 +123,18 @@ set(CORE_MODULES
 
 add_compile_options(-freflection) # -fdiagnostics-all-candidates
 
+set(PRE_COMPILE_REQUIREMENTS
+    ${CMAKE_SOURCE_DIR}/tools/sort_and_clean_visitor_template.py
+    ${CMAKE_SOURCE_DIR}/tools/check_include_style.py
+)
+
+set(_pre_comile_req_commands)
+foreach(req ${PRE_COMPILE_REQUIREMENTS})
+    list(APPEND _pre_comile_req_commands COMMAND python3 ${req})
+endforeach()
+    
 add_custom_target(format_visitor_h ALL
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/sort_and_clean_visitor_template.py
+    ${_pre_comile_req_commands}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
