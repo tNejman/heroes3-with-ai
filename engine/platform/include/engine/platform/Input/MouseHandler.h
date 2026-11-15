@@ -21,7 +21,7 @@ class MouseHandler : public IRVisitor {
 
  public:
   void updateMouseCoords( MouseCoords ) noexcept;
-  UserCommand getCommand() noexcept;
+  [[nodiscard]] UserCommand getCommand() noexcept;
 
   void visit( const game::StateOverworld& state ) noexcept override;
   void visit( const game::StateBattle& state ) noexcept override;

@@ -12,7 +12,7 @@ class StateStack {
   std::vector<std::unique_ptr<game::IState>> buf_;
 
  public:
-  StateStack();
+  [[nodiscard]] StateStack() noexcept;
 
   [[nodiscard]] const IState& nth( int i ) const noexcept;
   [[nodiscard]] IState& nth( int i ) noexcept;

@@ -4,7 +4,7 @@
 #include <vector>
 
 template <class T, class... Ts>
-std::vector<T> buildVector( Ts&&... xs ) {
+[[nodiscard]] constexpr std::vector<T> buildVector( Ts&&... xs ) noexcept {
   std::vector<T> v;
   v.reserve( sizeof...( xs ) );
   ( v.emplace_back( std::forward<Ts>( xs ) ), ... );
@@ -12,7 +12,7 @@ std::vector<T> buildVector( Ts&&... xs ) {
 }
 
 template <class... Ts>
-auto buildVector( Ts&&... xs ) {
+[[nodiscard]] constexpr auto buildVector( Ts&&... xs ) noexcept {
   using T = std::common_type_t<std::decay_t<Ts>...>;
   std::vector<T> v;
   v.reserve( sizeof...( xs ) );

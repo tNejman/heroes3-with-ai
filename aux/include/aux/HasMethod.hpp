@@ -6,7 +6,8 @@
 
 #include "aux/FixedString.hpp"
 
-consteval bool hasMethod( std::meta::info type, std::string_view name, std::meta::info signature ) {
+[[nodiscard]] consteval bool hasMethod( std::meta::info type, std::string_view name,
+                                        std::meta::info signature ) noexcept {
   return std::ranges::any_of(
       std::meta::members_of( type, std::meta::access_context::current() ), [&]( std::meta::info member ) {
         return ( std::meta::is_function( member ) || std::meta::is_function_template( member ) )

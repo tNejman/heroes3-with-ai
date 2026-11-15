@@ -14,26 +14,26 @@ class ILoader {
  protected:
   TypeContainer container_;
 
-  virtual void resetCounters() = 0;
-  virtual void moveWordToContainer( int word ) = 0;
-  virtual TypeLoaded getObjectFromContainer() = 0;
+  virtual void resetCounters() noexcept = 0;
+  virtual void moveWordToContainer( int word ) noexcept = 0;
+  [[nodiscard]] virtual TypeLoaded getObjectFromContainer() noexcept = 0;
 
-  [[nodiscard]] bool isNumber( const std::string& s ) const {
+  [[nodiscard]] bool isNumber( const std::string& s ) const noexcept {
     return !s.empty()
            && std::find_if( s.begin(), s.end(), []( unsigned char c ) { return !std::isdigit( c ); } ) == s.end();
   }
 
  public:
-  ILoader() = default;
+  [[nodiscard]] constexpr ILoader() noexcept = default;
   ILoader( const ILoader& ) = delete;
   ILoader( ILoader&& ) = delete;
   ILoader& operator=( const ILoader& ) = delete;
   ILoader& operator=( ILoader&& ) = delete;
-  explicit ILoader( TypeContainer container ) : container_( std::move( container ) ) {
+  [[nodiscard]] constexpr explicit ILoader( TypeContainer container ) noexcept : container_( std::move( container ) ) {
   }
   virtual ~ILoader() = default;
 
-  TypeLoaded load( const std::string& path ) {
+  [[nodiscard]] TypeLoaded load( const std::string& path ) noexcept {
     resetCounters();
     std::ifstream file( path );
     if ( !file.is_open() ) {

@@ -1,8 +1,8 @@
 #pragma once
 
 struct DisableCopyMove {  // NOLINT(cppcoreguidelines-special-member-functions)
-  DisableCopyMove() = default;
+  [[nodiscard]] constexpr DisableCopyMove() noexcept = default;
   DisableCopyMove( const DisableCopyMove& ) = delete;
   DisableCopyMove( DisableCopyMove&& ) = delete;
-  bool operator==( const DisableCopyMove& ) const noexcept = default;
+  [[nodiscard]] constexpr bool operator==( const DisableCopyMove& ) const noexcept = default;
 };

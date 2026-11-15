@@ -5,22 +5,22 @@
 #include <string>
 #include <utility>
 
-#include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "engine/model/IGame/Coords.h"
 
+#include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 
 class CoordinateOutOfBoundsException : public std::exception {
  private:
   std::string message_;
 
  public:
-  CoordinateOutOfBoundsException( std::string msg ) : message_( std::move( msg ) ) {
+  [[nodiscard]] constexpr CoordinateOutOfBoundsException( std::string msg ) noexcept : message_( std::move( msg ) ) {
   }
-  CoordinateOutOfBoundsException( std::string msg, CoordPair coords )
+  [[nodiscard]] CoordinateOutOfBoundsException( std::string msg, CoordPair coords ) noexcept
       : message_( std::format( "{}, {}", msg, coords ) ) {
   }
 
-  [[nodiscard]] const char* what() const noexcept override {
+  [[nodiscard]] constexpr const char* what() const noexcept override {
     return message_.c_str();
   }
 };

@@ -9,7 +9,7 @@
 
 namespace err {
 
-constexpr std::string_view scope( std::string_view fn ) noexcept {
+[[nodiscard]] constexpr std::string_view scope( std::string_view fn ) noexcept {
   if ( auto p = fn.find( '(' ); p != std::string_view::npos ) {
     fn.remove_suffix( fn.size() - p );  // drop "(...)" and trailing qualifiers
   }
@@ -19,7 +19,8 @@ constexpr std::string_view scope( std::string_view fn ) noexcept {
   return fn;
 }
 
-constexpr std::string_view scopeFunName( std::source_location src = std::source_location::current() ) noexcept {
+[[nodiscard]] constexpr std::string_view scopeFunName(
+    std::source_location src = std::source_location::current() ) noexcept {
   return scope( src.function_name() );
 }
 
@@ -49,7 +50,8 @@ requires( !std::convertible_to<Forward, std::string_view> )
 struct Cond {
   bool value;
   std::source_location loc;
-  constexpr Cond( bool v, std::source_location l = std::source_location::current() ) : value( v ), loc( l ) {
+  [[nodiscard]] constexpr Cond( bool v, std::source_location l = std::source_location::current() ) noexcept
+      : value( v ), loc( l ) {
   }
 };
 
@@ -69,7 +71,7 @@ constexpr void passCondOrAbort( Cond c, Args&&... msgs ) {
 }
 
 template <typename E, typename... Args>
-inline void passCondOrThrow( bool condition, Args&&... args ) {
+constexpr void passCondOrThrow( bool condition, Args&&... args ) {
   if ( !condition ) {
     raise<E>( std::forward<Args>( args )... );
   }

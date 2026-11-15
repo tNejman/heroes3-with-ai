@@ -2,10 +2,13 @@
 
 #include <algorithm>
 #include <array>
-#include <magic_enum/magic_enum.hpp>
+#include <cstddef>
 #include <variant>
 
+#include <magic_enum/magic_enum.hpp>
+
 #include "aux/DisableCopyMoveStructHelper.hpp"
+
 #include "core/Character/SecondarySkill.h"
 #include "core/Unit/UnitsLib.h"
 
@@ -214,20 +217,20 @@ constexpr inline std::array BASE_PRESET = {
 constexpr inline int MIN_LEVEL = 1;
 constexpr inline int MAX_LEVEL = 5;
 
-consteval bool isLevelInRange( const spell::BaseData& spell_data ) {
+[[nodiscard]] consteval bool isLevelInRange( const spell::BaseData& spell_data ) noexcept {
   return spell_data.level_ >= spell::MIN_LEVEL && spell_data.level_ <= spell::MAX_LEVEL;
 }
 
 constexpr inline int MIN_MANA_COST = 0;
 constexpr inline int MAX_MANA_COST = 100;
 
-consteval bool isManaInRange( const spell::BaseData& spell_data ) {
+[[nodiscard]] consteval bool isManaInRange( const spell::BaseData& spell_data ) noexcept {
   return spell_data.mana_cost_default_ >= spell::MIN_MANA_COST && spell_data.mana_cost_default_ <= spell::MAX_MANA_COST
          && spell_data.mana_cost_mastery_ >= spell::MIN_MANA_COST
          && spell_data.mana_cost_mastery_ <= spell::MAX_MANA_COST;
 }
 
-consteval bool isNotAoeOrIsAoeInRange( const spell::BaseData& spell_data ) {
+[[nodiscard]] consteval bool isNotAoeOrIsAoeInRange( const spell::BaseData& spell_data ) noexcept {
   return !std::holds_alternative<Target::AOE>( spell_data.target_.target_ )
          || std::get<Target::AOE>( spell_data.target_.target_ ).diameter_ >= 0;
 }
@@ -236,7 +239,7 @@ static_assert( std::ranges::all_of( spell::BASE_PRESET, []( const spell::BaseDat
   return isLevelInRange( spell_data ) && isManaInRange( spell_data ) && isNotAoeOrIsAoeInRange( spell_data );
 } ) );
 
-consteval bool doSpellTypesMatchArrayLocations() {
+[[nodiscard]] consteval bool doSpellTypesMatchArrayLocations() noexcept {
   for ( size_t i = 0; i < spell::BASE_PRESET.size(); ++i ) {
     const auto& spell_data = BASE_PRESET[i];
     if ( spell_data.type_ != static_cast<spell::Type>( i ) ) {

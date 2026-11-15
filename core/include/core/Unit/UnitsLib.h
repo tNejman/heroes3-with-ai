@@ -1,15 +1,10 @@
 #pragma once
-// Autor: Tomasz Nejman i Tomasz Naszkowski
-/* Zawartość klasy unitlib:
-    - klasa pozwala na przechowywanie jednostek
-    - klasa pozwala na tworzenie jednostek
-    - klasa pozwala na dodawanie jednostek do armii
-*/
 
 #include <array>
 #include <cstddef>
-#include <magic_enum/magic_enum.hpp>
 #include <variant>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "aux/DisableCopyMoveStructHelper.hpp"
 #include "aux/Enum.hpp"
@@ -457,7 +452,7 @@ constexpr inline std::array UNITS_PRESET_CASTLE = { UnitData{
                                                         .is_range_ = false,
                                                     } };
 
-constexpr const UnitData& getUnitDataFromType( UnitTypeV type ) {
+[[nodiscard]] constexpr const UnitData& getUnitDataFromType( UnitTypeV type ) noexcept {
   return std::visit(
       Overload{ [&]( ForgeUnitType t ) -> const UnitData& { return UNITS_PRESET_FORGE[static_cast<size_t>( t )]; },
                 [&]( ConfluxUnitType t ) -> const UnitData& { return UNITS_PRESET_CONFLUX[static_cast<size_t>( t )]; },
@@ -475,8 +470,8 @@ static_assert( UNITS_PRESET_CONFLUX.size() == EXPECTED_UNITS_PRESET_COUNT );
 static_assert( UNITS_PRESET_CASTLE.size() == EXPECTED_UNITS_PRESET_COUNT );
 
 template <Enum E>
-consteval bool areAllUnitsPreset(
-    const std::array<UnitData, static_cast<size_t>( magic_enum::enum_count<E>() )>& array ) {
+[[nodiscard]] consteval bool areAllUnitsPreset(
+    const std::array<UnitData, static_cast<size_t>( magic_enum::enum_count<E>() )>& array ) noexcept {
   for ( size_t i = 0; i < array.size(); ++i ) {
     const auto& unit_data = array[i];
     if ( std::get<E>( unit_data.type_ ) != static_cast<E>( i ) ) {

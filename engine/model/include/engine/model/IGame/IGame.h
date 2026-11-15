@@ -12,7 +12,7 @@ class IGame {  // NOLINT(cppcoreguidelines-special-member-functions)
   int ticks_since_start_ = 0;
 
  protected:
-  IGame() = default;
+  [[nodiscard]] IGame() noexcept = default;
 
   [[nodiscard]] StateStack& getStateStack() noexcept;
   [[nodiscard]] const StateStack& getStateStack() const noexcept;

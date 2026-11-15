@@ -52,10 +52,10 @@ class Stats {
   Movement movement_;
 
  public:
-  constexpr Stats() noexcept;
-  constexpr Stats( PrimarySkills primary_skills ) noexcept;
-  constexpr Stats( Misc misc ) noexcept;
-  constexpr Stats( PrimarySkills primary_skills, Misc misc ) noexcept;
+  [[nodiscard]] constexpr Stats() noexcept;
+  [[nodiscard]] constexpr Stats( PrimarySkills primary_skills ) noexcept;
+  [[nodiscard]] constexpr Stats( Misc misc ) noexcept;
+  [[nodiscard]] constexpr Stats( PrimarySkills primary_skills, Misc misc ) noexcept;
 
   [[nodiscard]] const PrimarySkills& getPrimarySkills() const noexcept;
   [[nodiscard]] const Level& getLevel() const noexcept;

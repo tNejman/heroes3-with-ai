@@ -8,9 +8,11 @@
 #include <utility>
 #include <vector>
 
-#include "engine/Character/Character.h"
-#include "engine/platform/LoadAndSaveTools/ILoader.hpp"
 #include "engine/model/IGame/Coords.h"
+
+#include "engine/platform/LoadAndSaveTools/ILoader.hpp"
+
+#include "engine/Character/Character.h"
 
 struct CharacterSaveContainer {
  public:
@@ -46,24 +48,24 @@ enum class CharacterDataLoadMode : char {
 class CharacterLoader : public ILoader<Character, CharacterSaveContainer> {
  private:
   CharacterDataLoadMode mode_ = CharacterDataLoadMode::NONE;
-  void resetCounters() override;
-  void moveWordToContainer( const int word ) override;
-  std::shared_ptr<Character> getObjectFromContainer() override;
+  void resetCounters() noexcept override;
+  void moveWordToContainer( const int word ) noexcept override;
+  [[nodiscard]] std::shared_ptr<Character> getObjectFromContainer() noexcept override;
 
-  void incrementCounters();
-  bool verifySaveMarker( const int word );
-  void loadName( const int word );
-  void loadCoords( const int word );
-  void loadAlive( const int word );
-  void loadStats1( const int word );
-  void loadStats2( const int word );
-  void loadSecondarySkills( const int word );
-  void loadArtifactsEquipped( const int word );
-  void loadWarMachines( const int word );
-  void loadSpells( const int word );
-  void loadArtifactsBackpack( const int word );
+  void incrementCounters() noexcept;
+  [[nodiscard]] bool verifySaveMarker( const int word ) noexcept;
+  void loadName( const int word ) noexcept;
+  void loadCoords( const int word ) noexcept;
+  void loadAlive( const int word ) noexcept;
+  void loadStats1( const int word ) noexcept;
+  void loadStats2( const int word ) noexcept;
+  void loadSecondarySkills( const int word ) noexcept;
+  void loadArtifactsEquipped( const int word ) noexcept;
+  void loadWarMachines( const int word ) noexcept;
+  void loadSpells( const int word ) noexcept;
+  void loadArtifactsBackpack( const int word ) noexcept;
 
-  void loadParty( const int word );
+  void loadParty( const int word ) noexcept;
 
  public:
 };

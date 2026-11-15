@@ -9,10 +9,10 @@ class BadCopyException : public std::exception {
   std::string message_;
 
  public:
-  BadCopyException( std::string msg ) : message_( std::move( msg ) ) {
+  [[nodiscard]] constexpr BadCopyException( std::string msg ) noexcept : message_( std::move( msg ) ) {
   }
 
-  [[nodiscard]] const char* what() const noexcept override {
+  [[nodiscard]] constexpr const char* what() const noexcept override {
     return message_.c_str();
   }
 };

@@ -3,13 +3,14 @@
 #include <memory>
 #include <vector>
 
+#include "engine/model/IGraphics/IRVisitor.h"
+
 #include "core/Battle/Battle.h"
 #include "core/Game/Context.h"
 #include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGraphics/IRVisitor.h"
 
 namespace game {
 
@@ -27,7 +28,8 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
   // StateTransition handleDefend( const Defend & ) noexcept;
 
  public:
-  StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
+  [[nodiscard]] StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                             Terrain background ) noexcept;
 
   [[nodiscard]] std::vector<UserCommand> legalCommands() const noexcept override;
   [[nodiscard]] game::StateTransition applyCommand( const UserCommand &, game::Context & ) noexcept override;
@@ -37,7 +39,7 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
 
   void accept( IRVisitor &v ) const noexcept override;
 
-  const Battle &viewBattle() const noexcept;
+  [[nodiscard]] const Battle &viewBattle() const noexcept;
 };
 
 }  // namespace game

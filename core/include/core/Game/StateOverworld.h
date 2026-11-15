@@ -3,13 +3,14 @@
 #include <memory>
 #include <vector>
 
+#include "engine/model/IGraphics/IRVisitor.h"
+#include "engine/model/IGraphics/Visitor.h"
+
 #include "core/Game/Context.h"
 #include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/model/IGraphics/IRVisitor.h"
-#include "engine/model/IGraphics/Visitor.h"
 
 namespace game {
 
@@ -18,7 +19,7 @@ class StateOverworld : public game::StateOf<WorldMapCommand, WorldMapSystemComma
   WorldMap map_;
 
   struct CtorKey {
-    explicit CtorKey() = default;
+    [[nodiscard]] constexpr explicit CtorKey() noexcept = default;
   };
 
  public:
@@ -26,7 +27,7 @@ class StateOverworld : public game::StateOf<WorldMapCommand, WorldMapSystemComma
    * @brief Construct a new State Overworld object
    * @note std::make_unique requires public ctor; key is to forbid creation other than through create methods
    */
-  explicit StateOverworld( CtorKey, WorldMap&& world_map ) noexcept;
+  [[nodiscard]] explicit StateOverworld( CtorKey, WorldMap&& world_map ) noexcept;
 
   [[nodiscard]] static game::StateOverworld create( WorldMap&& ) noexcept;
   [[nodiscard]] static std::unique_ptr<game::IState> createUniqueptr( WorldMap&& ) noexcept;

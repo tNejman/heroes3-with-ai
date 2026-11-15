@@ -16,7 +16,7 @@ class Context {
   std::reference_wrapper<Character> current_character_;
 
  public:
-  Context( std::vector<std::shared_ptr<Player>>&& ) noexcept;
+  [[nodiscard]] Context( std::vector<std::shared_ptr<Player>>&& ) noexcept;
 
   [[nodiscard]] const std::vector<std::shared_ptr<Player>>& getPlayers() const noexcept;
   [[nodiscard]] std::vector<std::shared_ptr<Player>>& getPlayers() noexcept;
@@ -30,7 +30,7 @@ class Context {
   [[nodiscard]] const Character& getCurrentCharacter() const noexcept;
   [[nodiscard]] Character& getCurrentCharacter() noexcept;
 
-  Player& nextPlayer() noexcept;
+  [[nodiscard]] Player& nextPlayer() noexcept;
   Character& nextCharacter() noexcept;
 };
 

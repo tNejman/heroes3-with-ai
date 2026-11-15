@@ -18,6 +18,10 @@ void MapObject::setCoords( CoordPair new_coords ) noexcept {
   return is_traversable_;
 }
 
+[[nodiscard]] const Character* MapObject::asCharacter() const noexcept {
+  return nullptr;
+}
+
 [[nodiscard]] Character* MapObject::asCharacter() noexcept {
   return nullptr;
 }

@@ -11,7 +11,7 @@ class InputHandler {
  private:
   static inline bool was_input_just_processed_ = false;
 
-  static CoordPair calculateNewCharacterPosition( CoordPair old_coords, CharacterMoveDirection direction ) noexcept;
+  [[nodiscard]] static CoordPair calculateNewCharacterPosition( CoordPair old_coords, CharacterMoveDirection direction ) noexcept;
 
   [[nodiscard]] static UserCommand processMouseInput( const sf::Event&, const Game&, int window_scale ) noexcept;
   [[nodiscard]] static UserCommand processKeyboardInput( const sf::Event&, const Game& ) noexcept;

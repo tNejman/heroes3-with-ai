@@ -10,9 +10,9 @@
 // NOLINTBEGIN(cppcoreguidelines-special-member-functions)
 class Spell {
  private:
-  std::reference_wrapper<spell::BaseData> data_;
+  std::reference_wrapper<const spell::BaseData> data_;
 
-  Spell( const spell::BaseData& data ) noexcept;
+  [[nodiscard]] Spell( const spell::BaseData& data ) noexcept;
 
  public:
   virtual ~Spell() = default;

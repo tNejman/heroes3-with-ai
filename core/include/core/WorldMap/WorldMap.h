@@ -13,12 +13,13 @@
 #include <memory>
 #include <vector>
 
+#include "engine/model/IGame/Coords.h"
+
 #include "core/Character/Character.h"
 #include "core/Game/IState.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/model/IGame/Coords.h"
 
 #define COORDS_IN_BOUNDS_OR_THROW( coords, ... )        \
   err::passCondOrThrow<CoordinateOutOfBoundsException>( \
@@ -43,8 +44,9 @@ class WorldMap {
 
  public:
   WorldMap() = delete;
-  WorldMap( const WorldMapGrid<int>& new_grid ) noexcept;
-  WorldMap( const WorldMapGrid<int>& new_grid, const std::vector<std::shared_ptr<OverworldObstacle>>& ) noexcept;
+  [[nodiscard]] WorldMap( const WorldMapGrid<int>& new_grid ) noexcept;
+  [[nodiscard]] WorldMap( const WorldMapGrid<int>& new_grid,
+                          const std::vector<std::shared_ptr<OverworldObstacle>>& ) noexcept;
 
   [[nodiscard]] static bool areCoordsInBounds( CoordPair coords ) noexcept;
 

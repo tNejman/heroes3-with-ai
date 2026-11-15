@@ -13,11 +13,12 @@ class AIPlayer : public Player {
   std::shared_ptr<Personality> personality;
 
  public:
-  AIPlayer( int hardness, std::shared_ptr<Personality> personality )
-      : hardness_( hardness ), personality( personality ) {}
-  std::shared_ptr<Personality> getPersonality() const;
-  void setPersonality( std::shared_ptr<Personality> personality );
-  int getHardness() const;
-  void setHardness( int hardness );
+  [[nodiscard]] AIPlayer( int hardness, std::shared_ptr<Personality> personality ) noexcept
+      : hardness_( hardness ), personality( personality ) {
+  }
+  [[nodiscard]] std::shared_ptr<Personality> getPersonality() const noexcept;
+  void setPersonality( std::shared_ptr<Personality> personality ) noexcept;
+  [[nodiscard]] int getHardness() const noexcept;
+  void setHardness( int hardness ) noexcept;
   // std::shared_ptr<Move> MakeMove(std::vector<Move> PossibleStates) override;
 };

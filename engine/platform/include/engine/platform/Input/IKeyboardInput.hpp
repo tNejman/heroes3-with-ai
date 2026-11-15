@@ -1,8 +1,10 @@
 
-#include <SFML/Window/Keyboard.hpp>
 #include <set>
 
+#include <SFML/Window/Keyboard.hpp>
+
 #include "engine/platform/Input/KeyboardLib.h"
+
 #include "core/Misc/ProjectLib.h"
 
 struct IKeyboardInput {
@@ -24,7 +26,7 @@ struct RealKeyboardInput : public IKeyboardInput {
 
 struct MockKeyboardInput : public IKeyboardInput {
   std::set<sf::Keyboard::Key> frame_;
-  std::set<sf::Keyboard::Key> pressedNow() const override {
+  [[nodiscard]] std::set<sf::Keyboard::Key> pressedNow() const noexcept override {
     return frame_;
   }
   void set( std::initializer_list<sf::Keyboard::Key> keys ) {

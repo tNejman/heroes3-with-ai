@@ -1,11 +1,13 @@
 #pragma once
 
 #include <fstream>
-#include <json.hpp>
 #include <string>
 
-#include "core/Exceptions/DamagedSaveException.hpp"
+#include <json.hpp>
+
 #include "aux/Err.hpp"
+
+#include "core/Exceptions/DamagedSaveException.hpp"
 #include "core/Exceptions/InvalidInputFileException.hpp"
 
 using json = nlohmann::json;
@@ -15,7 +17,7 @@ class IJsonLoader {
  protected:
   json data_;
 
-  void load( const std::string& path ) {
+  void load( const std::string& path ) noexcept {
     if ( !path.ends_with( ".json" ) ) {
       std::string message = "";
       message += typeid( TypeLoaded ).name();
@@ -26,13 +28,13 @@ class IJsonLoader {
     std::ifstream file( path );
     data_ = json::parse( file );
   }
-  virtual std::shared_ptr<TypeLoaded> doGetObject() = 0;
+  [[nodiscard]] virtual std::shared_ptr<TypeLoaded> doGetObject() noexcept = 0;
 
  public:
-  IJsonLoader() = default;
-  virtual ~IJsonLoader() = default;
+  [[nodiscard]] IJsonLoader() noexcept = default;
+  virtual ~IJsonLoader() noexcept = default;
 
-  std::shared_ptr<TypeLoaded> getObject() const {
+  [[nodiscard]] std::shared_ptr<TypeLoaded> getObject() const noexcept {
     load();
     return doGetObject();
   }

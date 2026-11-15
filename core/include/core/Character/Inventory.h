@@ -2,10 +2,11 @@
 
 #include <array>
 #include <cstddef>
-#include <magic_enum/magic_enum.hpp>
 #include <optional>
 #include <type_traits>
 #include <vector>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
@@ -24,7 +25,7 @@ class Inventory {
   Backpack backpack_;
 
   template <auto Member>
-  requires std::is_member_object_pointer_v<decltype( Member )> && requires( artifact::Data a ) { a.*Member; }
+  requires( std::is_member_object_pointer_v<decltype( Member )> && requires( artifact::Data a ) { a.*Member; } )
   [[nodiscard]] int getStatBonus() const noexcept {
     int stat_bonus = 0;
     for ( const auto& artifact : equipment_ ) {
@@ -37,12 +38,12 @@ class Inventory {
   }
 
  public:
-  Inventory() = default;
+  [[nodiscard]] constexpr Inventory() noexcept = default;
   Inventory( const Inventory& ) = delete;
-  Inventory( Inventory&& ) = default;
-  ~Inventory() = default;
+  [[nodiscard]] constexpr Inventory( Inventory&& ) noexcept = default;
+  ~Inventory() noexcept = default;
   Inventory& operator=( const Inventory& ) = delete;
-  Inventory& operator=( Inventory&& ) = default;
+  Inventory& operator=( Inventory&& ) noexcept = default;
 
   [[nodiscard]] bool isSlotEmpty( EquipmentSlots slot ) const noexcept;
   [[nodiscard]] const std::optional<Artifact>& getSlot( EquipmentSlots slot ) const noexcept;

@@ -29,7 +29,7 @@ struct BuilderIdGenerator {
 
 namespace detail {
 
-consteval auto constructorsOf( std::meta::info type ) -> std::vector<std::meta::info> {
+[[nodiscard]] consteval auto constructorsOf( std::meta::info type ) -> std::vector<std::meta::info> {
   std::vector<std::meta::info> result;
   for ( std::meta::info member : std::meta::members_of( type, std::meta::access_context::current() ) ) {
     if ( std::meta::is_constructor( member ) && !std::meta::is_default_constructor( member )
@@ -40,11 +40,11 @@ consteval auto constructorsOf( std::meta::info type ) -> std::vector<std::meta::
   return result;
 }
 
-consteval auto constructorOf( std::meta::info type ) -> std::meta::info {
+[[nodiscard]] consteval auto constructorOf( std::meta::info type ) -> std::meta::info {
   return constructorsOf( type ).front();
 }
 
-consteval auto setterName( std::string_view field_name ) -> std::string {
+[[nodiscard]] consteval auto setterName( std::string_view field_name ) -> std::string {
   std::string result{ "set" };
   bool capitalize_next = true;
   for ( char c : field_name ) {
@@ -58,11 +58,11 @@ consteval auto setterName( std::string_view field_name ) -> std::string {
   return result;
 }
 
-consteval auto isIdParameter( std::meta::info parameter ) -> bool {
+[[nodiscard]] consteval auto isIdParameter( std::meta::info parameter ) -> bool {
   return std::meta::has_identifier( parameter ) && std::meta::identifier_of( parameter ) == "id";
 }
 
-consteval auto fieldParametersOf( std::meta::info type ) -> std::vector<std::meta::info> {
+[[nodiscard]] consteval auto fieldParametersOf( std::meta::info type ) -> std::vector<std::meta::info> {
   std::vector<std::meta::info> result;
   for ( std::meta::info parameter : std::meta::parameters_of( constructorOf( type ) ) ) {
     if ( !isIdParameter( parameter ) ) {
@@ -74,7 +74,7 @@ consteval auto fieldParametersOf( std::meta::info type ) -> std::vector<std::met
 
 inline constexpr std::size_t no_id_index = std::numeric_limits<std::size_t>::max();
 
-consteval auto idIndexOf( std::meta::info type ) -> std::size_t {
+[[nodiscard]] consteval auto idIndexOf( std::meta::info type ) -> std::size_t {
   std::vector<std::meta::info> parameters{ std::meta::parameters_of( constructorOf( type ) ) };
   for ( std::size_t i = 0; i < parameters.size(); ++i ) {
     if ( isIdParameter( parameters[i] ) ) {
@@ -84,7 +84,7 @@ consteval auto idIndexOf( std::meta::info type ) -> std::size_t {
   return no_id_index;
 }
 
-consteval auto toDecimal( std::size_t value ) -> std::string {
+[[nodiscard]] consteval auto toDecimal( std::size_t value ) -> std::string {
   std::string digits;
   do {
     digits.insert( digits.begin(), static_cast<char>( '0' + static_cast<int>( value % 10 ) ) );
@@ -93,11 +93,11 @@ consteval auto toDecimal( std::size_t value ) -> std::string {
   return digits;
 }
 
-consteval auto displayType( std::meta::info type ) -> std::string {
+[[nodiscard]] consteval auto displayType( std::meta::info type ) -> std::string {
   return std::string{ std::meta::display_string_of( type ) };
 }
 
-consteval auto defaultOf( std::meta::info defaults, std::string_view field_name ) -> std::meta::info {
+[[nodiscard]] consteval auto defaultOf( std::meta::info defaults, std::string_view field_name ) -> std::meta::info {
   for ( std::meta::info member : std::meta::members_of( defaults, std::meta::access_context::unchecked() ) ) {
     if ( std::meta::is_variable( member ) && std::meta::has_identifier( member )
          && std::meta::identifier_of( member ) == field_name ) {
@@ -107,7 +107,7 @@ consteval auto defaultOf( std::meta::info defaults, std::string_view field_name 
   return std::meta::info{};
 }
 
-consteval auto defaultsFor( std::meta::info defaults, std::span<const std::meta::info> fields )
+[[nodiscard]] consteval auto defaultsFor( std::meta::info defaults, std::span<const std::meta::info> fields )
     -> std::vector<std::meta::info> {
   std::vector<std::meta::info> result;
   for ( std::meta::info field : fields ) {
@@ -116,7 +116,7 @@ consteval auto defaultsFor( std::meta::info defaults, std::span<const std::meta:
   return result;
 }
 
-consteval auto defaultsDiagnostic( std::meta::info type, std::meta::info defaults, bool specialized ) -> std::string {
+[[nodiscard]] consteval auto defaultsDiagnostic( std::meta::info type, std::meta::info defaults, bool specialized ) -> std::string {
   if ( constructorsOf( type ).size() != 1 ) {
     return {};
   }
@@ -186,7 +186,7 @@ consteval auto defaultsDiagnostic( std::meta::info type, std::meta::info default
   return defaults_name + " does not match the constructor of " + type_name + ":" + message;
 }
 
-consteval auto idGeneratorDiagnostic( std::meta::info type, std::meta::info generator_trait, bool specialized )
+[[nodiscard]] consteval auto idGeneratorDiagnostic( std::meta::info type, std::meta::info generator_trait, bool specialized )
     -> std::string {
   if ( constructorsOf( type ).size() != 1 ) {
     return {};
@@ -233,7 +233,7 @@ consteval auto idGeneratorDiagnostic( std::meta::info type, std::meta::info gene
   return trait_name + " has no static member 'generator' (a callable taking no arguments and returning int)";
 }
 
-consteval auto namedMemberSpec( std::meta::info type, std::string_view name ) -> std::meta::info {
+[[nodiscard]] consteval auto namedMemberSpec( std::meta::info type, std::string_view name ) -> std::meta::info {
   return std::meta::data_member_spec(
       type, { .name = name, .alignment = std::nullopt, .bit_width = std::nullopt, .no_unique_address = false } );
 }
@@ -241,15 +241,15 @@ consteval auto namedMemberSpec( std::meta::info type, std::string_view name ) ->
 template <typename Owner, std::size_t field_index>
 class Setter {
  public:
-  Setter() = default;
-  Setter( const Setter& ) noexcept {
+  [[nodiscard]] constexpr Setter() = default;
+  [[nodiscard]] constexpr Setter( const Setter& ) noexcept {
   }
-  auto operator=( const Setter& ) noexcept -> Setter& {
+  constexpr auto operator=( const Setter& ) noexcept -> Setter& {
     return *this;
   }
 
   template <typename Value>
-  auto operator()( Value&& value ) const -> Owner&& {
+  [[nodiscard]] constexpr auto operator()( Value&& value ) const -> Owner&& {
     constexpr std::meta::info member = Owner::value_members[field_index];
     owner_->[:member:] = std::forward<Value>( value );
     return std::move( *owner_ );
@@ -317,20 +317,20 @@ class Builder : public detail::BuilderFields<T>::Type {
   }( std::make_index_sequence<field_count>{} );
 
  public:
-  Builder() : Fields{ makeDefaultFields() } {
+  [[nodiscard]] constexpr Builder() : Fields{ makeDefaultFields() } {
     bindSetters();
   }
-  Builder( const Builder& other ) : Fields{ other } {
+  [[nodiscard]] constexpr Builder( const Builder& other ) : Fields{ other } {
     bindSetters();
   }
-  Builder( Builder&& other ) : Fields{ std::move( other ) } {
+  [[nodiscard]] constexpr Builder( Builder&& other ) : Fields{ std::move( other ) } {
     bindSetters();
   }
-  auto operator=( const Builder& ) -> Builder& = default;
-  auto operator=( Builder&& ) -> Builder& = default;
+  constexpr auto operator=( const Builder& ) -> Builder& = default;
+  constexpr auto operator=( Builder&& ) -> Builder& = default;
 
   template <template <typename...> class Wrapper = std::type_identity_t>
-  auto build() -> Wrapper<T> {
+  [[nodiscard]] constexpr auto build() -> Wrapper<T> {
     using Result = Wrapper<T>;
     Result result = [this]<std::size_t... indices>( std::index_sequence<indices...> ) -> Result {
       if constexpr ( std::same_as<Result, std::unique_ptr<T>> ) {
@@ -347,14 +347,14 @@ class Builder : public detail::BuilderFields<T>::Type {
   }
 
  private:
-  void bindSetters() {
+  constexpr void bindSetters() {
     template for ( constexpr std::meta::info member : setter_members ) {
       this->[:member:].owner_ = this;
     }
   }
 
   template <std::size_t parameter_index>
-  auto argument() -> decltype( auto ) {
+  [[nodiscard]] constexpr auto argument() -> decltype( auto ) {
     if constexpr ( parameter_index == id_index ) {
       return BuilderIdGenerator<T>::generator();
     } else {
@@ -363,13 +363,13 @@ class Builder : public detail::BuilderFields<T>::Type {
     }
   }
 
-  static auto makeDefaultFields() -> Fields {
+  [[nodiscard]] static constexpr auto makeDefaultFields() -> Fields {
     return []<std::size_t... indices>( std::index_sequence<indices...> ) -> Fields {
       return Fields{ *std::get<indices>( default_pointers )..., detail::Setter<Builder, indices>{}... };
     }( std::make_index_sequence<field_count>{} );
   }
 
-  void reset() {
+  constexpr void reset() {
     [this]<std::size_t... indices>( std::index_sequence<indices...> ) {
       ( ( this->[:value_members[indices]:] = *std::get<indices>( default_pointers ) ), ... );
     }( std::make_index_sequence<field_count>{} );

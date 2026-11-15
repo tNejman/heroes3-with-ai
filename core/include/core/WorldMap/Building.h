@@ -3,8 +3,10 @@
 
 #include <string>
 
-#include "core/MapObject/MapObject.h"
 #include "engine/model/IGame/Coords.h"
+
+#include "core/MapObject/MapObject.h"
+
 
 /**
  * @note don't derive visitor::Visitable here, Building is not final child
@@ -14,7 +16,7 @@ class Building : public MapObject {
   std::string name_;
 
  public:
-  Building( CoordPair coords, std::string name );
+  [[nodiscard]] Building( CoordPair coords, std::string name ) noexcept;
 
   [[nodiscard]] std::string getName() const;
 };

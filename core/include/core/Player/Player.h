@@ -7,14 +7,16 @@
 
 #include <array>
 #include <cstdint>
-#include <magic_enum/magic_enum.hpp>
 #include <memory>
 #include <vector>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "core/Character/Character.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/Castles/Castle.h"
+
 
 class Move;
 
@@ -30,24 +32,24 @@ class Player {
   PlayerColor color_;
 
  public:
-  Player( std::vector<std::shared_ptr<Character>> characters ) : characters_on_map_( characters ) {
+  [[nodiscard]] Player( std::vector<std::shared_ptr<Character>> characters ) : characters_on_map_( characters ) {
   }
   ~Player() = default;
 
-  std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
-  const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;
+  [[nodiscard]] std::vector<std::shared_ptr<Character>>& getCharacters() noexcept;
+  [[nodiscard]] const std::vector<std::shared_ptr<Character>>& getCharacters() const noexcept;
 
   // below are not implemented
-  bool addCharacter( std::shared_ptr<Character> character );
-  void addCastle( std::shared_ptr<Castle> castle );
-  std::shared_ptr<Castle> getCastles();
-  bool deleteCharacter( std::shared_ptr<Character> character );
-  bool loseCastle( std::shared_ptr<Castle> castle );
-  std::array<std::shared_ptr<Resource>, AMOUNT_OF_RESOURCES> getResourcesInPointers();
-  std::array<Resource, AMOUNT_OF_RESOURCES> getResourcesInValues();
-  Resource getResource( Resource::Type resource );
-  Resource setResource( Resource::Type resource, int amount );
-  std::shared_ptr<Move> makeMove( std::vector<Move> possible_states );
+  [[nodiscard]] bool addCharacter( std::shared_ptr<Character> character ) noexcept;
+  void addCastle( std::shared_ptr<Castle> castle ) noexcept;
+  [[nodiscard]] std::shared_ptr<Castle> getCastles() noexcept;
+  [[nodiscard]] bool deleteCharacter( std::shared_ptr<Character> character ) noexcept;
+  [[nodiscard]] bool loseCastle( std::shared_ptr<Castle> castle ) noexcept;
+  [[nodiscard]] std::array<std::shared_ptr<Resource>, AMOUNT_OF_RESOURCES> getResourcesInPointers() noexcept;
+  [[nodiscard]] std::array<Resource, AMOUNT_OF_RESOURCES> getResourcesInValues() noexcept;
+  [[nodiscard]] Resource getResource( Resource::Type resource ) const noexcept;
+  [[nodiscard]] Resource setResource( Resource::Type resource, int amount ) noexcept;
+  [[nodiscard]] std::shared_ptr<Move> makeMove( std::vector<Move> possible_states ) noexcept;
 
   [[nodiscard]] PlayerColor getColor() const noexcept;
 };

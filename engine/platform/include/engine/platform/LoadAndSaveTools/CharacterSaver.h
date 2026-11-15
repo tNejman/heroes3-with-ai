@@ -1,22 +1,23 @@
 #pragma once
 
-#include "engine/Character/Character.h"
 #include "engine/platform/LoadAndSaveTools/ISaver.hpp"
+
+#include "engine/Character/Character.h"
 
 class CharacterSaver : public ISaver {
  private:
   const std::unique_ptr<const Character> c_;
 
-  void saveStats( std::ofstream& out ) const;
-  void saveSecondarySkills( std::ofstream& out ) const;
-  void saveEquipment( std::ofstream& out ) const;
-  void saveWarMachines( std::ofstream& out ) const;
-  void saveSpellBook( std::ofstream& out ) const;
-  void saveBackpack( std::ostream& out ) const;
-  void saveParty( std::ofstream& out ) const;
+  void saveStats( std::ofstream& out ) const noexcept;
+  void saveSecondarySkills( std::ofstream& out ) const noexcept;
+  void saveEquipment( std::ofstream& out ) const noexcept;
+  void saveWarMachines( std::ofstream& out ) const noexcept;
+  void saveSpellBook( std::ofstream& out ) const noexcept;
+  void saveBackpack( std::ostream& out ) const noexcept;
+  void saveParty( std::ofstream& out ) const noexcept;
 
-  void doSave( std::ofstream& out ) const override;
+  void doSave( std::ofstream& out ) const noexcept override;
 
  public:
-  CharacterSaver( const std::string&& path, std::unique_ptr<const Character> character );
+  [[nodiscard]] CharacterSaver( const std::string&& path, std::unique_ptr<const Character> character ) noexcept;
 };

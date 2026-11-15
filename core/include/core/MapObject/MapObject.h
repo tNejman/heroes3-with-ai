@@ -19,13 +19,14 @@ class MapObject : public IPrintable {
                          // cppcoreguidelines-non-private-member-variables-in-classes)
 
  public:
-  MapObject( CoordPair coords ) noexcept;
-  MapObject( CoordPair coords, bool is_traversable ) noexcept;
+  [[nodiscard]] MapObject( CoordPair coords ) noexcept;
+  [[nodiscard]] MapObject( CoordPair coords, bool is_traversable ) noexcept;
   virtual ~MapObject() = default;  // NOLINT(modernize-use-override, cppcoreguidelines-explicit-virtual-functions)
 
   [[nodiscard]] CoordPair getCoords() const noexcept;
   void setCoords( CoordPair new_coords ) noexcept;
   [[nodiscard]] bool isTraversable() const noexcept;
 
+  [[nodiscard]] virtual const Character* asCharacter() const noexcept;
   [[nodiscard]] virtual Character* asCharacter() noexcept;
 };

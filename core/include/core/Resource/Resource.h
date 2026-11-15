@@ -12,7 +12,7 @@ class Resource {
 
  public:
   Resource() = delete;
-  Resource( Type type, int amount ) noexcept;
+  [[nodiscard]] Resource( Type type, int amount ) noexcept;
   [[nodiscard]] Type getType() const noexcept;
   [[nodiscard]] int getAmount() const noexcept;
 };

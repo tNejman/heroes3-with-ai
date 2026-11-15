@@ -1,17 +1,16 @@
 #pragma once
-// Autor: Tomasz Naszkowski
-/* Zawartość klasy UnitStack:
-  - Klasa jest obiektem reprezentującym oddział jednostki w grze. Posiada informacje o jednostce oraz jej ilości.
-*/
 
 #include <functional>
 
+#include "engine/model/IGame/Coords.h"
+
 #include "aux/Err.hpp"
+
 #include "core/Battle/TileObject.hpp"
 #include "core/Unit/UnitsLib.h"
-#include "engine/model/IGame/Coords.h"
+
 class UnitStack : public TileObject {
- private: 
+ private:
   static constexpr int DEFAULT_UNIT_STACK_MORALE = 0;
   static constexpr int DEFAULT_UNIT_STACK_LUCK = 0;
 
@@ -23,7 +22,7 @@ class UnitStack : public TileObject {
   CoordPair coords_in_battle_;
 
  public:
-  constexpr UnitStack( UnitTypeV type, int size ) noexcept;
+  [[nodiscard]] constexpr UnitStack( UnitTypeV type, int size ) noexcept;
   [[nodiscard]] const UnitData& getData() const noexcept;
 
   [[nodiscard]] int getMorale() const noexcept;
@@ -40,12 +39,12 @@ class UnitStack : public TileObject {
   void setCoordsInBattle( CoordPair new_coords ) noexcept;
   [[nodiscard]] CoordPair getCoordsInBattle() const noexcept;
 
+  [[nodiscard]] const UnitStack* asUnit() const noexcept override;
   [[nodiscard]] UnitStack* asUnit() noexcept override;
 };
 
-/* ===== @IMPL ===== */
+/* ===== @CONSTEXPR IMPL ===== */
 
-// apparently constexpr must live in header
 constexpr UnitStack::UnitStack( UnitTypeV type, int size ) noexcept
     : TileObject( false ),
       data_( getUnitDataFromType( type ) ),

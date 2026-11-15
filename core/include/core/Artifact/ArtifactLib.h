@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+
 #include <magic_enum/magic_enum.hpp>
 
 #include "aux/DisableCopyMoveStructHelper.hpp"
@@ -315,7 +316,7 @@ constexpr inline std::array PRESET = { artifact::Data{ .type_ = artifact::Type::
                                                        .cost_ = 6'000 } };
 }  // namespace artifact
 
-consteval bool areAllArtifactsPreset() {
+[[nodiscard]] consteval bool areAllArtifactsPreset() noexcept {
   if ( artifact::PRESET.size() != magic_enum::enum_count<artifact::Type>() ) {
     return false;
   }

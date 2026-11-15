@@ -8,10 +8,10 @@ class InvalidArtifactTypeException : public std::exception {
   std::string message_;
 
  public:
-  InvalidArtifactTypeException( std::string msg ) : message_( std::move( msg ) ) {
+  [[nodiscard]] constexpr InvalidArtifactTypeException( std::string msg ) noexcept : message_( std::move( msg ) ) {
   }
 
-  [[nodiscard]] const char* what() const noexcept override {
+  [[nodiscard]] constexpr const char* what() const noexcept override {
     return message_.c_str();
   }
 };

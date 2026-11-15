@@ -22,7 +22,7 @@ class Artifact : public visitor::Visitable<Artifact, IPrintable, GfxVisitor> {
  private:
   std::reference_wrapper<const artifact::Data> data_;
 
-  Artifact( const artifact::Data& data ) noexcept;
+  [[nodiscard]] Artifact( const artifact::Data& data ) noexcept;
 
  public:
   Artifact() = delete;

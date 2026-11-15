@@ -1,17 +1,20 @@
 #pragma once
 
+#include <functional>
+
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <functional>
+
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/IRVisitor.h"
+
+#include "engine/platform/Graphics/Renderers/BattleRenderer.h"
+#include "engine/platform/Graphics/Renderers/MapRenderer.h"
 
 #include "core/Game/Context.h"
 #include "core/Game/StateBattle.h"
 #include "core/Game/StateOverworld.h"
-#include "engine/model/IGraphics/IRVisitor.h"
-#include "engine/platform/Graphics/Renderers/BattleRenderer.h"
-#include "engine/platform/Graphics/Renderers/MapRenderer.h"
-#include "engine/model/IGame/Coords.h"
 
 class RVisitor : public IRVisitor {
  private:
@@ -19,7 +22,7 @@ class RVisitor : public IRVisitor {
   std::reference_wrapper<const game::Context> context_;
 
  public:
-  RVisitor( sf::RenderTexture& target_render_texture, const game::Context& context )
+  [[nodiscard]] constexpr RVisitor( sf::RenderTexture& target_render_texture, const game::Context& context ) noexcept
       : target_render_texture_( target_render_texture ), context_( context ) {
   }
 

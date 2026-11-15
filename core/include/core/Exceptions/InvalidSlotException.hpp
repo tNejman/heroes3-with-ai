@@ -9,10 +9,10 @@ class InvalidSlotException : public std::exception {
   std::string message_;
 
  public:
-  InvalidSlotException( std::string msg ) : message_( std::move( msg ) ) {
+  [[nodiscard]] constexpr InvalidSlotException( std::string msg ) noexcept : message_( std::move( msg ) ) {
   }
 
-  [[nodiscard]] const char* what() const noexcept override {
+  [[nodiscard]] constexpr const char* what() const noexcept override {
     return message_.c_str();
   }
 };

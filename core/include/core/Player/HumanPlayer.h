@@ -8,6 +8,6 @@
 class HumanPlayer : public Player {
  private:
  public:
-  HumanPlayer() = default;
+  [[nodiscard]] HumanPlayer() noexcept = default;
   // std::shared_ptr<Move> MakeMove(std::vector<Move> PossibleStates) override;
 };

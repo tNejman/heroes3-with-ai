@@ -7,13 +7,13 @@ class ISaver {
  private:
   std::string path_;
 
-  bool checkPath( const std::string& path );
-  virtual void doSave( std::ofstream& out ) const = 0;
+  [[nodiscard]] bool checkPath( const std::string& path ) const noexcept;
+  virtual void doSave( std::ofstream& out ) const noexcept = 0;
 
  public:
   ISaver() = delete;
-  ISaver( const std::string& path );
-  virtual ~ISaver() = default;
+  [[nodiscard]] ISaver( const std::string& path ) noexcept;
+  virtual ~ISaver() noexcept = default;
 
-  void save();
+  void save() noexcept;
 };

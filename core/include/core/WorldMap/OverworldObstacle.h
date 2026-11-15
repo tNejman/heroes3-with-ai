@@ -12,6 +12,6 @@ class OverworldObstacle : public MapObject, public visitor::Visitable<OverworldO
   OverworldObstacleType type_;
 
  public:
-  OverworldObstacle( OverworldObstacleType type, CoordPair coords ) noexcept;
+  [[nodiscard]] OverworldObstacle( OverworldObstacleType type, CoordPair coords ) noexcept;
   [[nodiscard]] OverworldObstacleType getType() const noexcept;
 };

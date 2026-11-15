@@ -45,7 +45,7 @@ namespace {
 void preMain() {
 }
 
-std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
+[[nodiscard]] std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   std::vector<std::shared_ptr<Character>> characters;
   characters.push_back(
       Builder<Character>{}

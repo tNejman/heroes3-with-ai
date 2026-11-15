@@ -11,12 +11,15 @@ class TileObject {  // NOLINT(cppcoreguidelines-special-member-functions)
   bool traversable_;
 
  public:
-  TileObject( bool traversable ) noexcept : traversable_( traversable ) {};
-  virtual ~TileObject() = default;
-  [[nodiscard]] bool isTraversable() const noexcept {
+  [[nodiscard]] constexpr TileObject( bool traversable ) noexcept : traversable_( traversable ) {};
+  constexpr virtual ~TileObject() = default;
+  [[nodiscard]] constexpr bool isTraversable() const noexcept {
     return traversable_;
   }
-  [[nodiscard]] virtual UnitStack* asUnit() noexcept {
+  [[nodiscard]] constexpr virtual const UnitStack* asUnit() const noexcept {
+    return nullptr;
+  }
+  [[nodiscard]] constexpr virtual UnitStack* asUnit() noexcept {
     return nullptr;
   }
 };

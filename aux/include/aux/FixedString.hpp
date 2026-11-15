@@ -8,7 +8,7 @@ template <std::size_t N>
 struct FixedString {
   char data[N]{};
 
-  constexpr FixedString( const char ( &str )[N] ) {
+  [[nodiscard]] constexpr FixedString( const char ( &str )[N] ) noexcept {
     std::copy_n( str, N, data );
   }
 

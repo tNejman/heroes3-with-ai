@@ -16,7 +16,12 @@
 #include <optional>
 #include <string>
 
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/IPrintable.h"
+#include "engine/model/IGraphics/Visitor.h"
+
 #include "aux/Visitor.hpp"
+
 #include "core/Character/Army.h"
 #include "core/Character/Inventory.h"
 #include "core/Character/SecondarySkill.h"
@@ -24,9 +29,6 @@
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGame/Coords.h"
-#include "engine/model/IGraphics/IPrintable.h"
-#include "engine/model/IGraphics/Visitor.h"
 
 constexpr inline int SECONDARY_SKILLS_SLOTS_COUNT = 8;
 
@@ -58,22 +60,23 @@ class Character : public MapObject, public visitor::Visitable<Character, IPrinta
   // friend class CharacterSaver;
   Character() = delete;
   Character( const Character& ) = delete;
-  Character( Character&& ) = default;
-  Character( int id, CoordPair coords, character::Type type, std::string name, bool is_user,
-             character::Stats stats ) noexcept;
-  ~Character() override = default;
+  [[nodiscard]] Character( Character&& ) noexcept = default;
+  [[nodiscard]] Character( int id, CoordPair coords, character::Type type, std::string name, bool is_user,
+                           character::Stats stats ) noexcept;
+  ~Character() noexcept override = default;
   Character& operator=( const Character& ) = delete;
   Character& operator=( Character&& ) = delete;
 
+  [[nodiscard]] const Character* asCharacter() const noexcept override;
   [[nodiscard]] Character* asCharacter() noexcept override;
 
   [[nodiscard]] int getId() const noexcept;
-  [[nodiscard]] CharacterMoveDirection getOrientation() const;
-  void setOrientation( CharacterMoveDirection new_orientation );
-  [[nodiscard]] character::Type getType() const;
-  [[nodiscard]] const std::string& getName() const;
+  [[nodiscard]] CharacterMoveDirection getOrientation() const noexcept;
+  void setOrientation( CharacterMoveDirection new_orientation ) noexcept;
+  [[nodiscard]] character::Type getType() const noexcept;
+  [[nodiscard]] const std::string& getName() const noexcept;
 
-  [[nodiscard]] bool getIfUser() const;
+  [[nodiscard]] bool getIfUser() const noexcept;
 
   [[nodiscard]] const character::Stats& stats() const noexcept;
   [[nodiscard]] character::Stats& stats() noexcept;
@@ -96,7 +99,7 @@ class Character : public MapObject, public visitor::Visitable<Character, IPrinta
   // void recruitWarMachine( std::unique_ptr<const Catapult> war_machine );
   // void unequipWarMachine( const std::string& slot_name );
 
-  void equipSpellBook( SpellBook spell_book );
+  void equipSpellBook( SpellBook spell_book ) noexcept;
   // [[nodiscard]] SpellBook unequipSpellBook();
 
   // const std::vector<Artifact>& getBackpack();

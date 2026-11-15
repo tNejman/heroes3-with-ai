@@ -10,9 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "core/Misc/ProjectLib.h"
 #include "engine/model/IGame/Coords.h"
 
+#include "core/Misc/ProjectLib.h"
 
 class Tile;
 class GridTile;
@@ -26,15 +26,15 @@ class BattleField {
   Terrain background_;
 
  public:
-  BattleField( Terrain background );
+  [[nodiscard]] BattleField( Terrain background );
 
   [[nodiscard]] const BattleGrid& getGrid() const noexcept;
 
-  std::vector<std::shared_ptr<Tile>> getTileNeighbours( CoordPair coords );
-  std::vector<std::shared_ptr<Tile>> getTileNeighbours( const std::shared_ptr<Tile>& tile );
-  std::shared_ptr<Tile> getTileByProxy( CoordPair coords );
+  [[nodiscard]] std::vector<std::shared_ptr<Tile>> getTileNeighbours( CoordPair coords ) noexcept;
+  [[nodiscard]] std::vector<std::shared_ptr<Tile>> getTileNeighbours( const std::shared_ptr<Tile>& tile ) noexcept;
+  [[nodiscard]] std::shared_ptr<Tile> getTileByProxy( CoordPair coords ) noexcept;
   // int createRandomObstacles( int amount );         // TODO
-  static std::vector<CoordPair> getCoordPairs( CoordPair coords );
+  [[nodiscard]] static std::vector<CoordPair> getCoordPairs( CoordPair coords ) noexcept;
 
   [[nodiscard]] Terrain getBackground() const noexcept;
 

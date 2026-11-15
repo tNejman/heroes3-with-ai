@@ -1,15 +1,18 @@
 #pragma once
 
-#include <SFML/Window.hpp>
-#include <SFML/Window/Keyboard.hpp>
 #include <deque>
 #include <memory>
 #include <optional>
 #include <set>
 #include <vector>
 
-#include "core/Misc/ProjectLib.h"
+#include <SFML/Window.hpp>
+#include <SFML/Window/Keyboard.hpp>
+
 #include "engine/platform/Input/IKeyboardInput.hpp"
+
+#include "core/Misc/ProjectLib.h"
+
 
 // Movement OverworldOnly
 class KeyHandler {
@@ -21,21 +24,22 @@ class KeyHandler {
   std::shared_ptr<IKeyboardInput> input_;
 
   void processBufferedInput();
-  std::optional<CharacterMoveDirection> getMoveFromKeys( const std::vector<sf::Keyboard::Key>& key_vec );
-  [[nodiscard]] bool isValidDiagonalPair( sf::Keyboard::Key first, sf::Keyboard::Key second ) const;
-  [[nodiscard]] bool isDoublePress( const std::vector<sf::Keyboard::Key>& keys ) const;
-  [[nodiscard]] bool isSinglePress( const std::vector<sf::Keyboard::Key>& keys ) const;
+  [[nodiscard]] std::optional<CharacterMoveDirection> getMoveFromKeys(
+      const std::vector<sf::Keyboard::Key>& key_vec ) noexcept;
+  [[nodiscard]] bool isValidDiagonalPair( sf::Keyboard::Key first, sf::Keyboard::Key second ) const noexcept;
+  [[nodiscard]] bool isDoublePress( const std::vector<sf::Keyboard::Key>& keys ) const noexcept;
+  [[nodiscard]] bool isSinglePress( const std::vector<sf::Keyboard::Key>& keys ) const noexcept;
   // void convertKeyPressesToMoves();
-  void removeEmptyFramesFromFront();
+  void removeEmptyFramesFromFront() noexcept;
   [[nodiscard]] int getFrameCountLookup() const noexcept;
 
  public:
   KeyHandler() = delete;
-  KeyHandler( bool is_buffered_input );
-  KeyHandler( bool is_buffered, bool is_mock_input );
+  [[nodiscard]] KeyHandler( bool is_buffered_input ) noexcept;
+  [[nodiscard]] KeyHandler( bool is_buffered, bool is_mock_input ) noexcept;
 
   // monitoring is split with getMove because there may be more than 1 move queued
-  void debugMockInput( std::shared_ptr<IKeyboardInput> mock_input );
-  void monitorKeyPresses();
-  std::optional<CharacterMoveDirection> getMove();
+  void debugMockInput( std::shared_ptr<IKeyboardInput> mock_input ) noexcept;
+  void monitorKeyPresses() noexcept;
+  [[nodiscard]] std::optional<CharacterMoveDirection> getMove() noexcept;
 };

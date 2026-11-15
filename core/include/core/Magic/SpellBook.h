@@ -14,14 +14,14 @@ class SpellBook {
   std::vector<Spell> spells_;
 
  public:
-  SpellBook() = default;
+  [[nodiscard]] constexpr SpellBook() noexcept = default;
   SpellBook( const SpellBook& ) = delete;
-  SpellBook( SpellBook&& ) = default;
-  ~SpellBook() = default;
+  [[nodiscard]] constexpr SpellBook( SpellBook&& ) noexcept = default;
+  ~SpellBook() noexcept = default;
   SpellBook& operator=( const SpellBook& ) = delete;
-  SpellBook& operator=( SpellBook&& ) = default;
+  SpellBook& operator=( SpellBook&& ) noexcept = default;
 
   friend class CharacterSaver;
-  void learnSpell( Spell spell );
-  [[nodiscard]] SpellBook copy() const;
+  void learnSpell( Spell spell ) noexcept;
+  [[nodiscard]] SpellBook copy() const noexcept;
 };

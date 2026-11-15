@@ -9,12 +9,14 @@
 #include <memory>
 #include <vector>
 
+#include "engine/model/IGame/Coords.h"
+
 #include "core/Battle/BattleField.h"
 #include "core/Battle/TileObject.hpp"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
-#include "engine/model/IGame/Coords.h"
+
 
 class MoveFactory;
 class Character;
@@ -61,9 +63,10 @@ class Battle : public std::enable_shared_from_this<Battle> {
 
  public:
   friend MoveFactory;
-  Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
-  Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background,
-          bool is_minimax );
+  [[nodiscard]] Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
+                        Terrain background ) noexcept;
+  [[nodiscard]] Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background,
+                        bool is_minimax ) noexcept;
   Battle( const Battle& ) = delete;
   Battle( Battle&& ) = delete;
 

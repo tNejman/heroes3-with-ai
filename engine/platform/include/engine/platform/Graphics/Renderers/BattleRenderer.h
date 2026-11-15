@@ -1,13 +1,16 @@
 #pragma once
 
+#include <utility>
+
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Window.hpp>
-#include <utility>
+
+#include "engine/model/IGame/Coords.h"
+
+#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
 
 #include "core/Battle/Battle.h"
-#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
-#include "engine/model/IGame/Coords.h"
 
 class BattleRenderer : public IRenderer<Battle> {
  private:
@@ -20,6 +23,6 @@ class BattleRenderer : public IRenderer<Battle> {
   void renderObjects() noexcept;
 
  public:
-  BattleRenderer( sf::RenderTexture& target_render_texture, const Battle& battle ) noexcept;
-  void render() override;
+  [[nodiscard]] BattleRenderer( sf::RenderTexture& target_render_texture, const Battle& battle ) noexcept;
+  void render() noexcept override;
 };

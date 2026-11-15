@@ -7,8 +7,9 @@
 
 #include <array>
 #include <cstddef>
-#include <magic_enum/magic_enum.hpp>
 #include <optional>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
@@ -38,9 +39,9 @@ class Army {
   WarMachineArr war_machines_;
 
  public:
-  Army() = default;
+  [[nodiscard]] constexpr Army() noexcept = default;
   Army( const Army& ) = delete;
-  Army( Army&& ) = default;
+  [[nodiscard]] constexpr Army( Army&& ) noexcept = default;
   ~Army() = default;
   Army& operator=( const Army& ) = delete;
   Army& operator=( Army&& ) = default;

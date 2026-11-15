@@ -3,9 +3,11 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "core/WorldMap/WorldMap.h"
-#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
 #include "engine/model/IGame/Coords.h"
+
+#include "engine/platform/Graphics/Renderers/IRenderer.hpp"
+
+#include "core/WorldMap/WorldMap.h"
 
 class MapRenderer : public IRenderer<WorldMap> {  // NOLINT(cppcoreguidelines-special-member-functions)
  private:
@@ -17,7 +19,8 @@ class MapRenderer : public IRenderer<WorldMap> {  // NOLINT(cppcoreguidelines-sp
   void renderObject( int x, int y ) const noexcept;
 
  public:
-  MapRenderer( sf::RenderTexture& target_render_texture, const WorldMap& object, CoordPair center_coords );
-  ~MapRenderer() override = default;
-  void render() override;
+  [[nodiscard]] MapRenderer( sf::RenderTexture& target_render_texture, const WorldMap& object,
+                             CoordPair center_coords ) noexcept;
+  ~MapRenderer() noexcept override = default;
+  void render() noexcept override;
 };
