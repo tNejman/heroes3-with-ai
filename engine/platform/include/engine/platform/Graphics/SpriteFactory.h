@@ -54,6 +54,13 @@ class SpriteFactory {  // NOLINT(cppcoreguidelines-special-member-functions)
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( OverworldObstacleType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( character::Type, CharacterMoveDirection ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( CastleUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( RampartUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( TowerUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( InfernoUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( NecropolisUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( DungeonUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( StrongholdUnitType ) noexcept;
+  [[nodiscard]] static sf::Sprite getSpriteFromBinding( FortressUnitType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ConfluxUnitType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( ForgeUnitType ) noexcept;
   [[nodiscard]] static sf::Sprite getSpriteFromBinding( WarMachineType ) noexcept;

@@ -279,6 +279,41 @@ void SpriteFactory::cleanupRawMagentaAndCyanTexture( sf::Texture& texture ) noex
   return sf::Sprite{ getTexture( cut, tex_filename ), sf::IntRect{ { 0, 0 }, crop } };
 }
 
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( RampartUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( TowerUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( InfernoUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( NecropolisUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( DungeonUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( StrongholdUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
+[[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( FortressUnitType ) noexcept {
+  err::passCondOrAbort( false, "not implemented" );
+  std::unreachable();
+}
+
 [[nodiscard]] sf::Sprite SpriteFactory ::getSpriteFromBinding( ConfluxUnitType ) noexcept {
   err::passCondOrAbort( false, "not implemented" );
   std::unreachable();

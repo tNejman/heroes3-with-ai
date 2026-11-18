@@ -1,56 +1,156 @@
 #include <gtest/gtest.h>
 
-#include <memory>
+#include <magic_enum/magic_enum.hpp>
+#include <variant>
 
-#include "core/Misc/ProjectLib.h"
-#include "core/Unit/Faction.hpp"
+#include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 
-// TEST( UnitTest, findUnitData ) {
-//   std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
-//   CastleUnitType unit_type = CastleUnitType::ANGEL;
-//   auto unit_data_itr = UNITS_PRESET_CASTLE.find( unit_type );
-//   ASSERT_NE( unit_data_itr, UNITS_PRESET_CASTLE.end() );
-// }
+/*
+====== Preset lookup tables ======
+*/
 
-// TEST( UnitTest, constructor ) {
-//   std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
-//   CastleUnitType unit_type = CastleUnitType::ANGEL;
-//   auto unit_data_ptr = UNITS_PRESET_CASTLE.find( unit_type )->second;  // not .end(), checked in previous test
-//   std::shared_ptr<Unit> unit = std::make_shared<Unit>( unit_data_ptr, faction_castle, static_cast<int>( unit_type )
-//   );
-//   // no assert, just checking if anything is thrown
-// }
+// getUnitDataFromType() indexes the preset arrays by enum value, so every entry must sit at the index of its own type.
+namespace {
+template <typename UnitType>
+class UnitPresetTest : public ::testing::Test {};
+}  // namespace
 
-// TEST( UnitTest, getters ) {
-//   std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();
-//   CastleUnitType unit_type = CastleUnitType::ANGEL;
-//   auto unit_data_ptr = UNITS_PRESET_CASTLE.find( unit_type )->second;  // not .end(), checked in previous test
-//   std::shared_ptr<Unit> unit = std::make_shared<Unit>( unit_data_ptr, faction_castle, static_cast<int>( unit_type )
-//   );
+using UnitTypes = ::testing::Types<CastleUnitType, RampartUnitType, TowerUnitType, InfernoUnitType, NecropolisUnitType,
+                                   DungeonUnitType, StrongholdUnitType, FortressUnitType, ConfluxUnitType,
+                                   ForgeUnitType, WarMachineType>;
+TYPED_TEST_SUITE( UnitPresetTest, UnitTypes );
 
-//   ASSERT_EQ( unit->getName(), unit_data_ptr->name_ );
-//   ASSERT_EQ( unit->getLevel(), unit_data_ptr->level_ );
-//   ASSERT_EQ( unit->getAttack(), unit_data_ptr->attack_ );
-//   ASSERT_EQ( unit->getDefense(), unit_data_ptr->defense_ );
-//   ASSERT_EQ( unit->getMinDamage(), unit_data_ptr->min_damage_ );
-//   ASSERT_EQ( unit->getMaxDamage(), unit_data_ptr->max_damage_ );
-//   ASSERT_EQ( unit->getHealth(), unit_data_ptr->health_ );
-//   ASSERT_EQ( unit->getSpeed(), unit_data_ptr->speed_ );
-//   ASSERT_EQ( unit->getCounterAttack(), unit_data_ptr->counter_attack_ );
-//   ASSERT_EQ( unit->getGrowth(), unit_data_ptr->growth_ );
-//   ASSERT_EQ( unit->getCost(), unit_data_ptr->cost_ );
-//   // getDmg gets checked later
-//   ASSERT_EQ( unit->getRange(), MELEE_UNIT_RANGE );  // range is melee
-//   ASSERT_EQ( unit->getFightValue(), unit_data_ptr->fight_value_ );
-// }
+TYPED_TEST( UnitPresetTest, lookupReturnsDataOfRequestedType ) {
+  for ( const TypeParam type : magic_enum::enum_values<TypeParam>() ) {
+    SCOPED_TRACE( magic_enum::enum_name( type ) );
 
-// TEST( UnitTest, getDmgCalculations ) {
+    const UnitData& data = getUnitDataFromType( type );
 
-//   // getDmg = min_dmg + rand() % (max_dmg - min_dmg + 1)
-//   for ( auto i = 0U; i < 1000; ++i ) {
-//     auto dmg_calculated = unit->getDmg();
-//     ASSERT_TRUE( dmg_calculated >= unit->getMinDamage() );
-//     ASSERT_TRUE( dmg_calculated <= unit->getMaxDamage() );
-//   }
-// }
+    ASSERT_TRUE( std::holds_alternative<TypeParam>( data.type_ ) );
+    EXPECT_EQ( std::get<TypeParam>( data.type_ ), type );
+  }
+}
+
+// All HoMM3 towns have real stats; Forge (not a HoMM3 town) is still a zero placeholder, so it is excluded.
+namespace {
+template <typename UnitType>
+class TownUnitPresetTest : public ::testing::Test {};
+}  // namespace
+
+using TownUnitTypes =
+    ::testing::Types<CastleUnitType, RampartUnitType, TowerUnitType, InfernoUnitType, NecropolisUnitType,
+                     DungeonUnitType, StrongholdUnitType, FortressUnitType, ConfluxUnitType>;
+TYPED_TEST_SUITE( TownUnitPresetTest, TownUnitTypes );
+
+TYPED_TEST( TownUnitPresetTest, presetValuesAreSane ) {
+  for ( const TypeParam type : magic_enum::enum_values<TypeParam>() ) {
+    SCOPED_TRACE( magic_enum::enum_name( type ) );
+
+    const UnitData& data = getUnitDataFromType( type );
+
+    // town dwellings go from level 1 to 7 in enum order
+    EXPECT_EQ( data.level_, static_cast<int>( type ) + 1 );
+    EXPECT_GT( data.attack_, 0 );
+    EXPECT_GT( data.defense_, 0 );
+    EXPECT_GT( data.min_damage_, 0 );
+    EXPECT_LE( data.min_damage_, data.max_damage_ );
+    EXPECT_GT( data.health_, 0 );
+    EXPECT_GT( data.speed_, 0 );
+    EXPECT_GE( data.counter_attack_, 1 );
+    EXPECT_GT( data.growth_, 0 );
+    EXPECT_GT( data.cost_, 0 );
+    EXPECT_GT( data.fight_value_, 0 );
+  }
+}
+
+TEST( UnitPresetValuesTest, matchesHomm3Stats ) {
+  const UnitData& pikeman = getUnitDataFromType( CastleUnitType::PIKEMAN );
+  EXPECT_EQ( pikeman.attack_, 4 );
+  EXPECT_EQ( pikeman.defense_, 5 );
+  EXPECT_EQ( pikeman.speed_, 4 );
+  EXPECT_EQ( pikeman.growth_, 14 );
+
+  const UnitData& griffin = getUnitDataFromType( CastleUnitType::GRIFFIN );
+  EXPECT_EQ( griffin.counter_attack_, 2 );
+
+  const UnitData& lich = getUnitDataFromType( NecropolisUnitType::LICH );
+  EXPECT_TRUE( lich.is_range_ );
+  EXPECT_EQ( lich.min_damage_, 11 );
+  EXPECT_EQ( lich.max_damage_, 13 );
+
+  const UnitData& firebird = getUnitDataFromType( ConfluxUnitType::FIREBIRD );
+  EXPECT_EQ( firebird.speed_, 15 );
+  EXPECT_EQ( firebird.growth_, 2 );  // SoD value, HotA lowered it to 1
+
+  const UnitData& ballista = getUnitDataFromType( WarMachineType::BALLISTA );
+  EXPECT_TRUE( ballista.is_range_ );
+  EXPECT_EQ( ballista.health_, 250 );
+  EXPECT_EQ( ballista.counter_attack_, 0 );
+}
+
+/*
+====== UnitStack ======
+*/
+
+TEST( UnitStackTest, constructedStackUsesPresetData ) {
+  const UnitStack angels{ CastleUnitType::ANGEL, 5 };
+
+  EXPECT_EQ( &angels.getData(), &getUnitDataFromType( CastleUnitType::ANGEL ) );
+  EXPECT_EQ( angels.getSize(), 5 );
+  EXPECT_TRUE( angels.isAlive() );
+  EXPECT_EQ( angels.getMorale(), 0 );
+  EXPECT_EQ( angels.getLuck(), 0 );
+}
+
+TEST( UnitStackTest, damageBelowOneUnitHealthKillsNoUnit ) {
+  UnitStack pikemen{ CastleUnitType::PIKEMAN, 10 };
+  const int unit_health = pikemen.getData().health_;
+  ASSERT_GT( unit_health, 1 );
+
+  pikemen.modifyCurrentHealth( unit_health - 1 );
+
+  EXPECT_EQ( pikemen.getSize(), 10 );
+  EXPECT_TRUE( pikemen.isAlive() );
+}
+
+TEST( UnitStackTest, damageEqualToOneUnitHealthKillsExactlyOneUnit ) {
+  UnitStack pikemen{ CastleUnitType::PIKEMAN, 10 };
+  const int unit_health = pikemen.getData().health_;
+
+  pikemen.modifyCurrentHealth( unit_health );
+
+  EXPECT_EQ( pikemen.getSize(), 9 );
+  EXPECT_TRUE( pikemen.isAlive() );
+}
+
+TEST( UnitStackTest, partialDamageAccumulatesAcrossHits ) {
+  UnitStack pikemen{ CastleUnitType::PIKEMAN, 10 };
+  const int unit_health = pikemen.getData().health_;
+  ASSERT_GT( unit_health, 1 );
+
+  pikemen.modifyCurrentHealth( unit_health - 1 );
+  pikemen.modifyCurrentHealth( 1 );
+
+  EXPECT_EQ( pikemen.getSize(), 9 );
+}
+
+TEST( UnitStackTest, overkillDestroysWholeStack ) {
+  UnitStack pikemen{ CastleUnitType::PIKEMAN, 10 };
+  const int unit_health = pikemen.getData().health_;
+
+  pikemen.modifyCurrentHealth( unit_health * 100 );
+
+  EXPECT_EQ( pikemen.getSize(), 0 );
+  EXPECT_FALSE( pikemen.isAlive() );
+}
+
+TEST( UnitStackTest, moraleAndLuckSetters ) {
+  UnitStack pikemen{ CastleUnitType::PIKEMAN, 1 };
+
+  pikemen.setMorale( 2 );
+  pikemen.setLuck( -1 );
+
+  EXPECT_EQ( pikemen.getMorale(), 2 );
+  EXPECT_EQ( pikemen.getLuck(), -1 );
+}
