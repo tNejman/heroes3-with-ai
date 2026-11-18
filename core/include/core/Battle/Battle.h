@@ -62,10 +62,6 @@ class Battle : public std::enable_shared_from_this<Battle> {
 
   bool is_minimax_ = false;
 
-  [[nodiscard]] bool isMoveLegal( const BattleCommand& ) const noexcept;
-  [[nodiscard]] bool isAttackLegal( const BattleCommand& ) const noexcept;
-  [[nodiscard]] bool isWaitLegal( const BattleCommand& ) const noexcept;
-
  public:
   friend MoveFactory;
   Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
@@ -85,7 +81,6 @@ class Battle : public std::enable_shared_from_this<Battle> {
   bool attack( UnitStack& attacking_unit, UnitStack& defending_unit );
 
   [[nodiscard]] bool isUnitBlocked( const UnitStack& ) const noexcept;
-  [[nodiscard]] bool isLegalCommand( const BattleCommand& ) const noexcept;
 
   [[nodiscard]] std::shared_ptr<BattleField> getBattlefield() const noexcept;
   [[nodiscard]] std::shared_ptr<BattleField> getBattlefield() noexcept;

@@ -126,7 +126,7 @@ std::optional<CharacterMoveDirection> KeyHandler::getMoveFromKeys( const std::ve
     return std::nullopt;
   }
   auto dist = std::distance( WORLD_MAP_DIRECTIONS.begin(), itr );
-  assert( dist <= 7U );
+  err::passCondOrAbort( dist <= 7U );
   return static_cast<CharacterMoveDirection>( dist );
 }
 

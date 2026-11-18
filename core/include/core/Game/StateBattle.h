@@ -45,6 +45,10 @@ class StateBattle : public game::StateOf<BattleCommand, BattleSystemCommand> {
   // StateTransition handleDefend( const Defend & ) noexcept;
   [[nodiscard]] game::StateTransition handleCastSpell( const BattleCommand & ) noexcept;
 
+  [[nodiscard]] bool isMoveLegal( const BattleCommand & ) const noexcept;
+  [[nodiscard]] bool isAttackLegal( const BattleCommand & ) const noexcept;
+  [[nodiscard]] bool isWaitLegal( const BattleCommand & ) const noexcept;
+
  public:
   StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background );
 

@@ -22,7 +22,7 @@ void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   // SINGLE_CALL_GUARD();
   for ( size_t col = 0; col < WORLD_MAP_WIDTH; ++col ) {
     for ( size_t row = 0; row < WORLD_MAP_HEIGHT; ++row ) {
-      assert( new_grid[col][row] >= 0 && new_grid[col][row] < static_cast<int>( magic_enum::enum_count<Terrain>() ) );
+      err::passCondOrAbort( new_grid[col][row] >= 0 && new_grid[col][row] < static_cast<int>( magic_enum::enum_count<Terrain>() ) );
       background_[col][row] = static_cast<Terrain>( new_grid[col][row] );
     }
   }

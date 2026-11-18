@@ -97,37 +97,6 @@ void Battle::nextRound() {
   has_defender_thrown_spell_this_turn_ = false;
 }
 
-[[nodiscard]] bool Battle::isMoveLegal( const BattleCommand& command_in_question ) const noexcept {
-  return std::ranges::any_of( possible_moves_, [&]( const UserCommand& available_command ) {
-    return std::get<BattleCommand>( available_command ) == command_in_question;
-  } );
-}
-[[nodiscard]] bool Battle::isAttackLegal( const BattleCommand& bc ) const noexcept {
-  /**
-   * @TODO
-   * check ammo
-   * check big units distance
-   * check dead unit/obstacle
-   */
-  assert( unit_in_action_ != nullptr && "Battle::isAttackLegal -> battle.unit_in_action is nullptr" );
-  if ( state_ != battle::State::ATTACKING ) {
-    return false;
-  }
-  const auto* const target = getUnitFromCoords( bc.destination_ );
-  if ( target == nullptr || isSameArmy( *unit_in_action_, *target ) ) {
-    return false;
-  }
-  const bool is_ranged_unit = unit_in_action_->getData().is_range_;
-  const bool next_to_defender = unit_in_action_->getCoordsInBattle().distanceFrom( bc.destination_ ) < 2;
-  const bool is_unit_blocked = isUnitBlocked( *unit_in_action_ );
-
-  return next_to_defender || ( is_ranged_unit && !is_unit_blocked );
-}
-[[nodiscard]] bool Battle::isWaitLegal( const BattleCommand& ) const noexcept {
-  // TODO actually write logic
-  return true;
-}
-
 /* === @PUBLIC === */
 
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background )
@@ -140,7 +109,7 @@ Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> 
   setAttackingArmy();
   setDefendingArmy();
   nextUnit();
-  assert( attacker_.get() != defender_.get() );
+  err::passCondOrAbort( attacker_.get() != defender_.get() );
 };
 
 Battle::Battle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender, Terrain background,
@@ -261,17 +230,6 @@ bool Battle::attack( UnitStack& attacking_unit, UnitStack& defending_unit ) {
     return object->asUnit() != nullptr && !isSameArmy( *object->asUnit(), stack );
   } );
   return it != neighbours.end();
-}
-
-[[nodiscard]] bool Battle::isLegalCommand( const BattleCommand& command ) const noexcept {
-  if ( command.destination_ == unit_in_action_->getCoordsInBattle() ) {
-    return isWaitLegal( command );
-  }
-  switch ( state_ ) {
-    case battle::State::ATTACKING: return isAttackLegal( command );
-    case battle::State::MOVING: return isMoveLegal( command );
-    default: assert( false && "Battle::isLegalCommand -> reached unknown state" );
-  }
 }
 
 std::shared_ptr<BattleField> Battle::getBattlefield() const noexcept {
@@ -514,7 +472,7 @@ std::shared_ptr<Battle> Battle::copy() {
 
   auto units_in_battle_old = this->getUnitsInBattle();
   auto units_in_battle_new = copy->getUnitsInBattle();
-  assert( units_in_battle_old.size() == units_in_battle_new.size() );
+  err::passCondOrAbort( units_in_battle_old.size() == units_in_battle_new.size() );
 
   copy->forceUnplaceUnitStacks();
   copy->round_queue_.clear();

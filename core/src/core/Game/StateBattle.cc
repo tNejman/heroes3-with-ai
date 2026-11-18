@@ -296,6 +296,39 @@ game::StateTransition game::StateBattle::handleWait() noexcept {
   err::abort( "not implemented -> find state change" );
 }
 
+[[nodiscard]] bool game::StateBattle::isMoveLegal( const BattleCommand &command_in_question ) const noexcept {
+  const auto &possible_moves = battle_.getPossibleMoves();
+  return std::ranges::any_of( possible_moves, [&]( const UserCommand &available_command ) {
+    return std::get<BattleCommand>( available_command ) == command_in_question;
+  } );
+}
+[[nodiscard]] bool game::StateBattle::isAttackLegal( const BattleCommand &bc ) const noexcept {
+  /**
+   * @TODO
+   * check ammo
+   * check big units distance
+   * check dead unit/obstacle
+   */
+  const auto *unit_in_action = battle_.getUnitInAction();
+  err::passCondOrAbort( unit_in_action != nullptr, "battle.unit_in_action is nullptr" );
+  if ( battle_.getState() != battle::State::ATTACKING ) {
+    return false;
+  }
+  const auto *const target = battle_.getUnitFromCoords( bc.destination_ );
+  if ( target == nullptr || battle_.isSameArmy( *unit_in_action, *target ) ) {
+    return false;
+  }
+  const bool is_ranged_unit = unit_in_action->getData().is_range_;
+  const bool next_to_defender = unit_in_action->getCoordsInBattle().distanceFrom( bc.destination_ ) < 2;
+  const bool is_unit_blocked = battle_.isUnitBlocked( *unit_in_action );
+
+  return next_to_defender || ( is_ranged_unit && !is_unit_blocked );
+}
+[[nodiscard]] bool game::StateBattle::isWaitLegal( const BattleCommand & ) const noexcept {
+  // TODO actually write logic
+  return true;
+}
+
 /* === @PUBLIC === */
 
 game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared_ptr<Character> defender,
@@ -351,7 +384,7 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
     transition = handleCastSpell( battle_command );
     battle_.setCurrentCharacterThrownSpellTrue();
   } else {
-    assert( false && "GameStateBattle::applyCommand -> unexpected state" );
+    err::unreachable();
   }
   // return std::visit( Overload{ [&]( const MoveStack &ms ) -> StateTransition { return handleMoveStack( ms ); },
   //                              [&]( const AttackStack &as ) -> StateTransition { return handleAttackStack( as ); },
@@ -367,7 +400,22 @@ game::StateBattle::StateBattle( std::shared_ptr<Character> attacker, std::shared
   if ( !isCommandForThisState( command ) ) {
     return false;
   }
-  return battle_.isLegalCommand( std::get<BattleCommand>( command ) );
+
+  const auto &battle_command = std::get<BattleCommand>( command );
+
+  if ( battle_command.destination_ == battle_.getUnitInAction()->getCoordsInBattle() ) {
+    return isWaitLegal( battle_command );
+  }
+
+  switch ( battle_.getState() ) {
+    case battle::State::ATTACKING: return isAttackLegal( battle_command );
+    case battle::State::MOVING: return isMoveLegal( battle_command );
+    case battle::State::PREPPING:
+    case battle::State::WIN_ATTACKER:
+    case battle::State::WIN_DEFENDER: err::unreachable( "not implemented" );
+  }
+
+  err::unreachable();
 }
 
 void game::StateBattle::applySystemCommand( const SystemCommand &, game::Context & ) noexcept {

@@ -34,8 +34,8 @@ void MapLoader::moveWordToContainer( const int word ) {
 
 WorldMap MapLoader::getObjectFromContainer() {
   // for explanation look in header
-  assert( y_counter_ == 4'294'967'295 );
-  assert( x_counter_ == 0 );
+  err::passCondOrAbort( y_counter_ == 4'294'967'295 );
+  err::passCondOrAbort( x_counter_ == 0 );
   return WorldMap{ container_, generateObstacles() };
   ;
 }

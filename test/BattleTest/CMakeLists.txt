@@ -6,5 +6,5 @@ f_add_test_executable(testBattle
 
 f_add_test_executable(testBattlefield
   SOURCES testBattlefield.cc
-  LIBRARIES Battle Coords
+  LIBRARIES Battle
 )

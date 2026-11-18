@@ -10,7 +10,6 @@ target_include_directories(Character PRIVATE
 
 target_link_libraries(Character PUBLIC
   Artifact
-  Coords
   Unit
   Magic
   MapObject

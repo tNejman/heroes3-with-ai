@@ -97,7 +97,6 @@ endif()
 
 set(ENGINE_MODEL_MODULES
   IGame
-  Coords
 )
 
 set(ENGINE_PLATFORM_MODULES

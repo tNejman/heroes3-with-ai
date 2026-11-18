@@ -1,15 +1,14 @@
 add_library(Artifact SHARED
-    Artifact.cc
+  Artifact.cc
 )
 
 target_include_directories(Artifact PRIVATE
 )
 
 target_link_libraries(Artifact PRIVATE
-    Coords
-    MapObject
+  MapObject
 )
 
 target_link_libraries(Artifact PUBLIC
-    magic_enum::magic_enum
+  magic_enum::magic_enum
 )

@@ -5,6 +5,8 @@
 
 #include "aux/Enum.hpp"
 
+namespace cycle_enum {
+
 template <Enum E>
 constexpr E next( E e ) {
   return static_cast<E>( ( std::to_underlying( e ) + 1 ) % magic_enum::enum_count<E>() );
@@ -18,3 +20,5 @@ constexpr E prev( E e ) {
   }
   return static_cast<E>( magic_enum::enum_count<E>() - 1 );
 }
+
+}  // namespace cycle_enum

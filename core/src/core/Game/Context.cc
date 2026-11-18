@@ -54,7 +54,7 @@ game::Context::Context( std::vector<std::shared_ptr<Player>>&& players ) noexcep
 
 Player& game::Context::nextPlayer() noexcept {
   const PlayerColor current_player_color = current_player_.get().getColor();
-  PlayerColor candidate = next( current_player_color );
+  PlayerColor candidate = cycle_enum::next( current_player_color );
   while ( candidate != current_player_color ) {
     const auto it =
         std::ranges::find_if( players_, [&]( const auto& player ) { return player->getColor() == candidate; } );
@@ -62,7 +62,7 @@ Player& game::Context::nextPlayer() noexcept {
       current_player_ = **it;
       return current_player_;
     }
-    candidate = next( candidate );
+    candidate = cycle_enum::next( candidate );
   }
   err::abort( "no other player found" );
 }
