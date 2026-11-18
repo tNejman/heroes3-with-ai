@@ -3,13 +3,15 @@
 #include <variant>
 #include <vector>
 
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/IRVisitor.h"
+
 #include "aux/IsVariantMember.hpp"
+
 #include "core/Game/Context.h"
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGraphics/IRVisitor.h"
-#include "engine/model/IGame/Coords.h"
 
 namespace game {
 

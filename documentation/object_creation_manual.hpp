@@ -6,12 +6,12 @@ DO NOT BUILD THIS FILE
 
 // Manual on how to create objects in Heroes3App
 
-#include <Misc/ProjectLib.h>
-#include <Units/UnitStack.h>
-
-#include <Units/Faction.hpp>
 #include <cassert>
 #include <memory>
+
+#include <Misc/ProjectLib.h>
+#include <Units/Faction.hpp>
+#include <Units/UnitStack.h>
 
 /* ===== 1. Faction =====
 pattern:

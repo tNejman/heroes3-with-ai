@@ -1,21 +1,23 @@
 #include "engine/platform/Graphics/Renderers/MapRenderer.h"
 
-#include <engine/platform/Graphics/GraphicsLib.h>
-#include <engine/platform/Graphics/SpriteVisitor.h>
+#include <algorithm>
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <algorithm>
+
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/ISpriteFactory.h"
+
+#include <engine/platform/Graphics/GraphicsLib.h>
 #include <engine/platform/Graphics/Renderers/IRenderer.hpp>
+#include <engine/platform/Graphics/SpriteVisitor.h>
 
 #include "core/Game/StateOverworld.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/model/IGame/Coords.h"
-#include "engine/model/IGraphics/ISpriteFactory.h"
 
 void MapRenderer::renderGridWithFun( void ( MapRenderer::*fun )( int, int ) const ) const noexcept {
   static constexpr int MAX_TILES_VISIBLE_FROM_CENTER_HORIZONTALLY = 13;

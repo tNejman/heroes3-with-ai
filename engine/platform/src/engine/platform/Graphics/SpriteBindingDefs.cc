@@ -1,15 +1,23 @@
 #include "engine/platform/Graphics/SpriteBindingDefs.h"
 
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <array>
-#include <magic_enum/magic_enum.hpp>
 #include <numeric>
 #include <utility>
 #include <variant>
 
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <magic_enum/magic_enum.hpp>
+
+#include "engine/model/IGraphics/ISpriteFactory.h"
+#include "engine/model/IGraphics/SpriteBinding.h"
+
+#include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
+#include "engine/platform/Graphics/GraphicsLib.h"
+
 #include "aux/Err.hpp"
 #include "aux/ToLowerString.hpp"
+
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
 #include "core/Character/Character.h"
@@ -19,10 +27,6 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/model/IGraphics/ISpriteFactory.h"
-#include "engine/model/IGraphics/SpriteBinding.h"
-#include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
-#include "engine/platform/Graphics/GraphicsLib.h"
 
 [[nodiscard]] TextureSource SpriteBinding<HexagonType, game::StateBattle>::source( HexagonType hexagon_type ) noexcept {
   static TextureSource texture_source{ .path_prefix_ = SPRITE_ROOT_DIR + "/battle/aux/" };

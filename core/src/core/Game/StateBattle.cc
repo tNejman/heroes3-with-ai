@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <iostream>
 #include <limits>
-#include <magic_enum/magic_enum.hpp>
 #include <memory>
 #include <queue>
 #include <set>
@@ -13,8 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include <magic_enum/magic_enum.hpp>
+
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/IRVisitor.h"
+
 #include "aux/Err.hpp"
 #include "aux/_NotImplementedException.hpp"
+
 #include "core/Battle/Battle.h"
 #include "core/Battle/BattleField.h"
 #include "core/Battle/Tile.h"
@@ -24,8 +29,6 @@
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGame/Coords.h"
-#include "engine/model/IGraphics/IRVisitor.h"
 
 [[nodiscard]] std::vector<BattleCommand> game::StateBattle::createMoveCommands() const noexcept {
   std::vector<BattleCommand> valid_moves;

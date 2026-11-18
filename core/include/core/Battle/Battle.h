@@ -17,7 +17,6 @@
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 
-
 class MoveFactory;
 class Character;
 class UnitStack;

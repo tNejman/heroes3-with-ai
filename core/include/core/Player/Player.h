@@ -17,7 +17,6 @@
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/Castles/Castle.h"
 
-
 class Move;
 
 enum PlayerColor : uint8_t { RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK, COUNT };

@@ -8,8 +8,11 @@
 #include <variant>
 #include <vector>
 
+#include "engine/model/IGraphics/IRVisitor.h"
+
 #include "aux/Err.hpp"
 #include "aux/Overload.hpp"
+
 #include "core/Algorithms/MinimaxAI.h"
 #include "core/Battle/Battle.h"
 #include "core/Character/Character.h"
@@ -23,7 +26,6 @@
 #include "core/Player/Player.h"
 #include "core/Unit/Faction.hpp"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/model/IGraphics/IRVisitor.h"
 
 game::StateTransition Game::handleStateIndependentCommand( const StateIndependentCommand& command ) noexcept {
   return std::visit( Overload{ [&]( const SwitchCharacter& ) -> game::StateTransition {

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <map>
 #include <vector>
+
+#include <SFML/Window/Keyboard.hpp>
 constexpr inline int KEY_BUFFER_DURATION = 5;
 
 constexpr sf::Keyboard::Key W = sf::Keyboard::Key::W;

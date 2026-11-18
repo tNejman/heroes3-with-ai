@@ -11,10 +11,12 @@
 
 #include <functional>
 
-#include "aux/Visitor.hpp"
-#include "core/Artifact/ArtifactLib.h"
 #include "engine/model/IGraphics/IPrintable.h"
 #include "engine/model/IGraphics/Visitor.h"
+
+#include "aux/Visitor.hpp"
+
+#include "core/Artifact/ArtifactLib.h"
 
 class Visitor;
 

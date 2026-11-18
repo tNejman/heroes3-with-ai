@@ -1,16 +1,18 @@
-#include <gtest/gtest.h>
-
 #include <array>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include <gtest/gtest.h>
+
+#include "engine/model/IGame/Coords.h"
+
 #include "aux/BuildVector.hpp"
 #include "aux/DiscardReturn.hpp"
+
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/model/IGame/Coords.h"
 
 // TEST( WorldMapTests, constructorWithGrid ) {
 //   std::array<std::array<int, WORLD_MAP_HEIGHT>, WORLD_MAP_WIDTH> grid_temp{};

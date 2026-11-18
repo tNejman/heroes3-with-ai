@@ -6,9 +6,10 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/Window.hpp>
 
-#include "core/Game/Game.h"
 #include "engine/platform/Graphics/RVisitor.h"
 #include "engine/platform/Graphics/Renderers/IRenderer.hpp"
+
+#include "core/Game/Game.h"
 
 GameRenderer::GameRenderer( sf::RenderWindow& window, sf::RenderTexture& target_render_texture,
                             const Game& game ) noexcept

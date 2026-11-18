@@ -13,7 +13,6 @@
 
 #include "core/Misc/ProjectLib.h"
 
-
 // Movement OverworldOnly
 class KeyHandler {
  private:

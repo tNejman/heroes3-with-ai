@@ -1,20 +1,22 @@
 
 #include "engine/platform/Input/MouseHandler.h"
 
-#include <engine/model/IGraphics/IRVisitor.h>
-#include <engine/platform/Graphics/GraphicsLib.h>
-
 #include <algorithm>
 #include <cmath>
 #include <memory>
 #include <optional>
 
+#include "engine/model/IGame/Coords.h"
+#include <engine/model/IGraphics/IRVisitor.h>
+
+#include <engine/platform/Graphics/GraphicsLib.h>
+
 #include "aux/Err.hpp"
+
 #include "core/Battle/Battle.h"
 #include "core/Game/StateBattle.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGame/Coords.h"
 
 [[nodiscard]] std::optional<CoordPair> MouseHandler::getHexagonCoordsFromClick( int mx, int my ) const noexcept {
   if ( mx < 0 || my < 0 ) {
@@ -88,5 +90,5 @@ void MouseHandler::visit( const game::StateBattle& gbs ) noexcept {
     return;
   }
 
-  command_ =  std::get<BattleCommand>( *it );
+  command_ = std::get<BattleCommand>( *it );
 }

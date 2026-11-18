@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "aux/Err.hpp"
+
 #include "core/Game/IState.h"
 
 constexpr inline size_t ASSUMED_SAFE_MAX_STATE_COUNT = 10;

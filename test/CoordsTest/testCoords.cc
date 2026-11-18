@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 #include "engine/model/IGame/Coords.h"
+
+#include "core/Exceptions/CoordinateOutOfBoundsException.hpp"
 
 /*
 ====== Shift Pair ======

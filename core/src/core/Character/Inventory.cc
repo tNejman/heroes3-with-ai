@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "aux/Err.hpp"
+
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
 #include "core/Exceptions/EmptySlotException.hpp"

@@ -11,17 +11,19 @@
 #include <variant>
 #include <vector>
 
+#include "engine/model/IGraphics/IRVisitor.h"
+
 #include "aux/DiscardReturn.hpp"
 #include "aux/Err.hpp"
 #include "aux/Overload.hpp"
 #include "aux/_NotImplementedException.hpp"
+
 #include "core/Game/Context.h"
 #include "core/Game/IState.h"
 #include "core/Game/SystemCommand.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/WorldMap.h"
-#include "engine/model/IGraphics/IRVisitor.h"
 
 /* ==== @PUBLIC ==== */
 

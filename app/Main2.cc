@@ -1,3 +1,9 @@
+#include <chrono>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -7,14 +13,10 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
-#include <chrono>
-#include <iostream>
 #include <magic_enum/magic_enum.hpp>
-#include <memory>
-#include <string>
-#include <thread>
 
 #include "aux/CycleEnumVal.hpp"
+
 #include "core/Artifact/ArtifactLib.h"
 
 // int main( int, char* argv[] ) {

@@ -5,10 +5,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <magic_enum/magic_enum.hpp>
 #include <map>
 #include <string>
 #include <unordered_map>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "engine/model/IGame/Coords.h"
 

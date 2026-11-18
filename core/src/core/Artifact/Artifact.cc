@@ -3,8 +3,9 @@
 #include <cassert>
 #include <cstddef>
 
-#include "core/Artifact/ArtifactLib.h"
 #include "engine/model/IGraphics/Visitor.h"
+
+#include "core/Artifact/ArtifactLib.h"
 
 Artifact::Artifact( const artifact::Data& data ) noexcept : data_( data ) {
 }

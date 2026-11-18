@@ -3,12 +3,16 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
-#include <magic_enum/magic_enum.hpp>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include <magic_enum/magic_enum.hpp>
+
+#include "engine/model/IGame/Coords.h"
+
 #include "aux/Err.hpp"
+
 #include "core/Exceptions/CoordinateOutOfBoundsException.hpp"  // IWYU pragma: keep
 #include "core/Exceptions/InvalidMapMoveException.hpp"
 #include "core/Game/IState.h"
@@ -16,7 +20,6 @@
 #include "core/Misc/Formatter.hpp"  // IWYU pragma: keep
 #include "core/Misc/ProjectLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/model/IGame/Coords.h"
 
 void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   // SINGLE_CALL_GUARD();

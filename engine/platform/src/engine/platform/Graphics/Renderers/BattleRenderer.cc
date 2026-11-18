@@ -1,6 +1,10 @@
 #include "engine/platform/Graphics/Renderers/BattleRenderer.h"
 
-#include <engine/platform/Graphics/GraphicsLib.h>
+#include <cmath>
+#include <cstddef>
+#include <string>
+#include <utility>
+#include <variant>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -12,24 +16,23 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <cmath>
-#include <cstddef>
+
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/ISpriteFactory.h"
+
+#include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
+#include <engine/platform/Graphics/GraphicsLib.h>
 #include <engine/platform/Graphics/Renderers/IRenderer.hpp>
-#include <string>
-#include <utility>
-#include <variant>
 
 #include "aux/Err.hpp"
 #include "aux/_NotImplementedException.hpp"
+
 #include "core/Battle/Battle.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
 #include "core/Game/StateBattle.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
-#include "engine/model/IGame/Coords.h"
-#include "engine/model/IGraphics/ISpriteFactory.h"
-#include "engine/platform/Graphics/GraphicsHelperFunctions.hpp"
 
 [[nodiscard]] std::pair<int, int> BattleRenderer::getHexagonOffset( CoordPair coords ) noexcept {
   int offset_x = graphics::BATTLE_MAP_SPRITE_INITIAL_OFFSET_X_ODD + ( coords.x_ * graphics::BATTLE_MAP_SPRITE_X_DELTA );

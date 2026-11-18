@@ -7,6 +7,7 @@
 
 #include "aux/CycleEnumVal.hpp"
 #include "aux/Err.hpp"
+
 #include "core/Character/Character.h"
 #include "core/Player/Player.h"
 

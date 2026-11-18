@@ -2,11 +2,13 @@
 
 #include <string>
 
+#include "engine/model/IGame/Coords.h"
+
 #include "aux/Builder.hpp"
-#include "core/Misc/BuilderDefaults.hpp"
+
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
-#include "engine/model/IGame/Coords.h"
+#include "core/Misc/BuilderDefaults.hpp"
 
 // NOLINTBEGIN(readability-identifier-naming)
 
@@ -21,7 +23,7 @@ struct BuilderDefaults<Character> {
 
 template <>
 struct BuilderIdGenerator<Character> {
-    static inline auto generator = [next_id = 0]() mutable -> int { return next_id++; };
+  static inline auto generator = [next_id = 0]() mutable -> int { return next_id++; };
 };
 
 // NOLINTEND(readability-identifier-naming)

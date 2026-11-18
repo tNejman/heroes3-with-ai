@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-
 #include <memory>
+
+#include <gtest/gtest.h>
 
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/Faction.hpp"

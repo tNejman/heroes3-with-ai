@@ -1,8 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <string>
 
 #include "engine/model/IGraphics/SpriteBinding.h"
 class TextureLoader {

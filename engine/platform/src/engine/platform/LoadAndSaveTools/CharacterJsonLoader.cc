@@ -10,9 +10,10 @@
 #include <string>
 #include <utility>
 
+#include "engine/model/IGame/Coords.h"
+
 #include "core/Character/Character.h"
 #include "core/Magic/SpellBook.h"
-#include "engine/model/IGame/Coords.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/WarMachine.h"

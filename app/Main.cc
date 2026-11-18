@@ -1,7 +1,8 @@
-#include <engine/model/IGame/Coords.h>
-#include <engine/platform/Graphics/GraphicsLib.h>
-#include <engine/platform/Graphics/Renderers/GameRenderer.h>
-#include <engine/platform/Input/InputHandler.h>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -15,13 +16,16 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Window.hpp>
 #include <SFML/Window/WindowEnums.hpp>
-#include <memory>
-#include <optional>
-#include <string>
-#include <utility>
-#include <vector>
+
+#include <engine/model/IGame/Coords.h>
+
+#include "engine/platform/LoadAndSaveTools/MapLoader.h"
+#include <engine/platform/Graphics/GraphicsLib.h>
+#include <engine/platform/Graphics/Renderers/GameRenderer.h>
+#include <engine/platform/Input/InputHandler.h>
 
 #include "aux/Err.hpp"
+
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Game/Game.h"
@@ -32,7 +36,6 @@
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
-#include "engine/platform/LoadAndSaveTools/MapLoader.h"
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 

@@ -13,8 +13,12 @@
 #include <variant>
 #include <vector>
 
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
+
 #include "aux/Err.hpp"
 #include "aux/_NotImplementedException.hpp"
+
 #include "core/Battle/BattleField.h"
 #include "core/Battle/Tile.h"
 #include "core/Character/Army.h"
@@ -23,8 +27,6 @@
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/UnitsLib.h"
-#include "engine/model/IGame/Coords.h"
-#include "engine/model/IGraphics/Visitor.h"
 
 void Battle::setAttackingArmy() {
   auto& party = attacker_->army().getParty();

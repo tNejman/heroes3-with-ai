@@ -7,13 +7,18 @@
   - Każda metoda zwraca odpowiednią teksturę dla danego obiektu.
 */
 
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <concepts>
 #include <optional>
 #include <string>
 
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+
+#include "engine/model/IGraphics/SpriteBinding.h"
+#include "engine/model/IGraphics/Visitor.h"
+
 #include "aux/Visitor.hpp"
+
 #include "core/Artifact/Artifact.h"
 #include "core/Battle/Battle.h"
 #include "core/Battle/Obstacle.hpp"
@@ -22,8 +27,6 @@
 #include "core/Magic/Spell.h"
 #include "core/Resource/Resource.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/model/IGraphics/SpriteBinding.h"
-#include "engine/model/IGraphics/Visitor.h"
 
 template <typename GameState>
 requires std::derived_from<GameState, game::IState>

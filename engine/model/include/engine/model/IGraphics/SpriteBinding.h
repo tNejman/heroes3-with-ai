@@ -1,13 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <concepts>
 #include <functional>
 #include <optional>
 #include <string>
 #include <type_traits>
+
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 
 #include "aux/Enum.hpp"
 

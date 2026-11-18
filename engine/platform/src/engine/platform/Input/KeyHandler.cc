@@ -1,5 +1,4 @@
 
-#include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <cassert>
 #include <iterator>
@@ -10,11 +9,16 @@
 #include <utility>
 #include <vector>
 
-#include "aux/Err.hpp"
-#include "core/Misc/ProjectLib.h"
+#include <SFML/Window/Keyboard.hpp>
+
 #include "engine/model/IGame/Coords.h"
+
 #include "engine/platform/Input/KeyboardHandler.h"
 #include "engine/platform/Input/KeyboardLib.h"
+
+#include "aux/Err.hpp"
+
+#include "core/Misc/ProjectLib.h"
 
 // void KeyHandler::processBufferedInput() {
 //   removeEmptyFramesFromFront();

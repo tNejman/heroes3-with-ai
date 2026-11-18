@@ -1,11 +1,13 @@
 #include "engine/model/IGraphics/TextureLoader.h"
 
-#include <SFML/Graphics/Texture.hpp>
 #include <string>
+
+#include <SFML/Graphics/Texture.hpp>
+
+#include "engine/model/IGraphics/SpriteBinding.h"
 
 #include "aux/Err.hpp"
 #include "aux/StringHash.hpp"
-#include "engine/model/IGraphics/SpriteBinding.h"
 
 [[nodiscard]] sf::Texture TextureLoader::loadTextureOrAbort( const std::string& path ) noexcept {
   sf::Texture t;

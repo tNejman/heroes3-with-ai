@@ -7,7 +7,6 @@
 
 #include "core/MapObject/MapObject.h"
 
-
 /**
  * @note don't derive visitor::Visitable here, Building is not final child
  */

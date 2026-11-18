@@ -5,7 +5,10 @@
 #include <string>
 #include <utility>
 
+#include "engine/model/IGame/Coords.h"
+
 #include "aux/Err.hpp"
+
 #include "core/Character/Army.h"
 #include "core/Character/Inventory.h"
 #include "core/Character/Stats.h"
@@ -13,7 +16,6 @@
 #include "core/Magic/SpellBook.h"
 #include "core/MapObject/MapObject.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGame/Coords.h"
 
 /* ==== @PRIVATE ==== */
 

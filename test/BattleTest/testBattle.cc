@@ -1,19 +1,21 @@
-#include <gtest/gtest.h>
-
 #include <memory>
 #include <optional>
 
+#include <gtest/gtest.h>
+
+#include "engine/model/IGame/Coords.h"
+#include "engine/model/IGraphics/Visitor.h"
+
+#include "aux/Builder.hpp"
+
 #include "core/Battle/Battle.h"
 #include "core/Battle/Tile.h"  // IWYU pragma: keep
-#include "aux/Builder.hpp"
-#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
+#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Misc/ProjectLib.h"
 #include "core/Unit/Faction.hpp"
 #include "core/Unit/UnitsLib.h"
-#include "engine/model/IGraphics/Visitor.h"
-#include "engine/model/IGame/Coords.h"
 
 // Easy factory constructor
 // const std::shared_ptr<FactionCastle> faction_castle = std::make_shared<FactionCastle>();

@@ -116,7 +116,8 @@ inline constexpr std::size_t no_id_index = std::numeric_limits<std::size_t>::max
   return result;
 }
 
-[[nodiscard]] consteval auto defaultsDiagnostic( std::meta::info type, std::meta::info defaults, bool specialized ) -> std::string {
+[[nodiscard]] consteval auto defaultsDiagnostic( std::meta::info type, std::meta::info defaults, bool specialized )
+    -> std::string {
   if ( constructorsOf( type ).size() != 1 ) {
     return {};
   }
@@ -186,8 +187,8 @@ inline constexpr std::size_t no_id_index = std::numeric_limits<std::size_t>::max
   return defaults_name + " does not match the constructor of " + type_name + ":" + message;
 }
 
-[[nodiscard]] consteval auto idGeneratorDiagnostic( std::meta::info type, std::meta::info generator_trait, bool specialized )
-    -> std::string {
+[[nodiscard]] consteval auto idGeneratorDiagnostic( std::meta::info type, std::meta::info generator_trait,
+                                                    bool specialized ) -> std::string {
   if ( constructorsOf( type ).size() != 1 ) {
     return {};
   }

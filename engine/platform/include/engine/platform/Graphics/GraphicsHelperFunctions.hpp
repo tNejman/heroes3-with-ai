@@ -1,11 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Image.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <array>
 #include <cstddef>
 #include <optional>
@@ -13,13 +7,23 @@
 #include <utility>
 #include <variant>
 
-#include "aux/DiscardReturn.hpp"
-#include "aux/Err.hpp"
-#include "core/Game/StateBattle.h"
-#include "core/Unit/UnitStack.h"
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
+
 #include "engine/model/IGraphics/ISpriteFactory.h"
+
 #include "engine/platform/Graphics/GraphicsLib.h"
 #include "engine/platform/Graphics/SpriteBindingDefs.h"
+
+#include "aux/DiscardReturn.hpp"
+#include "aux/Err.hpp"
+
+#include "core/Game/StateBattle.h"
+#include "core/Unit/UnitStack.h"
 
 namespace graphics {
 

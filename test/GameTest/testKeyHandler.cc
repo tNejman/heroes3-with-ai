@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
+#include <optional>
 
 #include <SFML/Window/Keyboard.hpp>
-#include <optional>
+#include <gtest/gtest.h>
 
 #include "core/Game/KeyHandler.h"
 #include "core/Misc/ProjectLib.h"

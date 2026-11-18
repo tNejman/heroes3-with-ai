@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "aux/Err.hpp"
+
 #include "core/Exceptions/NotEmptySlotException.hpp"
 #include "core/Unit/UnitStack.h"
 

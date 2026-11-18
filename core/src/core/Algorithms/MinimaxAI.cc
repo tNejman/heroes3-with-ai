@@ -1,7 +1,5 @@
 #include "core/Algorithms/MinimaxAI.h"
 
-#include <sys/types.h>
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -10,6 +8,8 @@
 #include <mutex>
 #include <utility>
 #include <vector>
+
+#include <sys/types.h>
 
 #include "core/Battle/Battle.h"
 #include "core/Misc/ProjectLib.h"

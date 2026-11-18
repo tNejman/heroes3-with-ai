@@ -1,8 +1,12 @@
 #pragma once
 
+#include <string>
+
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <string>
+
+#include "engine/model/IGraphics/ISpriteFactory.h"
+#include "engine/model/IGraphics/SpriteBinding.h"
 
 #include "core/Artifact/Artifact.h"
 #include "core/Character/Character.h"
@@ -12,8 +16,6 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 #include "core/WorldMap/OverworldObstacle.h"
-#include "engine/model/IGraphics/ISpriteFactory.h"
-#include "engine/model/IGraphics/SpriteBinding.h"
 
 static const inline std::string SPRITE_ROOT_DIR = "assets/sprites";
 

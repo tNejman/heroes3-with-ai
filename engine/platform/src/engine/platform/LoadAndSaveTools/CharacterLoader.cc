@@ -4,9 +4,10 @@
 #include <memory>
 #include <string>
 
+#include "aux/Err.hpp"
+
 #include "core/Character/Character.h"
 #include "core/Exceptions/DamagedSaveException.hpp"
-#include "aux/Err.hpp"
 
 CharacterSaveContainer::CharacterSaveContainer()
     : name_( std::nullopt ),

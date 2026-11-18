@@ -1,8 +1,9 @@
 #include "core/Unit/UnitStack.h"
 
+#include "engine/model/IGame/Coords.h"
+
 #include "core/Battle/TileObject.hpp"
 #include "core/Unit/UnitsLib.h"
-#include "engine/model/IGame/Coords.h"
 
 [[nodiscard]] const UnitData& UnitStack::getData() const noexcept {
   return data_;

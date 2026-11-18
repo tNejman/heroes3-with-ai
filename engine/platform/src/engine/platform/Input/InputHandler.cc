@@ -1,18 +1,21 @@
 #include "engine/platform/Input/InputHandler.h"
 
+#include <cstddef>
+#include <optional>
+
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <cstddef>
-#include <optional>
+
+#include "engine/model/IGame/Coords.h"
+
+#include "engine/platform/Input/KeyboardHandler.h"
+#include "engine/platform/Input/MouseHandler.h"
 
 #include "core/Game/Game.h"
 #include "core/Game/UserCommand.h"
 #include "core/Misc/ProjectLib.h"
-#include "engine/model/IGame/Coords.h"
-#include "engine/platform/Input/KeyboardHandler.h"
-#include "engine/platform/Input/MouseHandler.h"
 
 /* ===== @PRIVATE ===== */
 

@@ -1,15 +1,17 @@
 #include <gtest/gtest.h>
 
+#include "engine/model/IGame/Coords.h"
+
+#include "aux/Builder.hpp"
+
 #include "core/Artifact/Artifact.h"
 #include "core/Artifact/ArtifactLib.h"
-#include "aux/Builder.hpp"
-#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Character/Character.h"
 #include "core/Character/Stats.h"
 #include "core/Exceptions/InvalidArtifactTypeException.hpp"
 #include "core/Exceptions/NotEmptySlotException.hpp"
+#include "core/Misc/BuilderDefaults.hpp"
 #include "core/Unit/Faction.hpp"
-#include "engine/model/IGame/Coords.h"
 
 TEST( CharacterTest, createValidCharacter ) {
   // std::unique_ptr<Character> character1 = std::make_unique<Character>(
