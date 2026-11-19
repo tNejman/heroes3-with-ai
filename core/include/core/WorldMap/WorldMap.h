@@ -33,13 +33,15 @@ using WorldMapGrid = std::array<std::array<TileInGrid, WORLD_MAP_HEIGHT>, WORLD_
 class WorldMap {
  private:
   WorldMapGrid<Terrain> background_;
-  WorldMapGrid<std::shared_ptr<MapObject>> foreground_;
+  WorldMapGrid<MapObject*> foreground_;
 
-  std::vector<std::shared_ptr<Character>> characters_;
+  std::vector<Character*> character_;
+  std::vector<std::unique_ptr<OverworldObstacle>> obstacles_;
+
   std::vector<std::shared_ptr<Building>> buildings_;
 
   void loadBackground( const WorldMapGrid<int>& new_grid ) noexcept;
-  void loadObstacles( const std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) noexcept;
+  void loadObstacles( std::vector<std::unique_ptr<OverworldObstacle>>& obstacles ) noexcept;
 
  public:
   WorldMap() = delete;
@@ -50,10 +52,9 @@ class WorldMap {
 
   [[nodiscard]] Terrain getTerrain( CoordPair coords ) const noexcept;
 
-  [[nodiscard]] std::shared_ptr<MapObject>& getMapObjectShared( CoordPair coords ) noexcept;
   [[nodiscard]] const MapObject* getMapObject( CoordPair coords ) const noexcept;
   [[nodiscard]] MapObject* getMapObject( CoordPair coords ) noexcept;
-  void setMapObject( CoordPair coords, std::shared_ptr<MapObject> object ) noexcept;
+  void setMapObject( CoordPair coords, MapObject* object ) noexcept;
   void resetMapObject( CoordPair coords ) noexcept;
   [[nodiscard]] game::StateTransition moveMapObject( CoordPair old_coords, CoordPair new_coords );
 };

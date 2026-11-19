@@ -1,3 +1,4 @@
+#include <FastNoiseLite.h>
 #include <engine/model/IGame/Coords.h>
 #include <engine/platform/Graphics/GraphicsLib.h>
 #include <engine/platform/Graphics/Renderers/GameRenderer.h>
@@ -33,6 +34,7 @@
 #include "core/Unit/UnitStack.h"
 #include "core/Unit/UnitsLib.h"
 #include "engine/platform/LoadAndSaveTools/MapLoader.h"
+
 
 constexpr inline int FRAMES_PER_SECOND = 30;
 
@@ -108,6 +110,17 @@ std::vector<std::shared_ptr<Player>> producePresetPlayers() noexcept {
   players.push_back( std::make_shared<Player>( std::move( characters_2 ) ) );
 
   return players;
+}
+
+void generateNoise() {
+  FastNoiseLite noise{ 1337 };                                  // seed
+  noise.SetNoiseType( FastNoiseLite::NoiseType_OpenSimplex2 );  // or NoiseType_OpenSimplex2S (smoother, slower)
+  noise.SetFractalType( FastNoiseLite::FractalType_FBm );       // turns on fBm
+  noise.SetFrequency( 0.005f );                                 // feature size: lower = bigger hills (default 0.01)
+  noise.SetFractalOctaves( 6 );                                 // detail layers (default 3)
+  noise.SetFractalLacunarity( 2.0f );                           // frequency multiplier per layer (default 2.0)
+  noise.SetFractalGain( 0.5f );                                 // amplitude multiplier per layer (default 0.5)
+  float value = noise.GetNoise( x, y );  // returns roughly -1..1; same x, y, seed always gives the same value
 }
 
 }  // namespace

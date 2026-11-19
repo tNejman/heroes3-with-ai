@@ -97,7 +97,7 @@ TEST( WorldMapTests, setMapObject ) {
   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
 
   auto obstacle = std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) );
-  ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle ) );
+  ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle.get() ) );
 
   ASSERT_EQ( obstacle.get(), world_map->getMapObject( { 1, 1 } ) );
 }
@@ -141,7 +141,7 @@ TEST( WorldMapTests, moveMapObject ) {
   std::shared_ptr<WorldMap> world_map = std::make_shared<WorldMap>( grid_temp );
 
   auto obstacle = std::make_shared<OverworldObstacle>( OverworldObstacleType::DRIED_TREE, CoordPair( 1, 1 ) );
-  ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle ) );
+  ASSERT_NO_THROW( world_map->setMapObject( CoordPair( 1, 1 ), obstacle.get() ) );
 
   ASSERT_NO_THROW( DISCARD_RETURN() world_map->moveMapObject( CoordPair( 1, 1 ), CoordPair( 2, 2 ) ) );
   ASSERT_EQ( obstacle.get(), world_map->getMapObject( { 2, 2 } ) );

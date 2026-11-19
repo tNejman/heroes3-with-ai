@@ -72,8 +72,8 @@ void game::StateOverworld::applySystemCommand( const SystemCommand& command, gam
                        },
                         [&]( const EraseTile& et ) { map_.resetMapObject( et.desitnation_ ); },
                         [&]( const PlaceCharacter& pc ) {
-                          auto character = context.findCharacterById( pc.character_id_ );
-                          map_.setMapObject( pc.destination_, std::move( character ) );
+                          auto* character = context.findCharacterById( pc.character_id_ );
+                          map_.setMapObject( pc.destination_, character );
                         } },
               std::get<WorldMapSystemCommand>( command ) );
 }

@@ -25,7 +25,20 @@ game::Context::Context( std::vector<std::shared_ptr<Player>>&& players ) noexcep
   return players_;
 }
 
-[[nodiscard]] std::shared_ptr<Character> game::Context::findCharacterById( int id ) const noexcept {
+[[nodiscard]] Character* game::Context::findCharacterById( int id ) const noexcept {
+  for ( const auto& player : players_ ) {
+    for ( const auto& character : player->getCharacters() ) {
+      if ( character->getId() == id ) {
+        return character.get();
+      }
+    }
+  }
+  return nullptr;
+}
+[[nodiscard]] Character* game::Context::findCharacterById( int id ) noexcept {
+  return std::as_const( *this ).findCharacterById( id );
+}
+[[nodiscard]] std::shared_ptr<Character> game::Context::findCharacterByIdShared( int id ) const noexcept {
   for ( const auto& player : players_ ) {
     for ( const auto& character : player->getCharacters() ) {
       if ( character->getId() == id ) {
@@ -35,8 +48,8 @@ game::Context::Context( std::vector<std::shared_ptr<Player>>&& players ) noexcep
   }
   return nullptr;
 }
-[[nodiscard]] std::shared_ptr<Character> game::Context::findCharacterById( int id ) noexcept {
-  return std::as_const( *this ).findCharacterById( id );
+[[nodiscard]] std::shared_ptr<Character> game::Context::findCharacterByIdShared( int id ) noexcept {
+  return std::as_const( *this ).findCharacterByIdShared( id );
 }
 
 [[nodiscard]] const Player& game::Context::getCurrentPlayer() const noexcept {

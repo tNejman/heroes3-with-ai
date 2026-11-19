@@ -28,11 +28,12 @@ void WorldMap::loadBackground( const WorldMapGrid<int>& new_grid ) noexcept {
   }
 }
 
-void WorldMap::loadObstacles( const std::vector<std::shared_ptr<OverworldObstacle>>& obstacles ) noexcept {
-  // SINGLE_CALL_GUARD()
-  for ( const auto& obstacle : obstacles ) {
+void WorldMap::loadObstacles( std::vector<std::unique_ptr<OverworldObstacle>>& obstacles ) noexcept {
+  obstacles_ = std::move( obstacles );
+
+  for ( auto& obstacle : obstacles_ ) {
     err::passCondOrAbort( obstacle != nullptr );
-    setMapObject( obstacle->getCoords(), obstacle );
+    setMapObject( obstacle->getCoords(), obstacle.get() );
   }
 }
 
@@ -58,21 +59,18 @@ bool WorldMap::areCoordsInBounds( CoordPair coords ) noexcept {
   return background_[coords.xAsId()][coords.yAsId()];
 }
 
-[[nodiscard]] std::shared_ptr<MapObject>& WorldMap::getMapObjectShared( CoordPair coords ) noexcept {
+[[nodiscard]] const MapObject* WorldMap::getMapObject( CoordPair coords ) const noexcept {
   return foreground_[coords.xAsId()][coords.yAsId()];
 }
-[[nodiscard]] const MapObject* WorldMap::getMapObject( CoordPair coords ) const noexcept {
-  return foreground_[coords.xAsId()][coords.yAsId()].get();
-}
 [[nodiscard]] MapObject* WorldMap::getMapObject( CoordPair coords ) noexcept {
-  return foreground_[coords.xAsId()][coords.yAsId()].get();
+  return foreground_[coords.xAsId()][coords.yAsId()];
 }
 
-void WorldMap::setMapObject( CoordPair coords, std::shared_ptr<MapObject> object ) noexcept {
-  foreground_[coords.xAsId()][coords.yAsId()] = std::move( object );
+void WorldMap::setMapObject( CoordPair coords, MapObject* object ) noexcept {
+  foreground_[coords.xAsId()][coords.yAsId()] = object;
 }
 void WorldMap::resetMapObject( CoordPair coords ) noexcept {
-  foreground_[coords.xAsId()][coords.yAsId()].reset();
+  foreground_[coords.xAsId()][coords.yAsId()] = nullptr;
 }
 
 game::StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair new_coords ) {
@@ -82,8 +80,8 @@ game::StateTransition WorldMap::moveMapObject( CoordPair old_coords, CoordPair n
   COORDS_IN_BOUNDS_OR_THROW( old_coords, "Origin: " );
   COORDS_IN_BOUNDS_OR_THROW( new_coords, "Destination: " );
 
-  auto map_obj_src = getMapObjectShared( old_coords );
-  auto map_obj_dest = getMapObjectShared( new_coords );
+  auto* map_obj_src = getMapObject( old_coords );
+  auto* map_obj_dest = getMapObject( new_coords );
 
   err::passCondOrThrow<InvalidMapMoveException>( map_obj_src != nullptr,
                                                  "Tried moving object from an empty tile. Source coords:", old_coords );

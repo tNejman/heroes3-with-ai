@@ -21,8 +21,10 @@ class Context {
   [[nodiscard]] const std::vector<std::shared_ptr<Player>>& getPlayers() const noexcept;
   [[nodiscard]] std::vector<std::shared_ptr<Player>>& getPlayers() noexcept;
 
-  [[nodiscard]] std::shared_ptr<Character> findCharacterById( int id ) const noexcept;
-  [[nodiscard]] std::shared_ptr<Character> findCharacterById( int id ) noexcept;
+  [[nodiscard]] Character* findCharacterById( int id ) const noexcept;
+  [[nodiscard]] Character* findCharacterById( int id ) noexcept;
+  [[nodiscard]] std::shared_ptr<Character> findCharacterByIdShared( int id ) const noexcept;
+  [[nodiscard]] std::shared_ptr<Character> findCharacterByIdShared( int id ) noexcept;
 
   [[nodiscard]] const Player& getCurrentPlayer() const noexcept;
   [[nodiscard]] Player& getCurrentPlayer() noexcept;
